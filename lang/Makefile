@@ -1,4 +1,4 @@
-INSTALLDIR = .
+INSTALLDIR = $(shell pwd)
 LANGUAGES = `find ./ -name "auto_*.po" -print | sed 's|^\./auto_\(.*\).po|\1|'`
 DOMAINS = auto
 PHP_SOURCES = $(shell find ../ -maxdepth 1 -name \*.php) \
@@ -8,7 +8,7 @@ PHP_SOURCES = $(shell find ../ -maxdepth 1 -name \*.php) \
 all : extract mo
 
 twig :
-	../bin/twig-cache
+	cd ../../../../ && bin/console galette:twig-cache $(shell basename $(abspath $(CURDIR)/..)) && cd ${INSTALLDIR}
 
 po :
 	@echo "Generating PO files:"
