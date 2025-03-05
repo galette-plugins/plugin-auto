@@ -200,7 +200,7 @@ class ModelsController extends AbstractPluginController
         if ($action === 'edit') {
             // initialize model structure with database values
             $model->load($model_id);
-            if ($model->id == '') {
+            if (!$model->id) {
                 //not possible to load, exit
                 throw new \RuntimeException('Model does not exists!');
             }
