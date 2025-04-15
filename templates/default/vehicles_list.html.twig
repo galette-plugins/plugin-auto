@@ -52,7 +52,10 @@
 
 {% block header %}
     {% set columns = [
-        {'label': ''},
+        {
+            'label': '',
+            'collapse': true
+        },
         {'label': _T("Name", "auto")},
         {'label': _T("Owner", "auto")},
         {'label': _T("Brand", "auto")},
@@ -76,7 +79,7 @@
             <td data-col-label="{{ _T("Owner", "auto") }}"><a href="{{ url_for("member", {"id": auto.owner.id}) }}">{{ auto.owner.sfullname }}</a></td>
             <td data-col-label="{{ _T("Brand", "auto") }}"><a href="{{ edit_link }}">{{ brand.value }}</a></td>
             <td data-col-label="{{ _T("Model", "auto") }}"><a href="{{ edit_link }}">{{ auto.model.model }}</a></td>
-            <td class="center actions_row nowrap">
+            <td class="center actions_row collapsing">
                 {% if login.isAdmin() or login.isStaff() or auto.owner.id == login.id or login.isGroupManager() and preferences.pref_bool_groupsmanagers_edit_member %}
                     {% set actions = [
                         {
