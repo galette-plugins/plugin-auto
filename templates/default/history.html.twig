@@ -25,7 +25,7 @@
         <table id="listing" class="ui celled striped table">
             <thead>
                 <tr>
-                    <th class="listing left">
+                    <th class="listing left collapsing">
                         {{ _T("Date") }}
                     </th>
                     <th class="listing left">
@@ -46,7 +46,7 @@
         {% for entry in entries %}
             {% set owner = entry.owner %}
                 <tr>
-                    <td data-col-label="{{ _T("Date") }}">{{ entry.formatted_date }}</td>
+                    <td class="collapsing" data-col-label="{{ _T("Date") }}">{{ entry.formatted_date }}</td>
                     <td data-col-label="{{ _T("Owner", "auto") }}">
                         {% if owner.isCompany() %}
                             <i class="ui building outline icon tooltip"><span class="visually-hidden">{{ _T('Is a company') }}</span></i>
