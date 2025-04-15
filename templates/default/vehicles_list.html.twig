@@ -68,7 +68,9 @@
 
         <tr class="{{ loop.index is odd ? 'odd' : 'even' }}">
             <td class="collapsing" data-scope="row">
-                <input type="checkbox" name="entries_sel[]" value="{{ auto.id }}"/>
+                <span class="ui checkbox">
+                    <input type="checkbox" name="entries_sel[]" value="{{ auto.id }}"/>
+                </span>
             </td>
             <td data-col-label="{{ _T("Name", "auto") }}"><a href="{{ edit_link }}">{{ auto.name }}</a></td>
             <td data-col-label="{{ _T("Owner", "auto") }}"><a href="{{ url_for("member", {"id": auto.owner.id}) }}">{{ auto.owner.sfullname }}</a></td>
