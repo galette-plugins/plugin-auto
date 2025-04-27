@@ -4,22 +4,24 @@
 # Is that matters? <werentyou@proton.me>, 2022.
 # Evgeniy Khramov <thejenjagamertjg@gmail.com>, 2022.
 # SleepyOwl <artem726artem@gmail.com>, 2023.
+# Evgeniy Khramov <65224669+thejenja@users.noreply.github.com>, 2025.
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"Report-Msgid-Bugs-To: \n"
+"Report-Msgid-Bugs-To: translations@galette.eu\n"
 "POT-Creation-Date: 2024-02-23 08:39+0100\n"
-"PO-Revision-Date: 2023-01-18 05:42+0000\n"
-"Last-Translator: SleepyOwl <artem726artem@gmail.com>\n"
-"Language-Team: Russian <https://hosted.weblate.org/projects/galette/auto-"
-"plugin/ru/>\n"
+"PO-Revision-Date: 2025-04-28 16:03+0000\n"
+"Last-Translator: Evgeniy Khramov <65224669+thejenja@users.noreply.github.com>"
+"\n"
+"Language-Team: Russian <https://hosted.weblate.org/projects/galette/"
+"auto-plugin/ru/>\n"
 "Language: ru\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
-"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
-"X-Generator: Weblate 4.15.1-dev\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"X-Generator: Weblate 5.12-dev\n"
 
 #: ../_routes.php:125
 msgid "No vehicle was selected, please check at least one name."
@@ -650,7 +652,7 @@ msgstr ""
 
 #: ../tempcache/vehicles.html.twig:556 ../tempcache/vehicles.html.twig:563
 msgid "Comment"
-msgstr ""
+msgstr "Комментарий"
 
 #: ../tempcache/vehicles.html.twig:665
 msgid "Car's history"
