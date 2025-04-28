@@ -5,14 +5,14 @@
 # Evgeniy Khramov <thejenjagamertjg@gmail.com>, 2022.
 # SleepyOwl <artem726artem@gmail.com>, 2023.
 # Evgeniy Khramov <65224669+thejenja@users.noreply.github.com>, 2025.
+# Sotski Eugene <jekakmail@gmail.com>, 2025.
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: translations@galette.eu\n"
 "POT-Creation-Date: 2024-02-23 08:39+0100\n"
-"PO-Revision-Date: 2025-04-28 16:03+0000\n"
-"Last-Translator: Evgeniy Khramov <65224669+thejenja@users.noreply.github.com>"
-"\n"
+"PO-Revision-Date: 2025-04-28 23:23+0000\n"
+"Last-Translator: Sotski Eugene <jekakmail@gmail.com>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/galette/"
 "auto-plugin/ru/>\n"
 "Language: ru\n"
@@ -265,40 +265,28 @@ msgid "This brand is used by one or more vehicles, it cannot be deleted."
 msgstr ""
 
 #: ../lib/GaletteAuto/Controllers/Crud/PropertiesController.php:678
-#, fuzzy
-#| msgid "- An error occurred while saving record. Please try again."
 msgid "An error occurred trying to remove color :/"
-msgstr "- При сохранении записи произошла ошибка. Пожалуйста попробуйте снова."
+msgstr "Произошла ошибка при попытке удалить цвет :/"
 
 #: ../lib/GaletteAuto/Controllers/Crud/PropertiesController.php:682
-#, fuzzy
-#| msgid "- An error occurred while saving record. Please try again."
 msgid "An error occurred trying to remove state :/"
-msgstr "- При сохранении записи произошла ошибка. Пожалуйста попробуйте снова."
+msgstr "Произошла ошибка при попытке удалить состояние :/"
 
 #: ../lib/GaletteAuto/Controllers/Crud/PropertiesController.php:686
-#, fuzzy
-#| msgid "- An error occurred while saving record. Please try again."
 msgid "An error occurred trying to remove finition :/"
-msgstr "- При сохранении записи произошла ошибка. Пожалуйста попробуйте снова."
+msgstr "Произошла ошибка при попытке удалить finition :/"
 
 #: ../lib/GaletteAuto/Controllers/Crud/PropertiesController.php:690
-#, fuzzy
-#| msgid "- An error occurred while saving record. Please try again."
 msgid "An error occurred trying to remove body :/"
-msgstr "- При сохранении записи произошла ошибка. Пожалуйста попробуйте снова."
+msgstr "Произошла ошибка при попытке удалить тело :/"
 
 #: ../lib/GaletteAuto/Controllers/Crud/PropertiesController.php:694
-#, fuzzy
-#| msgid "- An error occurred while saving record. Please try again."
 msgid "An error occurred trying to remove transmission :/"
-msgstr "- При сохранении записи произошла ошибка. Пожалуйста попробуйте снова."
+msgstr "Произошла ошибка при попытке удалить передачу :/"
 
 #: ../lib/GaletteAuto/Controllers/Crud/PropertiesController.php:698
-#, fuzzy
-#| msgid "- An error occurred while saving record. Please try again."
 msgid "An error occurred trying to remove brand :/"
-msgstr "- При сохранении записи произошла ошибка. Пожалуйста попробуйте снова."
+msgstr "Произошла ошибка при попытке удалить бренд :/"
 
 #: ../lib/GaletteAuto/Controllers/Controller.php:90
 msgid "You do not have enough privileges."
@@ -553,10 +541,8 @@ msgid "- you must attach an owner to this car"
 msgstr ""
 
 #: ../lib/GaletteAuto/Auto.php:802
-#, fuzzy
-#| msgid "- An error occurred while saving record. Please try again."
 msgid "An error occurred while trying to delete car's photo"
-msgstr "- При сохранении записи произошла ошибка. Пожалуйста попробуйте снова."
+msgstr "Произошла ошибка при попытке удаления фотографию автомобиля"
 
 #: ../lib/GaletteAuto/PluginGaletteAuto.php:50
 msgid "Cars"
