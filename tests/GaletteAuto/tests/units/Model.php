@@ -171,6 +171,11 @@ class Model extends GaletteTestCase
     public function testLoadError(): void
     {
         $brand = new \GaletteAuto\Model($this->zdb);
+        $this->expectNoLogEntry();
         $this->assertFalse($brand->load(999));
+        $this->expectLogEntry(
+            \Analog::ERROR,
+            '[GaletteAuto\Model] Cannot load model from id `999`'
+        );
     }
 }

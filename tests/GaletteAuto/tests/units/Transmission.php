@@ -114,7 +114,12 @@ class Transmission extends GaletteTestCase
     public function testLoadError(): void
     {
         $transmission = new \GaletteAuto\Transmission($this->zdb);
+        $this->expectNoLogEntry();
         $this->assertFalse($transmission->load(999));
+        $this->expectLogEntry(
+            \Analog::ERROR,
+            '[GaletteAuto\Transmission] Cannot load transmissions from id `999`'
+        );
     }
 
     /**

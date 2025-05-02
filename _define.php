@@ -26,7 +26,7 @@ $this->register(
     'Plugin to manage Automobile clubs',    //Short description
     'Johan Cwiklinski',                     //Author
     '2.1.3',                                //Version
-    '1.1.4',                                //Galette compatible version
+    '1.2.0',                                //Galette compatible version
     'auto',                                 //routing name
     '2024-10-21',                           //Release date
     [ //routes permissions

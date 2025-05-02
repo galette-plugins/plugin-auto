@@ -233,7 +233,7 @@ class Auto
             Analog::log(
                 '[' . get_class($this) . '] Cannot load car from id `' . $id .
                 '` | ' . $e->getMessage(),
-                Analog::WARNING
+                Analog::ERROR
             );
             return false;
         }
@@ -484,7 +484,12 @@ class Auto
      */
     public function getProperties(): array
     {
-        return $this->getAllProperties(true);
+        $properties = $this->getAllProperties(true);
+        $to_unset = ['required', 'errors'];
+        foreach ($to_unset as $prop) {
+            unset($properties[array_search($prop, $properties)]);
+        }
+        return $properties;
     }
 
     /**
@@ -768,6 +773,9 @@ class Auto
                             _T("- You must choose a %s in the list", "auto")
                         );
                     }
+                    break;
+                case 'owner':
+                    //owner is not a property that can be set.
                     break;
                 case 'owner_id':
                     if (isset($post['change_owner']) || !isset($this->id)) {

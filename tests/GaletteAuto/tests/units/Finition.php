@@ -114,7 +114,12 @@ class Finition extends GaletteTestCase
     public function testLoadError(): void
     {
         $finition = new \GaletteAuto\Finition($this->zdb);
+        $this->expectNoLogEntry();
         $this->assertFalse($finition->load(999));
+        $this->expectLogEntry(
+            \Analog::ERROR,
+            '[GaletteAuto\Finition] Cannot load finitions from id `999`'
+        );
     }
 
     /**

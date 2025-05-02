@@ -114,7 +114,12 @@ class Brand extends GaletteTestCase
     public function testLoadError(): void
     {
         $brand = new \GaletteAuto\Brand($this->zdb);
+        $this->expectNoLogEntry();
         $this->assertFalse($brand->load(999));
+        $this->expectLogEntry(
+            \Analog::ERROR,
+            '[GaletteAuto\Brand] Cannot load brands from id `999`'
+        );
     }
 
     /**

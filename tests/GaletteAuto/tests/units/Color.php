@@ -114,7 +114,12 @@ class Color extends GaletteTestCase
     public function testLoadError(): void
     {
         $color = new \GaletteAuto\Color($this->zdb);
+        $this->expectNoLogEntry();
         $this->assertFalse($color->load(999));
+        $this->expectLogEntry(
+            \Analog::ERROR,
+            '[GaletteAuto\Color] Cannot load colors from id `999`'
+        );
     }
 
     /**

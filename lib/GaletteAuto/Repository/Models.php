@@ -134,11 +134,11 @@ class Models extends Repository
 
         switch ($this->filters->orderby) {
             case ModelsList::ORDERBY_BRAND:
-                $order[] = 'b.brand ' . $this->filters->ordered;
+                $order[] = 'b.brand ' . $this->filters->getDirection();
                 break;
             default:
             case ModelsList::ORDERBY_MODEL:
-                $order[] = 'm.model ' . $this->filters->ordered;
+                $order[] = 'm.model ' . $this->filters->getDirection();
                 break;
         }
 

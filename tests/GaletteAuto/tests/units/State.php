@@ -114,7 +114,12 @@ class State extends GaletteTestCase
     public function testLoadError(): void
     {
         $state = new \GaletteAuto\State($this->zdb);
+        $this->expectNoLogEntry();
         $this->assertFalse($state->load(999));
+        $this->expectLogEntry(
+            \Analog::ERROR,
+            '[GaletteAuto\State] Cannot load states from id `999`'
+        );
     }
 
     /**
