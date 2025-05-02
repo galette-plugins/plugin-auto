@@ -57,7 +57,7 @@
 {% block body %}
     {% for o in list %}
         {% set edit_link = url_for("propertyEdit", {"property": obj.getRouteName(), "id": o[pk]}) %}
-    <tr class="{{ loop.index is odd ? 'odd' : 'even' }}">
+    <tr>
         <td data-col-label="{{ field_name }}">
             <a
                 href="{% if show is defined and show == true %}{{ url_for("propertyShow", {"property": obj.getRouteName(), "id": o[pk]}) }}{% else %}{{ edit_link }}{% endif %}"

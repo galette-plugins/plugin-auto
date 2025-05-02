@@ -69,7 +69,7 @@
         {% set brand = auto.model.brand %}
         {% set edit_link = url_for("vehicleEdit", {"id": auto.id}) %}
 
-        <tr class="{{ loop.index is odd ? 'odd' : 'even' }}">
+        <tr>
             <td class="collapsing" data-scope="row">
                 <span class="ui checkbox">
                     <input type="checkbox" name="entries_sel[]" value="{{ auto.id }}"/>
