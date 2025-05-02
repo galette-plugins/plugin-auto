@@ -546,7 +546,7 @@ class PropertiesController extends AbstractPluginController
         $this->view->render(
             $response,
             'modals/confirm_removal.html.twig',
-            array(
+            [
                 'type'          => $object->getFieldLabel(),
                 'mode'          => $request->getHeaderLine('X-Requested-With') === 'XMLHttpRequest' ? 'ajax' : '',
                 'page_title'    => sprintf(
@@ -560,7 +560,7 @@ class PropertiesController extends AbstractPluginController
                 ),
                 'cancel_uri'    => $route,
                 'data'          => $data
-            )
+            ]
         );
         return $response;
     }
@@ -581,8 +581,7 @@ class PropertiesController extends AbstractPluginController
         $ajax = isset($post['ajax']) && $post['ajax'] === 'true';
         $success = false;
 
-        $uri = isset($post['redirect_uri']) ?
-            $post['redirect_uri'] :
+        $uri = $post['redirect_uri'] ??
             $this->routeparser->urlFor('slash');
 
         if (!isset($post['confirm'])) {

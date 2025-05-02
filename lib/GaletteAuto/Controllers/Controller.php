@@ -23,7 +23,6 @@ declare(strict_types=1);
 
 namespace GaletteAuto\Controllers;
 
-use ArrayObject;
 use Galette\Repository\Members;
 use GaletteAuto\Auto;
 use GaletteAuto\Autos;
@@ -75,10 +74,10 @@ class Controller extends AbstractPluginController
             && !$this->login->isAdmin()
             && !$this->login->isStaff()
         ) {
-            $deps = array(
+            $deps = [
                 'picture'   => false,
                 'dues'      => false
-            );
+            ];
             $member = new Adherent($this->zdb, $id_adh, $deps);
             if (!$this->login->isGroupManager(array_keys($member->groups))) {
                 //no right to see requested member.
@@ -420,8 +419,8 @@ class Controller extends AbstractPluginController
         $is_new = ($action === 'add' || $action === 'new');
 
         // initialize warnings
-        $error_detected = array();
-        $success_detected = array();
+        $error_detected = [];
+        $success_detected = [];
 
         if (isset($post['id_adh'])) {
             $this->checkAclsFor($response, (int)$post['id_adh']);
@@ -525,7 +524,7 @@ class Controller extends AbstractPluginController
     public function ajaxModels(Request $request, Response $response): Response
     {
         $post = $request->getParsedBody();
-        $list = array();
+        $list = [];
         $models = new Models(
             $this->zdb,
             $this->preferences,
@@ -572,7 +571,7 @@ class Controller extends AbstractPluginController
         $this->view->render(
             $response,
             'modals/confirm_removal.html.twig',
-            array(
+            [
                 'type'          => _T("Vehicle", "auto"),
                 'mode'          => $request->getHeaderLine('X-Requested-With') === 'XMLHttpRequest' ? 'ajax' : '',
                 'page_title'    => sprintf(
@@ -582,7 +581,7 @@ class Controller extends AbstractPluginController
                 'form_url'      => $this->routeparser->urlFor('doRemoveVehicle', ['id' => (string)$auto->id]),
                 'cancel_uri'    => $route,
                 'data'          => $data
-            )
+            ]
         );
         return $response;
     }
@@ -621,7 +620,7 @@ class Controller extends AbstractPluginController
         $this->view->render(
             $response,
             'modals/confirm_removal.html.twig',
-            array(
+            [
                 'type'          => _T("Vehicle", "auto"),
                 'mode'          => $request->getHeaderLine('X-Requested-With') === 'XMLHttpRequest' ? 'ajax' : '',
                 'page_title'    => _T('Remove vehicles', 'auto'),
@@ -633,7 +632,7 @@ class Controller extends AbstractPluginController
                 'form_url'      => $this->routeparser->urlFor('doRemoveVehicle'),
                 'cancel_uri'    => $route,
                 'data'          => $data
-            )
+            ]
         );
         return $response;
     }
@@ -652,8 +651,7 @@ class Controller extends AbstractPluginController
         $ajax = isset($post['ajax']) && $post['ajax'] === 'true';
         $success = false;
 
-        $uri = isset($post['redirect_uri']) ?
-            $post['redirect_uri'] :
+        $uri = $post['redirect_uri'] ??
             $this->routeparser->urlFor('slash');
 
         if (!isset($post['confirm'])) {

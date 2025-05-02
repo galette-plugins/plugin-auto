@@ -81,9 +81,9 @@ class Model
         try {
             $select = $this->zdb->select(AUTO_PREFIX . self::TABLE);
             $select->where(
-                array(
+                [
                     self::PK => $id
-                )
+                ]
             );
 
             $results = $this->zdb->execute($select);
@@ -128,10 +128,10 @@ class Model
     public function store(bool $new = false): bool
     {
         try {
-            $values = array(
+            $values = [
                 'model'     => $this->model,
                 Brand::PK   => $this->brand->id
-            );
+            ];
             if ($new) {
                 $insert = $this->zdb->insert(AUTO_PREFIX . self::TABLE);
                 $insert->values($values);
@@ -145,9 +145,9 @@ class Model
             } else {
                 $update = $this->zdb->update(AUTO_PREFIX . self::TABLE);
                 $update->set($values)->where(
-                    array(
+                    [
                         self::PK => $this->id
-                    )
+                    ]
                 );
                 $this->zdb->execute($update);
             }

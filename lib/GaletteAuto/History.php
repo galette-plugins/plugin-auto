@@ -44,14 +44,14 @@ class History
     private Db $zdb;
 
     //fields list and type
-    private array $fields = array(
+    private array $fields = [
         Auto::PK            => 'integer',
         Adherent::PK        => 'integer',
         'history_date'      => 'datetime',
         'car_registration'  => 'text',
         Color::PK           => 'integer',
         State::PK           => 'integer'
-    );
+    ];
 
     /**
      * history entries
@@ -89,9 +89,9 @@ class History
         try {
             $select = $this->zdb->select(AUTO_PREFIX . self::TABLE);
             $select->where(
-                array(
+                [
                     Auto::PK => $id
-                )
+                ]
             )->order('history_date ASC');
 
             $results = $this->zdb->execute($select);
@@ -117,9 +117,9 @@ class History
         try {
             $select = $this->zdb->select(AUTO_PREFIX . self::TABLE);
             $select->where(
-                array(
+                [
                     Auto::PK => $this->id_car
-                )
+                ]
             )->order('history_date DESC')->limit(1);
 
             $results = $this->zdb->execute($select);
@@ -188,7 +188,7 @@ class History
             ksort($fields);
             ksort($props);
 
-            $values = array();
+            $values = [];
             foreach ($props as $key => $prop) {
                 $values[$key] = $prop;
             }

@@ -77,18 +77,18 @@ class Autos
             //Retrieve some information
             $select = $this->zdb->select(AUTO_PREFIX . self::TABLE, 'a');
             $select->columns(
-                array(
+                [
                     self::PK,
                     'car_name'
-                )
+                ]
             )->join(
-                array('b' => PREFIX_DB . AUTO_PREFIX . Model::TABLE),
+                ['b' => PREFIX_DB . AUTO_PREFIX . Model::TABLE],
                 'a.' . Model::PK . ' = b.' . Model::PK,
-                array('model')
+                ['model']
             )->join(
-                array('c' => PREFIX_DB . AUTO_PREFIX . Brand::TABLE),
+                ['c' => PREFIX_DB . AUTO_PREFIX . Brand::TABLE],
                 'b.' . Brand::PK . ' = c.' . Brand::PK,
-                array('brand')
+                ['brand']
             )->where->in(self::PK, $list);
 
             $vehicles = $this->zdb->execute($select);
@@ -228,18 +228,18 @@ class Autos
 
             if ($on_logged) {
                 $select->where(
-                    array(
+                    [
                         Adherent::PK => $login->id
-                    )
+                    ]
                 );
             }
 
             //restrict on specified user vehicles if an id has been provided
             if ($id_adh !== null) {
                 $select->where(
-                    array(
+                    [
                         Adherent::PK => $id_adh
-                    )
+                    ]
                 );
             }
 
@@ -250,7 +250,7 @@ class Autos
             }
 
             $results = $this->zdb->execute($select);
-            $autos = array();
+            $autos = [];
             if ($as_autos) {
                 foreach ($results as $row) {
                     $autos[] = new Auto($this->plugins, $this->zdb, $row);
@@ -285,9 +285,9 @@ class Autos
             $countSelect->reset($countSelect::ORDER);
             $countSelect->reset($countSelect::HAVING);
             $countSelect->columns(
-                array(
+                [
                     'count' => new Expression('count(DISTINCT a.' . self::PK . ')')
-                )
+                ]
             );
 
             $have = $select->having;

@@ -111,9 +111,9 @@ abstract class AbstractObject
         try {
             $select = $this->zdb->select($this->table);
             $select->where(
-                array(
+                [
                     $this->pk => $id
-                )
+                ]
             );
 
             $results = $this->zdb->execute($select);
@@ -144,9 +144,9 @@ abstract class AbstractObject
     public function store(bool $new = false): bool
     {
         try {
-            $values = array(
+            $values = [
                 $this->field => $this->value
-            );
+            ];
             if ($new) {
                 $insert = $this->zdb->insert($this->table);
                 $insert->values($values);
@@ -160,9 +160,9 @@ abstract class AbstractObject
             } else {
                 $update = $this->zdb->update($this->table);
                 $update->set($values)->where(
-                    array(
+                    [
                         $this->pk => $this->id
-                    )
+                    ]
                 );
                 $this->zdb->execute($update);
             }
@@ -391,10 +391,10 @@ abstract class AbstractObject
             $countSelect->reset($countSelect::LIMIT);
             $countSelect->reset($countSelect::OFFSET);
             $countSelect->columns(
-                array(
+                [
                     //@phpstan-ignore-next-line
                     static::PK => new Expression('COUNT(' . static::PK . ')')
-                )
+                ]
             );
 
             $results = $this->zdb->execute($countSelect);

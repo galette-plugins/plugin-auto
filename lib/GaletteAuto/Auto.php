@@ -68,7 +68,7 @@ class Auto
     private Plugins $plugins;
     private Db $zdb;
 
-    private array $fields = array(
+    private array $fields = [
         'id_car'                        => 'integer',
         'car_name'                      => 'string',
         'car_registration'              => 'string',
@@ -89,9 +89,9 @@ class Auto
         Finition::PK                    => 'integer',
         Model::PK                       => 'integer',
         Adherent::PK                    => 'integer'
-    );
+    ];
 
-    private array $required = array(
+    private array $required = [
         'name'                      => 1,
         'model'                     => 1,
         'first_registration_date'   => 1,
@@ -103,7 +103,7 @@ class Auto
         'transmission'              => 1,
         'finition'                  => 1,
         'fuel'                      => 1
-    );
+    ];
 
     private int $id;
     private string $registration;
@@ -145,7 +145,7 @@ class Auto
     private bool $fire_history = false;
 
     //internal properties (not updatable outside the object)
-    private array $internals = array(
+    private array $internals = [
         'id',
         'creation_date',
         'history',
@@ -156,7 +156,7 @@ class Auto
         'fire_history',
         'plugins',
         'zdb'
-    );
+    ];
     private array $errors = [];
 
     /**
@@ -171,7 +171,7 @@ class Auto
         $this->plugins = $plugins;
         $this->zdb = $zdb;
 
-        $this->propnames = array(
+        $this->propnames = [
             'name'                      => mb_strtolower(_T("Name", "auto")),
             'model'                     => mb_strtolower(_T("Model", "auto")),
             'registration'              => mb_strtolower(_T("Registration", "auto")),
@@ -187,7 +187,7 @@ class Auto
             'transmission'              => mb_strtolower(_T("Transmission", "auto")),
             'body'                      => mb_strtolower(_T("Body", "auto")),
             'fuel'                      => mb_strtolower(_T("Fuel", "auto")),
-        );
+        ];
 
         $this->model = new Model($this->zdb);
         $this->color = new Color($this->zdb);
@@ -217,9 +217,9 @@ class Auto
         try {
             $select = $this->zdb->select(AUTO_PREFIX . self::TABLE);
             $select->where(
-                array(
+                [
                     self::PK => $id
-                )
+                ]
             );
 
             $results = $this->zdb->execute($select);
@@ -290,14 +290,14 @@ class Auto
     public function listFuels(): array
     {
         //TODO: make this list configurable?
-        $f = array(
+        $f = [
             self::FUEL_PETROL       => _T("Petrol", "auto"),
             self::FUEL_DIESEL       => _T("Diesel", "auto"),
             self::FUEL_GAS          => _T("Gas", "auto"),
             self::FUEL_HYBRID       => _T("Hybrid", "auto"),
             self::FUEL_ELECTRICITY  => _T("Electricity", "auto"),
             self::FUEL_BIO          => _T("Bio", "auto")
-        );
+        ];
         return $f;
     }
 
@@ -318,7 +318,7 @@ class Auto
         }
 
         try {
-            $values = array();
+            $values = [];
 
             foreach ($this->fields as $k => $v) {
                 switch ($k) {
@@ -399,9 +399,9 @@ class Auto
             } else {
                 $update = $this->zdb->update(AUTO_PREFIX . self::TABLE);
                 $update->set($values)->where(
-                    array(
+                    [
                         self::PK => $this->id
-                    )
+                    ]
                 );
                 $edit = $this->zdb->execute($update);
                 //edit == 0 does not mean there were an error, but that there
@@ -430,7 +430,7 @@ class Auto
             }
 
             if ($this->fire_history) {
-                $h_props = array();
+                $h_props = [];
                 foreach ($this->history->fields as $prop) {
                     if ($prop != 'history_date') {
                         $h_props[$prop] = $this->$prop;
@@ -464,7 +464,7 @@ class Auto
      */
     private function getAllProperties(bool $restrict = false): array
     {
-        $result = array();
+        $result = [];
         foreach (get_class_vars(static::class) as $key => $value) {
             if (
                 !$restrict
@@ -540,7 +540,7 @@ class Auto
      */
     public function __get(string $name): mixed
     {
-        $forbidden = array();
+        $forbidden = [];
         if (!in_array($name, $forbidden)) {
             switch ($name) {
                 case self::PK:
@@ -672,7 +672,7 @@ class Auto
         //check for required fields, and correct values
         $required = $this->getRequired();
         foreach ($this->getProperties() as $prop) {
-            $value = isset($post[$prop]) ? $post[$prop] : null;
+            $value = $post[$prop] ?? null;
 
             if (($value == '' || $value == null) && in_array($prop, array_keys($required))) {
                 $this->errors[] = str_replace(
@@ -690,27 +690,27 @@ class Auto
                         $this->$prop = $value;
                     } else {
                         $this->errors[] = str_replace(
-                            array(
+                            [
                                 '%maxsize',
                                 '%field',
                                 '%cursize'
-                            ),
-                            array(
+                            ],
+                            [
                                 '10',
                                 $this->getPropName($prop),
                                 (string)mb_strlen($value)
-                            ),
+                            ],
                             _T("- Maximum size for %field is %maxsize (current %cursize)!", "auto")
                         );
                     }
                     break;
-                //string values, no check
+                    //string values, no check
                 case 'name':
                 case 'comment':
                 case 'chassis_number':
                     $this->$prop = $value;
                     break;
-                //dates
+                    //dates
                 case 'first_registration_date':
                 case 'first_circulation_date':
                     try {
@@ -732,7 +732,7 @@ class Auto
                         );
                     }
                     break;
-                //numeric values
+                    //numeric values
                 case 'mileage':
                 case 'seats':
                 case 'horsepower':
@@ -747,7 +747,7 @@ class Auto
                         );
                     }
                     break;
-                //constants
+                    //constants
                 case 'fuel':
                     if (in_array($value, array_keys($this->listFuels()))) {
                         $this->fuel = (int)$value;
@@ -755,7 +755,7 @@ class Auto
                         $this->errors[] = _T("- You must choose a fuel in the list", "auto");
                     }
                     break;
-                //external objects
+                    //external objects
                 case 'finition':
                 case 'color':
                 case 'model':

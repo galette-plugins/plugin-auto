@@ -76,9 +76,9 @@ class Models extends Repository
 
         if ($brandId !== null) {
             $select->where(
-                array(
+                [
                     'm.' . Brand::PK => $brandId
-                )
+                ]
             );
         } else {
             $this->filters->setLimits($select);
@@ -86,7 +86,7 @@ class Models extends Repository
         $results = $this->zdb->execute($select);
 
         if ($as_object) {
-            $models = array();
+            $models = [];
             foreach ($results as $r) {
                 $pk = self::PK;
                 $models[$r->$pk] = new Model($this->zdb, $r);
@@ -107,7 +107,7 @@ class Models extends Repository
         try {
             $select = $this->zdb->select(AUTO_PREFIX . self::TABLE, 'm');
             $select->join(
-                array('b' => PREFIX_DB . AUTO_PREFIX . Brand::TABLE),
+                ['b' => PREFIX_DB . AUTO_PREFIX . Brand::TABLE],
                 'm.' . Brand::PK . '= b.' . Brand::PK
             );
             $select->order(self::buildOrderClause());
@@ -130,7 +130,7 @@ class Models extends Repository
      */
     private function buildOrderClause(): array
     {
-        $order = array();
+        $order = [];
 
         switch ($this->filters->orderby) {
             case ModelsList::ORDERBY_BRAND:
@@ -160,9 +160,9 @@ class Models extends Repository
             $countSelect->reset($countSelect::JOINS);
             $countSelect->reset($countSelect::ORDER);
             $countSelect->columns(
-                array(
+                [
                     self::PK => new Expression('COUNT(' . self::PK . ')')
-                )
+                ]
             );
 
             $results = $this->zdb->execute($countSelect);

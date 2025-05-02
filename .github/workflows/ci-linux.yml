@@ -72,6 +72,12 @@ jobs:
           cd galette-core/galette/plugins/plugin-auto
           ../../vendor/bin/phpcs lib/ ./*.php
 
+      - name: CS Fixer
+        if: matrix.php-versions == '8.1'
+        run: |
+          cd galette-core/galette/plugins/plugin-auto
+          ../../vendor/bin/php-cs-fixer check --show-progress=dots --verbose --diff
+
       - name: Twig CS
         run: |
           cd galette-core/galette/plugins/plugin-auto
