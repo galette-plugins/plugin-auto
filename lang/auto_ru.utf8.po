@@ -6,13 +6,14 @@
 # SleepyOwl <artem726artem@gmail.com>, 2023.
 # Evgeniy Khramov <65224669+thejenja@users.noreply.github.com>, 2025.
 # Sotski Eugene <jekakmail@gmail.com>, 2025.
+# Maksim_220 Кабанов <law820314@gmail.com>, 2025.
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: translations@galette.eu\n"
 "POT-Creation-Date: 2024-02-23 08:39+0100\n"
-"PO-Revision-Date: 2025-04-28 23:23+0000\n"
-"Last-Translator: Sotski Eugene <jekakmail@gmail.com>\n"
+"PO-Revision-Date: 2025-06-03 21:01+0000\n"
+"Last-Translator: Maksim_220 Кабанов <law820314@gmail.com>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/galette/"
 "auto-plugin/ru/>\n"
 "Language: ru\n"
@@ -32,9 +33,8 @@ msgstr ""
 #: ../lib/GaletteAuto/State.php:63 ../lib/GaletteAuto/Auto.php:181
 #: ../tempcache/vehicles.html.twig:397 ../tempcache/history.html.twig:82
 #: ../tempcache/history.html.twig:154
-#, fuzzy
 msgid "State"
-msgstr "Состояние"
+msgstr "Государство"
 
 #: ../lib/GaletteAuto/State.php:100
 #, php-format
@@ -42,6 +42,7 @@ msgid "%count state"
 msgid_plural "%count states"
 msgstr[0] ""
 msgstr[1] ""
+msgstr[2] "%c"
 
 #: ../lib/GaletteAuto/Controllers/Crud/ModelsController.php:127
 #: ../lib/GaletteAuto/PluginGaletteAuto.php:86
@@ -72,28 +73,28 @@ msgstr "Модель сохранена!"
 
 #. TRANS: first parameter is the number of models
 #: ../lib/GaletteAuto/Controllers/Crud/ModelsController.php:351
-#, fuzzy, php-format
+#, php-format
 msgid "Remove %1$s model"
 msgid_plural "Remove %1$s models"
 msgstr[0] "Убрать %1$s модель"
 msgstr[1] "Убрать %1$s модели"
-msgstr[2] ""
+msgstr[2] "Убрать %1$s моделей"
 
 #. TRANS: first parameter is the model name
 #: ../lib/GaletteAuto/Controllers/Crud/ModelsController.php:359
-#, fuzzy, php-format
+#, php-format
 msgid "Remove model \"%1$s\""
-msgstr "Убрать модель \"%1$s\""
+msgstr "Удалить модель \"%1$s\""
 
 #: ../lib/GaletteAuto/Controllers/Crud/ModelsController.php:389
 msgid "This model is used by one or more vehicles, it cannot be deleted."
 msgstr ""
+"Эта модель используется одним или несколькими автомобилями, ее нельзя "
+"удалить."
 
 #: ../lib/GaletteAuto/Controllers/Crud/ModelsController.php:394
-#, fuzzy
-#| msgid "- An error occurred while saving record. Please try again."
 msgid "An error occurred while deleting model."
-msgstr "- При сохранении записи произошла ошибка. Пожалуйста попробуйте снова."
+msgstr "При удалении модели произошла ошибка."
 
 #: ../lib/GaletteAuto/Controllers/Crud/PropertiesController.php:189
 #: ../lib/GaletteAuto/PluginGaletteAuto.php:61
@@ -107,105 +108,105 @@ msgstr "Добавить новый цвет"
 #: ../lib/GaletteAuto/Controllers/Crud/PropertiesController.php:194
 #: ../lib/GaletteAuto/PluginGaletteAuto.php:65
 msgid "States list"
-msgstr ""
+msgstr "Список государств"
 
 #: ../lib/GaletteAuto/Controllers/Crud/PropertiesController.php:195
 msgid "Add new state"
-msgstr ""
+msgstr "Добавьте новый штат"
 
 #: ../lib/GaletteAuto/Controllers/Crud/PropertiesController.php:199
 #: ../lib/GaletteAuto/PluginGaletteAuto.php:69
 msgid "Finitions list"
-msgstr ""
+msgstr "Список пунктов"
 
 #: ../lib/GaletteAuto/Controllers/Crud/PropertiesController.php:200
 msgid "Add new finition"
-msgstr ""
+msgstr "Добавить новый пункт"
 
 #: ../lib/GaletteAuto/Controllers/Crud/PropertiesController.php:204
 #: ../lib/GaletteAuto/PluginGaletteAuto.php:73
 msgid "Bodies list"
-msgstr ""
+msgstr "Список органов"
 
 #: ../lib/GaletteAuto/Controllers/Crud/PropertiesController.php:205
 msgid "Add new body"
-msgstr ""
+msgstr "Добавьте новое тело"
 
 #: ../lib/GaletteAuto/Controllers/Crud/PropertiesController.php:209
 #: ../lib/GaletteAuto/PluginGaletteAuto.php:77
 msgid "Transmissions list"
-msgstr ""
+msgstr "Список трансмиссий"
 
 #: ../lib/GaletteAuto/Controllers/Crud/PropertiesController.php:210
 msgid "Add new transmission"
-msgstr ""
+msgstr "Добавить новую передачу"
 
 #: ../lib/GaletteAuto/Controllers/Crud/PropertiesController.php:214
 #: ../lib/GaletteAuto/PluginGaletteAuto.php:81
 msgid "Brands list"
-msgstr ""
+msgstr "Список брендов"
 
 #: ../lib/GaletteAuto/Controllers/Crud/PropertiesController.php:215
 #, php-format
 msgid "Brand '%s'"
-msgstr ""
+msgstr "Бренд '%s'"
 
 #: ../lib/GaletteAuto/Controllers/Crud/PropertiesController.php:216
 #: ../tempcache/object_show.html.twig:68
 msgid "Add new brand"
-msgstr ""
+msgstr "Добавить новый бренд"
 
 #: ../lib/GaletteAuto/Controllers/Crud/PropertiesController.php:332
 msgid "New"
-msgstr ""
+msgstr "Новый"
 
 #: ../lib/GaletteAuto/Controllers/Crud/PropertiesController.php:338
 #, php-format
 msgid "Change '%s'"
-msgstr ""
+msgstr "Изменить '%s'"
 
 #: ../lib/GaletteAuto/Controllers/Crud/PropertiesController.php:412
 msgid "- No id provided for modifying this record! (internal)"
-msgstr ""
+msgstr "- Не указан идентификатор для изменения этой записи! (внутренний)"
 
 #: ../lib/GaletteAuto/Controllers/Crud/PropertiesController.php:418
 #: ../lib/GaletteAuto/Model.php:231
 msgid "- You must provide a value!"
-msgstr ""
+msgstr "- Вы должны предоставить значение!"
 
 #: ../lib/GaletteAuto/Controllers/Crud/PropertiesController.php:432
 msgid "New %property has been added!"
-msgstr ""
+msgstr "Добавлено новое %property!"
 
 #: ../lib/GaletteAuto/Controllers/Crud/PropertiesController.php:433
 msgid "%property has been saved!"
-msgstr ""
+msgstr "%property было сохранено!"
 
 #: ../lib/GaletteAuto/Controllers/Crud/PropertiesController.php:492
 #, php-format
 msgid "Show '%s' brand"
-msgstr ""
+msgstr "Показать бренд '%s'"
 
 #: ../lib/GaletteAuto/Controllers/Crud/PropertiesController.php:551
 #, php-format
 msgid "Remove %1$s %2$s"
-msgstr ""
+msgstr "Удалить %1$s %2$s"
 
 #: ../lib/GaletteAuto/Controllers/Crud/PropertiesController.php:607
 #, php-format
 msgid "%1$s color has been successfully deleted."
 msgid_plural "%1$s colors have been successfully deleted."
-msgstr[0] ""
-msgstr[1] ""
-msgstr[2] ""
+msgstr[0] "Цвет %1$s был успешно удален."
+msgstr[1] "%1$s цвета были успешно удалены."
+msgstr[2] "%1$s цветов были успешно удалены."
 
 #: ../lib/GaletteAuto/Controllers/Crud/PropertiesController.php:611
 #, php-format
 msgid "%1$s state has been successfully deleted."
 msgid_plural "%1$s states have been successfully deleted."
-msgstr[0] ""
-msgstr[1] ""
-msgstr[2] ""
+msgstr[0] "Состояние %1$s было успешно удалено."
+msgstr[1] "%1$s состояния были успешно удалены."
+msgstr[2] "%1$s состояний были успешно удалены."
 
 #: ../lib/GaletteAuto/Controllers/Crud/PropertiesController.php:615
 #, php-format
