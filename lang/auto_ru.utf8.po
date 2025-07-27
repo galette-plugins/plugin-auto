@@ -12,7 +12,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: translations@galette.eu\n"
 "POT-Creation-Date: 2024-02-23 08:39+0100\n"
-"PO-Revision-Date: 2025-06-25 05:41+0000\n"
+"PO-Revision-Date: 2025-07-28 23:35+0000\n"
 "Last-Translator: Maksim_220 Кабанов <law820314@gmail.com>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/galette/"
 "auto-plugin/ru/>\n"
@@ -220,9 +220,9 @@ msgstr[2] "Финишей %1$s было успешно удалено."
 #, php-format
 msgid "%1$s body has been successfully deleted."
 msgid_plural "%1$s bodies have been successfully deleted."
-msgstr[0] ""
-msgstr[1] ""
-msgstr[2] ""
+msgstr[0] "%1$s было успешно удалено."
+msgstr[1] "%1$s были успешно удалены."
+msgstr[2] "%1$s были успешно удалены."
 
 #: ../lib/GaletteAuto/Controllers/Crud/PropertiesController.php:623
 #, php-format
