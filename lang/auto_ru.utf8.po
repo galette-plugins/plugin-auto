@@ -7,13 +7,14 @@
 # Evgeniy Khramov <65224669+thejenja@users.noreply.github.com>, 2025.
 # Sotski Eugene <jekakmail@gmail.com>, 2025.
 # Maksim_220 Кабанов <law820314@gmail.com>, 2025.
+# vanapro1 <law820314@gmail.com>, 2025.
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: translations@galette.eu\n"
 "POT-Creation-Date: 2024-02-23 08:39+0100\n"
-"PO-Revision-Date: 2025-07-28 23:35+0000\n"
-"Last-Translator: Maksim_220 Кабанов <law820314@gmail.com>\n"
+"PO-Revision-Date: 2025-08-16 00:01+0000\n"
+"Last-Translator: vanapro1 <law820314@gmail.com>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/galette/"
 "auto-plugin/ru/>\n"
 "Language: ru\n"
@@ -22,7 +23,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
 "n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
-"X-Generator: Weblate 5.13-dev\n"
+"X-Generator: Weblate 5.13\n"
 
 #: ../_routes.php:125
 msgid "No vehicle was selected, please check at least one name."
@@ -228,9 +229,9 @@ msgstr[2] "%1$s были успешно удалены."
 #, php-format
 msgid "%1$s transmission has been successfully deleted."
 msgid_plural "%1$s transmissions have been successfully deleted."
-msgstr[0] ""
-msgstr[1] ""
-msgstr[2] ""
+msgstr[0] "Передача %1$s была успешно удалена."
+msgstr[1] "%1$s передачи были успешно удалены."
+msgstr[2] "%1$s передач были успешно удалены."
 
 #: ../lib/GaletteAuto/Controllers/Crud/PropertiesController.php:627
 #, php-format
@@ -328,26 +329,26 @@ msgstr ""
 
 #: ../lib/GaletteAuto/Controllers/Controller.php:444
 msgid "Vehicle has been saved!"
-msgstr ""
+msgstr "Автомобиль был сохранён!"
 
 #: ../lib/GaletteAuto/Controllers/Controller.php:501
 #, php-format
 msgid "History of car #%d"
-msgstr ""
+msgstr "История автомобиля #%d"
 
 #: ../lib/GaletteAuto/Controllers/Controller.php:574
 #: ../lib/GaletteAuto/Controllers/Controller.php:623
 msgid "Vehicle"
-msgstr ""
+msgstr "Автомобиль"
 
 #: ../lib/GaletteAuto/Controllers/Controller.php:577
 #, php-format
 msgid "Remove vehicle %1$s"
-msgstr ""
+msgstr "Удалить автомобиль %1$s"
 
 #: ../lib/GaletteAuto/Controllers/Controller.php:625
 msgid "Remove vehicles"
-msgstr ""
+msgstr "Убрать автомобили"
 
 #: ../lib/GaletteAuto/Controllers/Controller.php:629
 #, php-format
@@ -452,15 +453,15 @@ msgstr ""
 
 #: ../lib/GaletteAuto/Auto.php:174 ../tempcache/vehicles.html.twig:142
 msgid "First registration date"
-msgstr ""
+msgstr "Дата первой регистрации"
 
 #: ../lib/GaletteAuto/Auto.php:175 ../tempcache/vehicles.html.twig:148
 msgid "First circulation date"
-msgstr ""
+msgstr "Дата первого тиража"
 
 #: ../lib/GaletteAuto/Auto.php:176 ../tempcache/vehicles.html.twig:154
 msgid "Mileage"
-msgstr ""
+msgstr "Пробег"
 
 #: ../lib/GaletteAuto/Auto.php:177 ../tempcache/vehicles.html.twig:161
 msgid "Seats"
