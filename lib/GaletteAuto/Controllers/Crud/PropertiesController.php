@@ -431,8 +431,8 @@ class PropertiesController extends AbstractPluginController
                 $msg = str_replace(
                     '%property',
                     $object->getFieldLabel(),
-                    $is_new ? _T("New %property has been added!", "auto") :
-                    _T("%property has been saved!", "auto")
+                    $is_new ? _T("New %property has been added!", "auto")
+                    : _T("%property has been saved!", "auto")
                 );
                 $this->flash->addMessage(
                     'success_detected',
@@ -581,8 +581,8 @@ class PropertiesController extends AbstractPluginController
         $ajax = isset($post['ajax']) && $post['ajax'] === 'true';
         $success = false;
 
-        $uri = $post['redirect_uri'] ??
-            $this->routeparser->urlFor('slash');
+        $uri = $post['redirect_uri']
+            ?? $this->routeparser->urlFor('slash');
 
         if (!isset($post['confirm'])) {
             $this->flash->addMessage(

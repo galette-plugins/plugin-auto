@@ -231,8 +231,8 @@ class Auto
             return true;
         } catch (\Exception $e) {
             Analog::log(
-                '[' . get_class($this) . '] Cannot load car from id `' . $id .
-                '` | ' . $e->getMessage(),
+                '[' . get_class($this) . '] Cannot load car from id `' . $id
+                . '` | ' . $e->getMessage(),
                 Analog::ERROR
             );
             return false;
@@ -375,8 +375,8 @@ class Auto
                 if ($add->count() > 0) {
                     /** @phpstan-ignore-next-line */
                     $this->id = (int)$this->zdb->driver->getLastGeneratedValue(
-                        $this->zdb->isPostgres() ?
-                            PREFIX_DB . AUTO_PREFIX . self::TABLE . '_id_seq'
+                        $this->zdb->isPostgres()
+                            ? PREFIX_DB . AUTO_PREFIX . self::TABLE . '_id_seq'
                             : null
                     );
 
@@ -445,9 +445,9 @@ class Auto
             return true;
         } catch (\Exception $e) {
             Analog::log(
-                '[' . get_class($this) . '] An error has occurred ' .
-                (($new) ? 'inserting' : 'updating') . ' car | ' .
-                $e->getMessage(),
+                '[' . get_class($this) . '] An error has occurred '
+                . (($new) ? 'inserting' : 'updating') . ' car | '
+                . $e->getMessage(),
                 Analog::ERROR
             );
             return false;
@@ -563,8 +563,8 @@ class Auto
                         } catch (\Exception $e) {
                             //oops, we've got a bad date :/
                             Analog::log(
-                                'Bad date (' . $this->$name . ') | ' .
-                                $e->getMessage(),
+                                'Bad date (' . $this->$name . ') | '
+                                . $e->getMessage(),
                                 Analog::WARNING
                             );
                             return $this->$name;
@@ -627,8 +627,8 @@ class Auto
             }
         } else {
             Analog::log(
-                '[' . get_class($this) . '] Trying to set an internal property (`' .
-                $name . '`)',
+                '[' . get_class($this) . '] Trying to set an internal property (`'
+                . $name . '`)',
                 Analog::INFO
             );
         }
@@ -791,8 +791,8 @@ class Auto
                 default:
                     /** TODO: what's the default? */
                     Analog::log(
-                        'Trying to edit an Auto property that is not handled in the source code! (prop is: ' .
-                        $prop . ')',
+                        'Trying to edit an Auto property that is not handled in the source code! (prop is: '
+                        . $prop . ')',
                         Analog::ERROR
                     );
                     break;

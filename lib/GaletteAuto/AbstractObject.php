@@ -91,8 +91,8 @@ abstract class AbstractObject
             return $list;
         } catch (\Exception $e) {
             Analog::log(
-                '[' . get_class($this) . '] Cannot load ' . $this->name .
-                ' list | ' . $e->getMessage(),
+                '[' . get_class($this) . '] Cannot load ' . $this->name
+                . ' list | ' . $e->getMessage(),
                 Analog::ERROR
             );
             throw $e;
@@ -126,8 +126,8 @@ abstract class AbstractObject
             return true;
         } catch (\Exception $e) {
             Analog::log(
-                '[' . get_class($this) . '] Cannot load ' . $this->name .
-                ' from id `' . $id . '` | ' . $e->getMessage(),
+                '[' . get_class($this) . '] Cannot load ' . $this->name
+                . ' from id `' . $id . '` | ' . $e->getMessage(),
                 Analog::ERROR
             );
             return false;
@@ -153,8 +153,8 @@ abstract class AbstractObject
                 $this->zdb->execute($insert);
                 /** @phpstan-ignore-next-line */
                 $this->id = (int)$this->zdb->driver->getLastGeneratedValue(
-                    $this->zdb->isPostgres() ?
-                        PREFIX_DB . $this->table . '_id_seq'
+                    $this->zdb->isPostgres()
+                        ? PREFIX_DB . $this->table . '_id_seq'
                         : null
                 );
             } else {
@@ -169,9 +169,9 @@ abstract class AbstractObject
             return true;
         } catch (\Exception $e) {
             Analog::log(
-                '[' . get_class($this) . '] Cannot store ' . $this->name .
-                ' values `' . ($this->id ?? '') . '`, `' . $this->value . '` | ' .
-                $e->getMessage(),
+                '[' . get_class($this) . '] Cannot store ' . $this->name
+                . ' values `' . ($this->id ?? '') . '`, `' . $this->value . '` | '
+                . $e->getMessage(),
                 Analog::WARNING
             );
             return false;
@@ -194,8 +194,8 @@ abstract class AbstractObject
             return true;
         } catch (\Exception $e) {
             Analog::log(
-                '[' . get_class($this) . '] Cannot delete ' . $this->name .
-                ' from ids `' . implode(' - ', $ids) . '` | ' . $e->getMessage(),
+                '[' . get_class($this) . '] Cannot delete ' . $this->name
+                . ' from ids `' . implode(' - ', $ids) . '` | ' . $e->getMessage(),
                 Analog::WARNING
             );
             throw $e;

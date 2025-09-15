@@ -651,8 +651,8 @@ class Controller extends AbstractPluginController
         $ajax = isset($post['ajax']) && $post['ajax'] === 'true';
         $success = false;
 
-        $uri = $post['redirect_uri'] ??
-            $this->routeparser->urlFor('slash');
+        $uri = $post['redirect_uri']
+            ?? $this->routeparser->urlFor('slash');
 
         if (!isset($post['confirm'])) {
             $this->flash->addMessage(

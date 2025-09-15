@@ -95,21 +95,21 @@ class Autos
 
             $infos = null;
             foreach ($vehicles as $vehicle) {
-                $str_v = $vehicle->id_car . ' - ' . $vehicle->car_name .
-                    ' (' . $vehicle->brand . ' ' . $vehicle->model . ')';
+                $str_v = $vehicle->id_car . ' - ' . $vehicle->car_name
+                    . ' (' . $vehicle->brand . ' ' . $vehicle->model . ')';
                 $infos .= $str_v . "\n";
 
                 $p = new Picture($this->plugins, $vehicle->id_car);
                 if ($p->hasPicture()) {
                     if (!$p->delete()) {
                         Analog::log(
-                            'Unable to delete picture for vehicle ' .
-                            $str_v,
+                            'Unable to delete picture for vehicle '
+                            . $str_v,
                             Analog::ERROR
                         );
                         throw new \Exception(
-                            'Unable to delete picture for vehicle ' .
-                            $str_v
+                            'Unable to delete picture for vehicle '
+                            . $str_v
                         );
                     } else {
                         $hist->add(
@@ -142,8 +142,8 @@ class Autos
         } catch (\Exception $e) {
             $this->zdb->connection->rollBack();
             Analog::log(
-                'Unable to delete selected vehicle(s) |' .
-                $e->getMessage(),
+                'Unable to delete selected vehicle(s) |'
+                . $e->getMessage(),
                 Analog::ERROR
             );
             return false;
@@ -261,8 +261,8 @@ class Autos
             return $autos;
         } catch (\Exception $e) {
             Analog::log(
-                '[' . get_class($this) . '] Cannot list Autos | ' .
-                $e->getMessage(),
+                '[' . get_class($this) . '] Cannot list Autos | '
+                . $e->getMessage(),
                 Analog::ERROR
             );
             throw $e;

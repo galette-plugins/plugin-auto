@@ -95,8 +95,8 @@ class Model
             return true;
         } catch (\Exception $e) {
             Analog::log(
-                '[' . get_class($this) . '] Cannot load model from id `' . $id .
-                '` | ' . $e->getMessage(),
+                '[' . get_class($this) . '] Cannot load model from id `' . $id
+                . '` | ' . $e->getMessage(),
                 Analog::ERROR
             );
             return false;
@@ -138,8 +138,8 @@ class Model
                 $this->zdb->execute($insert);
                 /** @phpstan-ignore-next-line */
                 $this->id = (int)$this->zdb->driver->getLastGeneratedValue(
-                    $this->zdb->isPostgres() ?
-                        PREFIX_DB . AUTO_PREFIX . self::TABLE . '_id_seq'
+                    $this->zdb->isPostgres()
+                        ? PREFIX_DB . AUTO_PREFIX . self::TABLE . '_id_seq'
                         : null
                 );
             } else {
@@ -154,9 +154,9 @@ class Model
             return true;
         } catch (\Exception $e) {
             Analog::log(
-                '[' . get_class($this) . '] Cannot store model' .
-                ' values `' . $this->id . '`, `' . implode('`, `', $values) . '` | ' .
-                $e->getMessage(),
+                '[' . get_class($this) . '] Cannot store model'
+                . ' values `' . $this->id . '`, `' . implode('`, `', $values) . '` | '
+                . $e->getMessage(),
                 Analog::WARNING
             );
             return false;
@@ -179,8 +179,8 @@ class Model
             return true;
         } catch (\Exception $e) {
             Analog::log(
-                '[' . get_class($this) . '] Cannot delete models from ids `' .
-                implode(' - ', $ids) . '` | ' . $e->getMessage(),
+                '[' . get_class($this) . '] Cannot delete models from ids `'
+                . implode(' - ', $ids) . '` | ' . $e->getMessage(),
                 Analog::WARNING
             );
             throw $e;

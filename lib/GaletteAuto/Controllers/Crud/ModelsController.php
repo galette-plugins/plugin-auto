@@ -269,8 +269,8 @@ class ModelsController extends AbstractPluginController
                 $error_detected[]
                     = _T("- An error occurred while saving record. Please try again.", "auto");
             } else {
-                $msg = $is_new ? _T("New model has been added!", "auto") :
-                    _T("Model has been saved!", "auto");
+                $msg = $is_new ? _T("New model has been added!", "auto")
+                    : _T("Model has been saved!", "auto");
                 $this->flash->addMessage(
                     'success_detected',
                     $msg

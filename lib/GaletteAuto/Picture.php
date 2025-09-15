@@ -63,8 +63,8 @@ class Picture extends GalettePicture
             }
         } elseif (!is_dir($this->store_path)) {
             Analog::log(
-                'Unable to store plugin images, since `' . $this->store_path .
-                '` is not a directory.',
+                'Unable to store plugin images, since `' . $this->store_path
+                . '` is not a directory.',
                 Analog::WARNING
             );
         }
@@ -81,8 +81,8 @@ class Picture extends GalettePicture
     protected function getDefaultPicture(): void
     {
         $this->file_path = (string)realpath(
-            $this->plugins->getTemplatesPathFromName('Galette Auto') .
-            '/../../webroot/images/1f698.png'
+            $this->plugins->getTemplatesPathFromName('Galette Auto')
+            . '/../../webroot/images/1f698.png'
         );
         $this->format = 'png';
         $this->mime = 'image/png';

@@ -99,8 +99,8 @@ class History
             return true;
         } catch (\Exception $e) {
             Analog::log(
-                '[' . get_class($this) . '] Cannot get car\'s history (id was ' .
-                $this->id_car . ') | ' . $e->getMessage(),
+                '[' . get_class($this) . '] Cannot get car\'s history (id was '
+                . $this->id_car . ') | ' . $e->getMessage(),
                 Analog::ERROR
             );
             return false;
@@ -130,9 +130,9 @@ class History
             }
         } catch (\Exception $e) {
             Analog::log(
-                '[' . get_class($this) .
-                '] Cannot get car\'s latest history entry | ' .
-                $e->getMessage(),
+                '[' . get_class($this)
+                . '] Cannot get car\'s latest history entry | '
+                . $e->getMessage(),
                 Analog::ERROR
             );
             return false;
@@ -199,8 +199,8 @@ class History
 
             if ($add->count() > 0) {
                 Analog::log(
-                    '[' . get_class($this) .
-                    '] new AutoHistory entry set successfully.',
+                    '[' . get_class($this)
+                    . '] new AutoHistory entry set successfully.',
                     Analog::DEBUG
                 );
             } else {
@@ -210,8 +210,8 @@ class History
             }
         } catch (\Exception $e) {
             Analog::log(
-                '[' . get_class($this) . '] Cannot register new history entry | ' .
-                $e->getMessage(),
+                '[' . get_class($this) . '] Cannot register new history entry | '
+                . $e->getMessage(),
                 Analog::ERROR
             );
             throw $e;
