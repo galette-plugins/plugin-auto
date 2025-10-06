@@ -30,6 +30,7 @@ use Galette\Core\Login;
 use Galette\Core\Plugins;
 use Galette\Entity\Adherent;
 use Laminas\Db\Sql\Expression;
+use Psr\Http\Message\UploadedFileInterface;
 
 /**
  * Automobile Transmissions class for galette Auto plugin
@@ -386,10 +387,6 @@ class Auto
                         strtoupper($this->name)
                     );
                     $this->history->load((int)$this->id);
-
-                    //handle picture for newly added cars
-                    $this->picture = new Picture($this->plugins, (int)$this->id);
-                    $this->handlePicture();
                 } else {
                     $hist->add(_T("Fail to add new car.", "auto"));
                     throw new \Exception(
@@ -799,11 +796,6 @@ class Auto
             }//switch
         }//foreach
 
-        if (isset($this->id)) {
-            //handle picture for updated cars
-            $this->handlePicture();
-        }
-
         //delete photo
         if (isset($post['del_photo'])) {
             if (!$this->picture->delete()) {
@@ -844,20 +836,18 @@ class Auto
     /**
      * Handle car picture upload
      *
-     * @return void
+     * @param array<UploadedFileInterface> $files Files sent
+     *
+     * @return bool
      */
-    private function handlePicture(): void
+    public function handleFiles(array $files): bool
     {
-        // picture upload
-        if (isset($_FILES['photo'])) {
-            if ($_FILES['photo']['tmp_name'] != '') {
-                if (is_uploaded_file($_FILES['photo']['tmp_name'])) {
-                    $res = $this->picture->store($_FILES['photo']);
-                    if ($res < 0) {
-                        $this->errors[] = $this->picture->getErrorMessage($res);
-                    }
-                }
-            }
+        $this->errors = [];
+        $this->picture = new Picture($this->plugins, (int)$this->id);
+        if (!$this->picture->upload(request_files: $files, key: 'photo')) {
+            $this->errors = array_merge($this->errors, $this->picture->uploadErrors());
         }
+
+        return !count($this->errors);
     }
 }

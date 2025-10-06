@@ -420,6 +420,7 @@ class Controller extends AbstractPluginController
 
         // initialize warnings
         $error_detected = [];
+        $warning_detected = [];
         $success_detected = [];
 
         if (isset($post['id_adh'])) {
@@ -447,6 +448,9 @@ class Controller extends AbstractPluginController
                 if (!$this->checkAclsFor($response, $id_adh, false) || $this->login->id == $id_adh) {
                     $route = $this->routeparser->urlFor('myVehiclesList');
                 }
+                if (!$auto->handleFiles($request->getUploadedFiles())) {
+                    $warning_detected = $auto->getErrors();
+                }
             }
         }
 
@@ -463,6 +467,15 @@ class Controller extends AbstractPluginController
                 $this->flash->addMessage(
                     'error_detected',
                     $error
+                );
+            }
+        }
+
+        if (count($warning_detected) > 0) {
+            foreach ($warning_detected as $warning) {
+                $this->flash->addMessage(
+                    'warning_detected',
+                    $warning
                 );
             }
         }
