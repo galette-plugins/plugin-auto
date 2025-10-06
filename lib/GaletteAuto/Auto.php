@@ -254,16 +254,16 @@ class Auto
         $this->name = $r->car_name;
         $this->first_registration_date = $r->car_first_registration_date;
         $this->first_circulation_date = $r->car_first_circulation_date;
-        $this->mileage = $r->car_mileage;
+        $this->mileage = $r->car_mileage != null ? (int)$r->car_mileage : null;
         $this->comment = $r->car_comment;
         $this->chassis_number = $r->car_chassis_number;
-        $this->seats = $r->car_seats;
-        $this->horsepower = $r->car_horsepower;
-        $this->engine_size = $r->car_engine_size;
+        $this->seats = $r->car_seats != null ? (int)$r->car_seats : null;
+        $this->horsepower = $r->car_horsepower != null ? (int)$r->car_horsepower : null;
+        $this->engine_size = $r->car_engine_size != null ? (int)$r->car_engine_size : null;
         $this->creation_date = $r->car_creation_date;
-        $this->fuel = (int)$r->car_fuel;
+        $this->fuel = $r->car_fuel != null ? (int)$r->car_fuel : null;
         //External objects
-        $this->picture = new Picture($this->plugins, (int)$this->id);
+        $this->picture = new Picture($this->plugins, $this->id);
         $fpk = Finition::PK;
         $this->finition->load((int)$r->$fpk);
         $cpk = Color::PK;
@@ -279,7 +279,7 @@ class Auto
         $this->owner->load($this->owner_id);
         $spk = State::PK;
         $this->state->load((int)$r->$spk);
-        $this->history->load((int)$this->id);
+        $this->history->load($this->id);
     }
 
     /**
