@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright © 2003-2024 The Galette Team
+ * Copyright © 2003-2025 The Galette Team
  *
  * This file is part of Galette (https://galette.eu).
  *
@@ -77,39 +77,39 @@ class Autos
             //Retrieve some information
             $select = $this->zdb->select(AUTO_PREFIX . self::TABLE, 'a');
             $select->columns(
-                array(
+                [
                     self::PK,
                     'car_name'
-                )
+                ]
             )->join(
-                array('b' => PREFIX_DB . AUTO_PREFIX . Model::TABLE),
+                ['b' => PREFIX_DB . AUTO_PREFIX . Model::TABLE],
                 'a.' . Model::PK . ' = b.' . Model::PK,
-                array('model')
+                ['model']
             )->join(
-                array('c' => PREFIX_DB . AUTO_PREFIX . Brand::TABLE),
+                ['c' => PREFIX_DB . AUTO_PREFIX . Brand::TABLE],
                 'b.' . Brand::PK . ' = c.' . Brand::PK,
-                array('brand')
+                ['brand']
             )->where->in(self::PK, $list);
 
             $vehicles = $this->zdb->execute($select);
 
             $infos = null;
             foreach ($vehicles as $vehicle) {
-                $str_v = $vehicle->id_car . ' - ' . $vehicle->car_name .
-                    ' (' . $vehicle->brand . ' ' . $vehicle->model . ')';
+                $str_v = $vehicle->id_car . ' - ' . $vehicle->car_name
+                    . ' (' . $vehicle->brand . ' ' . $vehicle->model . ')';
                 $infos .= $str_v . "\n";
 
                 $p = new Picture($this->plugins, $vehicle->id_car);
                 if ($p->hasPicture()) {
                     if (!$p->delete()) {
                         Analog::log(
-                            'Unable to delete picture for vehicle ' .
-                            $str_v,
+                            'Unable to delete picture for vehicle '
+                            . $str_v,
                             Analog::ERROR
                         );
                         throw new \Exception(
-                            'Unable to delete picture for vehicle ' .
-                            $str_v
+                            'Unable to delete picture for vehicle '
+                            . $str_v
                         );
                     } else {
                         $hist->add(
@@ -142,8 +142,8 @@ class Autos
         } catch (\Exception $e) {
             $this->zdb->connection->rollBack();
             Analog::log(
-                'Unable to delete selected vehicle(s) |' .
-                $e->getMessage(),
+                'Unable to delete selected vehicle(s) |'
+                . $e->getMessage(),
                 Analog::ERROR
             );
             return false;
@@ -228,18 +228,18 @@ class Autos
 
             if ($on_logged) {
                 $select->where(
-                    array(
+                    [
                         Adherent::PK => $login->id
-                    )
+                    ]
                 );
             }
 
             //restrict on specified user vehicles if an id has been provided
             if ($id_adh !== null) {
                 $select->where(
-                    array(
+                    [
                         Adherent::PK => $id_adh
-                    )
+                    ]
                 );
             }
 
@@ -250,7 +250,7 @@ class Autos
             }
 
             $results = $this->zdb->execute($select);
-            $autos = array();
+            $autos = [];
             if ($as_autos) {
                 foreach ($results as $row) {
                     $autos[] = new Auto($this->plugins, $this->zdb, $row);
@@ -261,8 +261,8 @@ class Autos
             return $autos;
         } catch (\Exception $e) {
             Analog::log(
-                '[' . get_class($this) . '] Cannot list Autos | ' .
-                $e->getMessage(),
+                '[' . get_class($this) . '] Cannot list Autos | '
+                . $e->getMessage(),
                 Analog::ERROR
             );
             throw $e;
@@ -285,9 +285,9 @@ class Autos
             $countSelect->reset($countSelect::ORDER);
             $countSelect->reset($countSelect::HAVING);
             $countSelect->columns(
-                array(
+                [
                     'count' => new Expression('count(DISTINCT a.' . self::PK . ')')
-                )
+                ]
             );
 
             $have = $select->having;

@@ -7,14 +7,13 @@ build:
         override:
             - composer self-update
             - git clone --depth=1 https://github.com/galette/galette -b develop galette && pushd galette
-            - ./bin/install_deps && popd
 
     nodes:
 
         analysis:
             environment:
                 php:
-                    version: 8.1
+                    version: 8.2
 
             project_setup:
                 override:

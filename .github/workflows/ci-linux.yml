@@ -25,7 +25,7 @@ jobs:
 
     strategy:
       matrix:
-        php-versions: [ '8.1', '8.3' ]
+        php-versions: [ '8.1', '8.4' ]
         coverage: [none]
       fail-fast: false
 
@@ -72,6 +72,12 @@ jobs:
           cd galette-core/galette/plugins/plugin-auto
           ../../vendor/bin/phpcs lib/ ./*.php
 
+      - name: CS Fixer
+        if: matrix.php-versions == '8.1'
+        run: |
+          cd galette-core/galette/plugins/plugin-auto
+          ../../vendor/bin/php-cs-fixer check --show-progress=dots --verbose --diff
+
       - name: Twig CS
         run: |
           cd galette-core/galette/plugins/plugin-auto
@@ -82,7 +88,7 @@ jobs:
           cd galette-core/galette/plugins/plugin-auto
           composer require maglnet/composer-require-checker -W
           vendor/bin/composer-require-checker check --config-file=.composer-require-checker.config.json ../../composer.json
-        if: matrix.php-versions == '8.3'
+        if: matrix.php-versions == '8.4'
 
       - name: PHPStan checks
         run: |
@@ -110,16 +116,16 @@ jobs:
           - { php-version: "8.1", db-image: "postgres:11", coverage: none, always: false }
           - { php-version: "8.1", db-image: "postgres:16", coverage: none, always: false }
           #higher stable php version
-          - { php-version: "8.3", db-image: "mysql:5.7", coverage: none, always: true }
-          - { php-version: "8.3", db-image: "mysql:8.1", coverage: none, always: false }
-          - { php-version: "8.3", db-image: "mariadb:10.4", coverage: none, always: true }
-          - { php-version: "8.3", db-image: "mariadb:11", coverage: none, always: false }
-          - { php-version: "8.3", db-image: "postgres:11", coverage: none, always: true }
-          - { php-version: "8.3", db-image: "postgres:16", coverage: none, always: true }
+          - { php-version: "8.4", db-image: "mysql:5.7", coverage: none, always: true }
+          - { php-version: "8.4", db-image: "mysql:8.1", coverage: none, always: false }
+          - { php-version: "8.4", db-image: "mariadb:10.4", coverage: none, always: true }
+          - { php-version: "8.4", db-image: "mariadb:11", coverage: none, always: false }
+          - { php-version: "8.4", db-image: "postgres:11", coverage: none, always: true }
+          - { php-version: "8.4", db-image: "postgres:16", coverage: none, always: true }
       fail-fast: false
 
     env:
-      skip: ${{ matrix.always == false && (github.event_name == 'pull_request' || github.repository != 'galette/galette-auto' || !(github.event_name == 'workflow_dispatch' || github.ref == 'refs/heads/master' || github.ref == 'refs/heads/develop' || startsWith(github.ref, 'refs/tags'))) }}
+      skip: ${{ matrix.always == false && (github.event_name == 'pull_request' || github.repository != 'galette/plugin-auto' || !(github.event_name == 'workflow_dispatch' || github.ref == 'refs/heads/master' || github.ref == 'refs/heads/develop' || startsWith(github.ref, 'refs/tags'))) }}
       DB: ${{ matrix.db-image }}
 
     services:
@@ -147,7 +153,7 @@ jobs:
           --health-timeout=5s
           --health-retries=10
 
-    name: PHP ${{ matrix.php-version }} ${{ matrix.db-image }} ${{ (matrix.always == false && (github.event_name == 'pull_request' || github.repository != 'galette/galette' || !(github.event_name == 'workflow_dispatch' || github.ref == 'refs/heads/master' || github.ref == 'refs/heads/develop' || startsWith(github.ref, 'refs/tags')))) && ' (skipped)' || matrix.coverage == 'xdebug' && ' (with coverage)' || ''}}
+    name: PHP ${{ matrix.php-version }} ${{ matrix.db-image }} ${{ (matrix.always == false && (github.event_name == 'pull_request' || github.repository != 'galette/plugin-auto' || !(github.event_name == 'workflow_dispatch' || github.ref == 'refs/heads/master' || github.ref == 'refs/heads/develop' || startsWith(github.ref, 'refs/tags')))) && ' (skipped)' || matrix.coverage == 'xdebug' && ' (with coverage)' || ''}}
 
     steps:
       - name: PHP

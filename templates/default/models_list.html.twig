@@ -53,10 +53,10 @@
 {% block body %}
     {% for m in models %}
         {% set edit_link = url_for("modelEdit", {"id": m.id}) %}
-    <tr class="{{ loop.index is odd ? 'odd' : 'even' }}">
+    <tr>
         <td data-col-label="{{ _T("Model", "auto") }}"><a href="{{ edit_link }}">{{ m.model }}</a></td>
         <td data-col-label="{{ _T("Brand", "auto") }}"><a href="{{ edit_link }}">{{ m.brand.value }}</a></td>
-        <td class="center actions_row nowrap">
+        <td class="center actions_row collapsing">
             <a href="{{ edit_link }}" class="tooltip action">
                 <i class="ui edit icon"></i>
                 <span class="visually-hidden">{{ _T("Edit %property", "auto")|replace({"%property": m.brand.value ~ ' ' ~ m.model}) }}</span>

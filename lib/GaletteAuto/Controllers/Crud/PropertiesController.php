@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright © 2003-2024 The Galette Team
+ * Copyright © 2003-2025 The Galette Team
  *
  * This file is part of Galette (https://galette.eu).
  *
@@ -64,8 +64,8 @@ class PropertiesController extends AbstractPluginController
     public function brandsList(
         Request $request,
         Response $response,
-        string $option = null,
-        string|int $value = null
+        ?string $option = null,
+        string|int|null $value = null
     ): Response {
         return $this->propertiesList($request, $response, 'brands', $option, $value);
     }
@@ -83,8 +83,8 @@ class PropertiesController extends AbstractPluginController
     public function colorsList(
         Request $request,
         Response $response,
-        string $option = null,
-        int|string $value = null
+        ?string $option = null,
+        int|string|null $value = null
     ): Response {
         return $this->propertiesList($request, $response, 'colors', $option, $value);
     }
@@ -102,8 +102,8 @@ class PropertiesController extends AbstractPluginController
     public function statesList(
         Request $request,
         Response $response,
-        string $option = null,
-        string|int $value = null
+        ?string $option = null,
+        string|int|null $value = null
     ): Response {
         return $this->propertiesList($request, $response, 'states', $option, $value);
     }
@@ -121,8 +121,8 @@ class PropertiesController extends AbstractPluginController
     public function finitionsList(
         Request $request,
         Response $response,
-        string $option = null,
-        string|int $value = null
+        ?string $option = null,
+        string|int|null $value = null
     ): Response {
         return $this->propertiesList($request, $response, 'finitions', $option, $value);
     }
@@ -140,8 +140,8 @@ class PropertiesController extends AbstractPluginController
     public function bodiesList(
         Request $request,
         Response $response,
-        string $option = null,
-        string|int $value = null
+        ?string $option = null,
+        string|int|null $value = null
     ): Response {
         return $this->propertiesList($request, $response, 'bodies', $option, $value);
     }
@@ -159,8 +159,8 @@ class PropertiesController extends AbstractPluginController
     public function transmissionsList(
         Request $request,
         Response $response,
-        string $option = null,
-        string|int $value = null
+        ?string $option = null,
+        string|int|null $value = null
     ): Response {
         return $this->propertiesList($request, $response, 'transmissions', $option, $value);
     }
@@ -180,8 +180,8 @@ class PropertiesController extends AbstractPluginController
         Request $request,
         Response $response,
         string $property,
-        string $option = null,
-        string|int $value = null
+        ?string $option = null,
+        string|int|null $value = null
     ): Response {
         $get = $request->getQueryParams();
 
@@ -324,7 +324,7 @@ class PropertiesController extends AbstractPluginController
      *
      * @return Response
      */
-    public function propertyEdit(Request $request, Response $response, string $property, int $id = null, string $action = 'edit'): Response
+    public function propertyEdit(Request $request, Response $response, string $property, ?int $id = null, string $action = 'edit'): Response
     {
         $is_new = ($action === 'add');
 
@@ -395,7 +395,7 @@ class PropertiesController extends AbstractPluginController
         Request $request,
         Response $response,
         string $property,
-        int $id = null,
+        ?int $id = null,
         string $action = 'edit',
     ): Response {
         $classname = AbstractObject::getClassForPropName($property);
@@ -431,8 +431,8 @@ class PropertiesController extends AbstractPluginController
                 $msg = str_replace(
                     '%property',
                     $object->getFieldLabel(),
-                    $is_new ? _T("New %property has been added!", "auto") :
-                    _T("%property has been saved!", "auto")
+                    $is_new ? _T("New %property has been added!", "auto")
+                    : _T("%property has been saved!", "auto")
                 );
                 $this->flash->addMessage(
                     'success_detected',
@@ -546,7 +546,7 @@ class PropertiesController extends AbstractPluginController
         $this->view->render(
             $response,
             'modals/confirm_removal.html.twig',
-            array(
+            [
                 'type'          => $object->getFieldLabel(),
                 'mode'          => $request->getHeaderLine('X-Requested-With') === 'XMLHttpRequest' ? 'ajax' : '',
                 'page_title'    => sprintf(
@@ -560,7 +560,7 @@ class PropertiesController extends AbstractPluginController
                 ),
                 'cancel_uri'    => $route,
                 'data'          => $data
-            )
+            ]
         );
         return $response;
     }
@@ -575,15 +575,14 @@ class PropertiesController extends AbstractPluginController
      *
      * @return Response
      */
-    public function doRemoveProperty(Request $request, Response $response, string $property, int $id = null): Response
+    public function doRemoveProperty(Request $request, Response $response, string $property, ?int $id = null): Response
     {
         $post = $request->getParsedBody();
         $ajax = isset($post['ajax']) && $post['ajax'] === 'true';
         $success = false;
 
-        $uri = isset($post['redirect_uri']) ?
-            $post['redirect_uri'] :
-            $this->routeparser->urlFor('slash');
+        $uri = $post['redirect_uri']
+            ?? $this->routeparser->urlFor('slash');
 
         if (!isset($post['confirm'])) {
             $this->flash->addMessage(

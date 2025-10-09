@@ -1,22 +1,24 @@
 # Tymofij Lytvynenko <till.svit@gmail.com>, 2021.
 # Johan Cwiklinski <trasher@x-tnd.be>, 2021, 2023.
 # Artem <artem@molotov.work>, 2022.
+# Максим Горпиніч <mgorpinic2005@gmail.com>, 2024.
+# Максим Горпиніч <maksimgorpinic4@gmail.com>, 2025.
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"Report-Msgid-Bugs-To: \n"
+"Report-Msgid-Bugs-To: translations@galette.eu\n"
 "POT-Creation-Date: 2024-02-23 08:39+0100\n"
-"PO-Revision-Date: 2023-09-20 00:26+0000\n"
-"Last-Translator: Johan Cwiklinski <trasher@x-tnd.be>\n"
-"Language-Team: Ukrainian <https://hosted.weblate.org/projects/galette/auto-"
-"plugin/uk/>\n"
+"PO-Revision-Date: 2025-05-22 16:01+0000\n"
+"Last-Translator: Максим Горпиніч <maksimgorpinic4@gmail.com>\n"
+"Language-Team: Ukrainian <https://hosted.weblate.org/projects/galette/"
+"auto-plugin/uk/>\n"
 "Language: uk\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
-"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
-"X-Generator: Weblate 5.1-dev\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"X-Generator: Weblate 5.12-dev\n"
 
 #: ../_routes.php:125
 msgid "No vehicle was selected, please check at least one name."
@@ -82,12 +84,12 @@ msgstr "Вилучити модель %1$s"
 #: ../lib/GaletteAuto/Controllers/Crud/ModelsController.php:389
 msgid "This model is used by one or more vehicles, it cannot be deleted."
 msgstr ""
+"Ця модель використовується одним або кількома автомобілями, її неможливо "
+"видалити."
 
 #: ../lib/GaletteAuto/Controllers/Crud/ModelsController.php:394
-#, fuzzy
-#| msgid "An error occurred while trying to delete car's photo"
 msgid "An error occurred while deleting model."
-msgstr "Під час спроби видалити світлину автомобіля сталася помилка"
+msgstr "Під час видалення моделі сталася помилка."
 
 #: ../lib/GaletteAuto/Controllers/Crud/PropertiesController.php:189
 #: ../lib/GaletteAuto/PluginGaletteAuto.php:61
@@ -101,7 +103,7 @@ msgstr "Додати новий колір"
 #: ../lib/GaletteAuto/Controllers/Crud/PropertiesController.php:194
 #: ../lib/GaletteAuto/PluginGaletteAuto.php:65
 msgid "States list"
-msgstr "Список станів"
+msgstr "Списки станів"
 
 #: ../lib/GaletteAuto/Controllers/Crud/PropertiesController.php:195
 msgid "Add new state"
@@ -186,119 +188,113 @@ msgid "Remove %1$s %2$s"
 msgstr "Вилучити %1$s %2$s"
 
 #: ../lib/GaletteAuto/Controllers/Crud/PropertiesController.php:607
-#, fuzzy, php-format
-#| msgid "%count models have been successfully deleted."
+#, php-format
 msgid "%1$s color has been successfully deleted."
 msgid_plural "%1$s colors have been successfully deleted."
-msgstr[0] "%count моделей успішно видалено."
-msgstr[1] "%count моделей успішно видалено."
-msgstr[2] "%count моделей успішно видалено."
+msgstr[0] "Колір %1$s успішно видалено."
+msgstr[1] "%1$s кольори успішно видалено."
+msgstr[2] "%1$s кольори успішно видалено."
 
 #: ../lib/GaletteAuto/Controllers/Crud/PropertiesController.php:611
-#, fuzzy, php-format
-#| msgid "%count models have been successfully deleted."
+#, php-format
 msgid "%1$s state has been successfully deleted."
 msgid_plural "%1$s states have been successfully deleted."
-msgstr[0] "%count моделей успішно видалено."
-msgstr[1] "%count моделей успішно видалено."
-msgstr[2] "%count моделей успішно видалено."
+msgstr[0] "Стан %1$s успішно видалено."
+msgstr[1] "%1$s станів успішно видалено."
+msgstr[2] "%1$s станів успішно видалено."
 
 #: ../lib/GaletteAuto/Controllers/Crud/PropertiesController.php:615
-#, fuzzy, php-format
-#| msgid "%count models have been successfully deleted."
+#, php-format
 msgid "%1$s finition has been successfully deleted."
 msgid_plural "%1$s finitions have been successfully deleted."
-msgstr[0] "%count моделей успішно видалено."
-msgstr[1] "%count моделей успішно видалено."
-msgstr[2] "%count моделей успішно видалено."
+msgstr[0] "Завершення %1$s успішно видалено."
+msgstr[1] "%1$s завершення успішно видалено."
+msgstr[2] "%1$s завершення успішно видалено."
 
 #: ../lib/GaletteAuto/Controllers/Crud/PropertiesController.php:619
-#, fuzzy, php-format
-#| msgid "%count models have been successfully deleted."
+#, php-format
 msgid "%1$s body has been successfully deleted."
 msgid_plural "%1$s bodies have been successfully deleted."
-msgstr[0] "%count моделей успішно видалено."
-msgstr[1] "%count моделей успішно видалено."
-msgstr[2] "%count моделей успішно видалено."
+msgstr[0] "Тіло %1$s успішно видалено."
+msgstr[1] "Тіла %1$s успішно видалено."
+msgstr[2] "Тіла %1$s успішно видалено."
 
 #: ../lib/GaletteAuto/Controllers/Crud/PropertiesController.php:623
-#, fuzzy, php-format
-#| msgid "%count models have been successfully deleted."
+#, php-format
 msgid "%1$s transmission has been successfully deleted."
 msgid_plural "%1$s transmissions have been successfully deleted."
-msgstr[0] "%count моделей успішно видалено."
-msgstr[1] "%count моделей успішно видалено."
-msgstr[2] "%count моделей успішно видалено."
+msgstr[0] "Передачу %1$s успішно видалено."
+msgstr[1] "Передачі %1$s успішно видалено."
+msgstr[2] "Передачі %1$s успішно видалено."
 
 #: ../lib/GaletteAuto/Controllers/Crud/PropertiesController.php:627
-#, fuzzy, php-format
-#| msgid "%count models have been successfully deleted."
+#, php-format
 msgid "%1$s brand has been successfully deleted."
 msgid_plural "%1$s brands have been successfully deleted."
-msgstr[0] "%count моделей успішно видалено."
-msgstr[1] "%count моделей успішно видалено."
-msgstr[2] "%count моделей успішно видалено."
+msgstr[0] "Бренд %1$s успішно видалено."
+msgstr[1] "Бренди %1$s успішно видалено."
+msgstr[2] "Бренди %1$s успішно видалено."
 
 #: ../lib/GaletteAuto/Controllers/Crud/PropertiesController.php:644
 msgid "This color is used by one or more vehicles, it cannot be deleted."
 msgstr ""
+"Цей колір використовується одним або кількома транспортними засобами, його "
+"неможливо видалити."
 
 #: ../lib/GaletteAuto/Controllers/Crud/PropertiesController.php:648
 msgid "This state is used by one or more vehicles, it cannot be deleted."
 msgstr ""
+"Цей стан використовується одним або кількома транспортними засобами, його "
+"неможливо видалити."
 
 #: ../lib/GaletteAuto/Controllers/Crud/PropertiesController.php:652
 msgid "This finition is used by one or more vehicles, it cannot be deleted."
 msgstr ""
+"Це завершення використовується одним або кількома транспортними засобами, "
+"його неможливо видалити."
 
 #: ../lib/GaletteAuto/Controllers/Crud/PropertiesController.php:656
 msgid "This body is used by one or more vehicles, it cannot be deleted."
 msgstr ""
+"Це тіло використовується одним або кількома транспортними засобами, його "
+"неможливо видалити."
 
 #: ../lib/GaletteAuto/Controllers/Crud/PropertiesController.php:660
 msgid ""
 "This transmission is used by one or more vehicles, it cannot be deleted."
 msgstr ""
+"Ця трансмісія використовується одним або кількома автомобілями, її неможливо "
+"видалити."
 
 #: ../lib/GaletteAuto/Controllers/Crud/PropertiesController.php:664
 msgid "This brand is used by one or more vehicles, it cannot be deleted."
 msgstr ""
+"Ця марка використовується одним або кількома автомобілями, її неможливо "
+"видалити."
 
 #: ../lib/GaletteAuto/Controllers/Crud/PropertiesController.php:678
-#, fuzzy
-#| msgid "An error occurred trying to remove models :/"
 msgid "An error occurred trying to remove color :/"
-msgstr "Під час вилучення моделей сталася помилка :/"
+msgstr "Під час спроби видалити колір сталася помилка :/"
 
 #: ../lib/GaletteAuto/Controllers/Crud/PropertiesController.php:682
-#, fuzzy
-#| msgid "An error occurred trying to remove models :/"
 msgid "An error occurred trying to remove state :/"
-msgstr "Під час вилучення моделей сталася помилка :/"
+msgstr "Під час спроби видалити стан сталася помилка:/"
 
 #: ../lib/GaletteAuto/Controllers/Crud/PropertiesController.php:686
-#, fuzzy
-#| msgid "An error occurred trying to remove models :/"
 msgid "An error occurred trying to remove finition :/"
-msgstr "Під час вилучення моделей сталася помилка :/"
+msgstr "Під час спроби видалити finition сталася помилка :/"
 
 #: ../lib/GaletteAuto/Controllers/Crud/PropertiesController.php:690
-#, fuzzy
-#| msgid "An error occurred trying to remove models :/"
 msgid "An error occurred trying to remove body :/"
-msgstr "Під час вилучення моделей сталася помилка :/"
+msgstr "Під час спроби видалити тіло сталася помилка :/"
 
 #: ../lib/GaletteAuto/Controllers/Crud/PropertiesController.php:694
-#, fuzzy
-#| msgid "An error occurred trying to remove models :/"
 msgid "An error occurred trying to remove transmission :/"
-msgstr "Під час вилучення моделей сталася помилка :/"
+msgstr "Під час спроби видалити передачу сталася помилка :/"
 
 #: ../lib/GaletteAuto/Controllers/Crud/PropertiesController.php:698
-#, fuzzy
-#| msgid "An error occurred trying to remove models :/"
 msgid "An error occurred trying to remove brand :/"
-msgstr "Під час вилучення моделей сталася помилка :/"
+msgstr "Під час спроби видалити бренд сталася помилка :/"
 
 #: ../lib/GaletteAuto/Controllers/Controller.php:90
 msgid "You do not have enough privileges."
@@ -538,7 +534,7 @@ msgstr "Автомобіль оновлено"
 
 #: ../lib/GaletteAuto/Auto.php:698
 msgid "- Maximum size for %field is %maxsize (current %cursize)!"
-msgstr ""
+msgstr "- Максимальний розмір поля %maxsize (поточний %cursize)!"
 
 #: ../lib/GaletteAuto/Auto.php:741
 #, php-format
@@ -567,10 +563,8 @@ msgid "Cars"
 msgstr "Автомобілі"
 
 #: ../lib/GaletteAuto/PluginGaletteAuto.php:132
-#, fuzzy
-#| msgid "Vehicle"
 msgid "Vehicles"
-msgstr "Транспортний засіб"
+msgstr "Транспортні засоби"
 
 #: ../lib/GaletteAuto/Finition.php:100
 #, php-format

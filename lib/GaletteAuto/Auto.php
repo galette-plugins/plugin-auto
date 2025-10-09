@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright © 2003-2024 The Galette Team
+ * Copyright © 2003-2025 The Galette Team
  *
  * This file is part of Galette (https://galette.eu).
  *
@@ -30,6 +30,7 @@ use Galette\Core\Login;
 use Galette\Core\Plugins;
 use Galette\Entity\Adherent;
 use Laminas\Db\Sql\Expression;
+use Psr\Http\Message\UploadedFileInterface;
 
 /**
  * Automobile Transmissions class for galette Auto plugin
@@ -68,7 +69,7 @@ class Auto
     private Plugins $plugins;
     private Db $zdb;
 
-    private array $fields = array(
+    private array $fields = [
         'id_car'                        => 'integer',
         'car_name'                      => 'string',
         'car_registration'              => 'string',
@@ -89,9 +90,9 @@ class Auto
         Finition::PK                    => 'integer',
         Model::PK                       => 'integer',
         Adherent::PK                    => 'integer'
-    );
+    ];
 
-    private array $required = array(
+    private array $required = [
         'name'                      => 1,
         'model'                     => 1,
         'first_registration_date'   => 1,
@@ -103,7 +104,7 @@ class Auto
         'transmission'              => 1,
         'finition'                  => 1,
         'fuel'                      => 1
-    );
+    ];
 
     private int $id;
     private string $registration;
@@ -145,7 +146,7 @@ class Auto
     private bool $fire_history = false;
 
     //internal properties (not updatable outside the object)
-    private array $internals = array(
+    private array $internals = [
         'id',
         'creation_date',
         'history',
@@ -156,7 +157,7 @@ class Auto
         'fire_history',
         'plugins',
         'zdb'
-    );
+    ];
     private array $errors = [];
 
     /**
@@ -166,12 +167,12 @@ class Auto
      * @param Db           $zdb     Database instance
      * @param ?ArrayObject $args    A resultset row to load
      */
-    public function __construct(Plugins $plugins, Db $zdb, ArrayObject $args = null)
+    public function __construct(Plugins $plugins, Db $zdb, ?ArrayObject $args = null)
     {
         $this->plugins = $plugins;
         $this->zdb = $zdb;
 
-        $this->propnames = array(
+        $this->propnames = [
             'name'                      => mb_strtolower(_T("Name", "auto")),
             'model'                     => mb_strtolower(_T("Model", "auto")),
             'registration'              => mb_strtolower(_T("Registration", "auto")),
@@ -187,7 +188,7 @@ class Auto
             'transmission'              => mb_strtolower(_T("Transmission", "auto")),
             'body'                      => mb_strtolower(_T("Body", "auto")),
             'fuel'                      => mb_strtolower(_T("Fuel", "auto")),
-        );
+        ];
 
         $this->model = new Model($this->zdb);
         $this->color = new Color($this->zdb);
@@ -217,9 +218,9 @@ class Auto
         try {
             $select = $this->zdb->select(AUTO_PREFIX . self::TABLE);
             $select->where(
-                array(
+                [
                     self::PK => $id
-                )
+                ]
             );
 
             $results = $this->zdb->execute($select);
@@ -231,9 +232,9 @@ class Auto
             return true;
         } catch (\Exception $e) {
             Analog::log(
-                '[' . get_class($this) . '] Cannot load car from id `' . $id .
-                '` | ' . $e->getMessage(),
-                Analog::WARNING
+                '[' . get_class($this) . '] Cannot load car from id `' . $id
+                . '` | ' . $e->getMessage(),
+                Analog::ERROR
             );
             return false;
         }
@@ -254,16 +255,16 @@ class Auto
         $this->name = $r->car_name;
         $this->first_registration_date = $r->car_first_registration_date;
         $this->first_circulation_date = $r->car_first_circulation_date;
-        $this->mileage = $r->car_mileage;
+        $this->mileage = $r->car_mileage != null ? (int)$r->car_mileage : null;
         $this->comment = $r->car_comment;
         $this->chassis_number = $r->car_chassis_number;
-        $this->seats = $r->car_seats;
-        $this->horsepower = $r->car_horsepower;
-        $this->engine_size = $r->car_engine_size;
+        $this->seats = $r->car_seats != null ? (int)$r->car_seats : null;
+        $this->horsepower = $r->car_horsepower != null ? (int)$r->car_horsepower : null;
+        $this->engine_size = $r->car_engine_size != null ? (int)$r->car_engine_size : null;
         $this->creation_date = $r->car_creation_date;
-        $this->fuel = (int)$r->car_fuel;
+        $this->fuel = $r->car_fuel != null ? (int)$r->car_fuel : null;
         //External objects
-        $this->picture = new Picture($this->plugins, (int)$this->id);
+        $this->picture = new Picture($this->plugins, $this->id);
         $fpk = Finition::PK;
         $this->finition->load((int)$r->$fpk);
         $cpk = Color::PK;
@@ -279,7 +280,7 @@ class Auto
         $this->owner->load($this->owner_id);
         $spk = State::PK;
         $this->state->load((int)$r->$spk);
-        $this->history->load((int)$this->id);
+        $this->history->load($this->id);
     }
 
     /**
@@ -290,14 +291,14 @@ class Auto
     public function listFuels(): array
     {
         //TODO: make this list configurable?
-        $f = array(
+        $f = [
             self::FUEL_PETROL       => _T("Petrol", "auto"),
             self::FUEL_DIESEL       => _T("Diesel", "auto"),
             self::FUEL_GAS          => _T("Gas", "auto"),
             self::FUEL_HYBRID       => _T("Hybrid", "auto"),
             self::FUEL_ELECTRICITY  => _T("Electricity", "auto"),
             self::FUEL_BIO          => _T("Bio", "auto")
-        );
+        ];
         return $f;
     }
 
@@ -318,7 +319,7 @@ class Auto
         }
 
         try {
-            $values = array();
+            $values = [];
 
             foreach ($this->fields as $k => $v) {
                 switch ($k) {
@@ -375,8 +376,8 @@ class Auto
                 if ($add->count() > 0) {
                     /** @phpstan-ignore-next-line */
                     $this->id = (int)$this->zdb->driver->getLastGeneratedValue(
-                        $this->zdb->isPostgres() ?
-                            PREFIX_DB . AUTO_PREFIX . self::TABLE . '_id_seq'
+                        $this->zdb->isPostgres()
+                            ? PREFIX_DB . AUTO_PREFIX . self::TABLE . '_id_seq'
                             : null
                     );
 
@@ -386,10 +387,6 @@ class Auto
                         strtoupper($this->name)
                     );
                     $this->history->load((int)$this->id);
-
-                    //handle picture for newly added cars
-                    $this->picture = new Picture($this->plugins, (int)$this->id);
-                    $this->handlePicture();
                 } else {
                     $hist->add(_T("Fail to add new car.", "auto"));
                     throw new \Exception(
@@ -399,9 +396,9 @@ class Auto
             } else {
                 $update = $this->zdb->update(AUTO_PREFIX . self::TABLE);
                 $update->set($values)->where(
-                    array(
+                    [
                         self::PK => $this->id
-                    )
+                    ]
                 );
                 $edit = $this->zdb->execute($update);
                 //edit == 0 does not mean there were an error, but that there
@@ -430,7 +427,7 @@ class Auto
             }
 
             if ($this->fire_history) {
-                $h_props = array();
+                $h_props = [];
                 foreach ($this->history->fields as $prop) {
                     if ($prop != 'history_date') {
                         $h_props[$prop] = $this->$prop;
@@ -445,9 +442,9 @@ class Auto
             return true;
         } catch (\Exception $e) {
             Analog::log(
-                '[' . get_class($this) . '] An error has occurred ' .
-                (($new) ? 'inserting' : 'updating') . ' car | ' .
-                $e->getMessage(),
+                '[' . get_class($this) . '] An error has occurred '
+                . (($new) ? 'inserting' : 'updating') . ' car | '
+                . $e->getMessage(),
                 Analog::ERROR
             );
             return false;
@@ -464,7 +461,7 @@ class Auto
      */
     private function getAllProperties(bool $restrict = false): array
     {
-        $result = array();
+        $result = [];
         foreach (get_class_vars(static::class) as $key => $value) {
             if (
                 !$restrict
@@ -484,7 +481,12 @@ class Auto
      */
     public function getProperties(): array
     {
-        return $this->getAllProperties(true);
+        $properties = $this->getAllProperties(true);
+        $to_unset = ['required', 'errors'];
+        foreach ($to_unset as $prop) {
+            unset($properties[array_search($prop, $properties)]);
+        }
+        return $properties;
     }
 
     /**
@@ -535,7 +537,7 @@ class Auto
      */
     public function __get(string $name): mixed
     {
-        $forbidden = array();
+        $forbidden = [];
         if (!in_array($name, $forbidden)) {
             switch ($name) {
                 case self::PK:
@@ -558,8 +560,8 @@ class Auto
                         } catch (\Exception $e) {
                             //oops, we've got a bad date :/
                             Analog::log(
-                                'Bad date (' . $this->$name . ') | ' .
-                                $e->getMessage(),
+                                'Bad date (' . $this->$name . ') | '
+                                . $e->getMessage(),
                                 Analog::WARNING
                             );
                             return $this->$name;
@@ -622,8 +624,8 @@ class Auto
             }
         } else {
             Analog::log(
-                '[' . get_class($this) . '] Trying to set an internal property (`' .
-                $name . '`)',
+                '[' . get_class($this) . '] Trying to set an internal property (`'
+                . $name . '`)',
                 Analog::INFO
             );
         }
@@ -667,7 +669,7 @@ class Auto
         //check for required fields, and correct values
         $required = $this->getRequired();
         foreach ($this->getProperties() as $prop) {
-            $value = isset($post[$prop]) ? $post[$prop] : null;
+            $value = $post[$prop] ?? null;
 
             if (($value == '' || $value == null) && in_array($prop, array_keys($required))) {
                 $this->errors[] = str_replace(
@@ -685,27 +687,27 @@ class Auto
                         $this->$prop = $value;
                     } else {
                         $this->errors[] = str_replace(
-                            array(
+                            [
                                 '%maxsize',
                                 '%field',
                                 '%cursize'
-                            ),
-                            array(
-                                10,
+                            ],
+                            [
+                                '10',
                                 $this->getPropName($prop),
-                                mb_strlen($value)
-                            ),
+                                (string)mb_strlen($value)
+                            ],
                             _T("- Maximum size for %field is %maxsize (current %cursize)!", "auto")
                         );
                     }
                     break;
-                //string values, no check
+                    //string values, no check
                 case 'name':
                 case 'comment':
                 case 'chassis_number':
                     $this->$prop = $value;
                     break;
-                //dates
+                    //dates
                 case 'first_registration_date':
                 case 'first_circulation_date':
                     try {
@@ -727,7 +729,7 @@ class Auto
                         );
                     }
                     break;
-                //numeric values
+                    //numeric values
                 case 'mileage':
                 case 'seats':
                 case 'horsepower':
@@ -742,7 +744,7 @@ class Auto
                         );
                     }
                     break;
-                //constants
+                    //constants
                 case 'fuel':
                     if (in_array($value, array_keys($this->listFuels()))) {
                         $this->fuel = (int)$value;
@@ -750,7 +752,7 @@ class Auto
                         $this->errors[] = _T("- You must choose a fuel in the list", "auto");
                     }
                     break;
-                //external objects
+                    //external objects
                 case 'finition':
                 case 'color':
                 case 'model':
@@ -769,6 +771,9 @@ class Auto
                         );
                     }
                     break;
+                case 'owner':
+                    //owner is not a property that can be set.
+                    break;
                 case 'owner_id':
                     if (isset($post['change_owner']) || !isset($this->id)) {
                         $value = (int)$value;
@@ -783,18 +788,13 @@ class Auto
                 default:
                     /** TODO: what's the default? */
                     Analog::log(
-                        'Trying to edit an Auto property that is not handled in the source code! (prop is: ' .
-                        $prop . ')',
+                        'Trying to edit an Auto property that is not handled in the source code! (prop is: '
+                        . $prop . ')',
                         Analog::ERROR
                     );
                     break;
             }//switch
         }//foreach
-
-        if (isset($this->id)) {
-            //handle picture for updated cars
-            $this->handlePicture();
-        }
 
         //delete photo
         if (isset($post['del_photo'])) {
@@ -836,20 +836,18 @@ class Auto
     /**
      * Handle car picture upload
      *
-     * @return void
+     * @param array<UploadedFileInterface> $files Files sent
+     *
+     * @return bool
      */
-    private function handlePicture(): void
+    public function handleFiles(array $files): bool
     {
-        // picture upload
-        if (isset($_FILES['photo'])) {
-            if ($_FILES['photo']['tmp_name'] != '') {
-                if (is_uploaded_file($_FILES['photo']['tmp_name'])) {
-                    $res = $this->picture->store($_FILES['photo']);
-                    if ($res < 0) {
-                        $this->errors[] = $this->picture->getErrorMessage($res);
-                    }
-                }
-            }
+        $this->errors = [];
+        $this->picture = new Picture($this->plugins, (int)$this->id);
+        if (!$this->picture->upload(request_files: $files, key: 'photo')) {
+            $this->errors = array_merge($this->errors, $this->picture->uploadErrors());
         }
+
+        return !count($this->errors);
     }
 }

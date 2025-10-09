@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright © 2003-2024 The Galette Team
+ * Copyright © 2003-2025 The Galette Team
  *
  * This file is part of Galette (https://galette.eu).
  *
@@ -114,7 +114,12 @@ class Finition extends GaletteTestCase
     public function testLoadError(): void
     {
         $finition = new \GaletteAuto\Finition($this->zdb);
+        $this->expectNoLogEntry();
         $this->assertFalse($finition->load(999));
+        $this->expectLogEntry(
+            \Analog::ERROR,
+            '[GaletteAuto\Finition] Cannot load finitions from id `999`'
+        );
     }
 
     /**

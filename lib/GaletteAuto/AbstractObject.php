@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright © 2003-2024 The Galette Team
+ * Copyright © 2003-2025 The Galette Team
  *
  * This file is part of Galette (https://galette.eu).
  *
@@ -62,7 +62,7 @@ abstract class AbstractObject
      * @param string   $name  name
      * @param ?integer $id    id to load. Defaults to null
      */
-    public function __construct(Db $zdb, string $table, string $pk, string $field, string $name, int $id = null)
+    public function __construct(Db $zdb, string $table, string $pk, string $field, string $name, ?int $id = null)
     {
         $this->zdb = $zdb;
         $this->table = AUTO_PREFIX . $table;
@@ -91,8 +91,8 @@ abstract class AbstractObject
             return $list;
         } catch (\Exception $e) {
             Analog::log(
-                '[' . get_class($this) . '] Cannot load ' . $this->name .
-                ' list | ' . $e->getMessage(),
+                '[' . get_class($this) . '] Cannot load ' . $this->name
+                . ' list | ' . $e->getMessage(),
                 Analog::ERROR
             );
             throw $e;
@@ -111,9 +111,9 @@ abstract class AbstractObject
         try {
             $select = $this->zdb->select($this->table);
             $select->where(
-                array(
+                [
                     $this->pk => $id
-                )
+                ]
             );
 
             $results = $this->zdb->execute($select);
@@ -126,8 +126,8 @@ abstract class AbstractObject
             return true;
         } catch (\Exception $e) {
             Analog::log(
-                '[' . get_class($this) . '] Cannot load ' . $this->name .
-                ' from id `' . $id . '` | ' . $e->getMessage(),
+                '[' . get_class($this) . '] Cannot load ' . $this->name
+                . ' from id `' . $id . '` | ' . $e->getMessage(),
                 Analog::ERROR
             );
             return false;
@@ -144,34 +144,34 @@ abstract class AbstractObject
     public function store(bool $new = false): bool
     {
         try {
-            $values = array(
+            $values = [
                 $this->field => $this->value
-            );
+            ];
             if ($new) {
                 $insert = $this->zdb->insert($this->table);
                 $insert->values($values);
                 $this->zdb->execute($insert);
                 /** @phpstan-ignore-next-line */
                 $this->id = (int)$this->zdb->driver->getLastGeneratedValue(
-                    $this->zdb->isPostgres() ?
-                        PREFIX_DB . $this->table . '_id_seq'
+                    $this->zdb->isPostgres()
+                        ? PREFIX_DB . $this->table . '_id_seq'
                         : null
                 );
             } else {
                 $update = $this->zdb->update($this->table);
                 $update->set($values)->where(
-                    array(
+                    [
                         $this->pk => $this->id
-                    )
+                    ]
                 );
                 $this->zdb->execute($update);
             }
             return true;
         } catch (\Exception $e) {
             Analog::log(
-                '[' . get_class($this) . '] Cannot store ' . $this->name .
-                ' values `' . ($this->id ?? '') . '`, `' . $this->value . '` | ' .
-                $e->getMessage(),
+                '[' . get_class($this) . '] Cannot store ' . $this->name
+                . ' values `' . ($this->id ?? '') . '`, `' . $this->value . '` | '
+                . $e->getMessage(),
                 Analog::WARNING
             );
             return false;
@@ -194,8 +194,8 @@ abstract class AbstractObject
             return true;
         } catch (\Exception $e) {
             Analog::log(
-                '[' . get_class($this) . '] Cannot delete ' . $this->name .
-                ' from ids `' . implode(' - ', $ids) . '` | ' . $e->getMessage(),
+                '[' . get_class($this) . '] Cannot delete ' . $this->name
+                . ' from ids `' . implode(' - ', $ids) . '` | ' . $e->getMessage(),
                 Analog::WARNING
             );
             throw $e;
@@ -391,10 +391,10 @@ abstract class AbstractObject
             $countSelect->reset($countSelect::LIMIT);
             $countSelect->reset($countSelect::OFFSET);
             $countSelect->columns(
-                array(
+                [
                     //@phpstan-ignore-next-line
                     static::PK => new Expression('COUNT(' . static::PK . ')')
-                )
+                ]
             );
 
             $results = $this->zdb->execute($countSelect);

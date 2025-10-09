@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright © 2003-2024 The Galette Team
+ * Copyright © 2003-2025 The Galette Team
  *
  * This file is part of Galette (https://galette.eu).
  *
@@ -23,12 +23,13 @@ declare(strict_types=1);
 
 namespace GaletteAuto\Controllers;
 
-use ArrayObject;
 use Galette\Repository\Members;
 use GaletteAuto\Auto;
 use GaletteAuto\Autos;
 use GaletteAuto\History;
+use GaletteAuto\Model;
 use GaletteAuto\Picture;
+use Laminas\Db\ResultSet\ResultSet;
 use Slim\Psr7\Request;
 use Slim\Psr7\Response;
 use Galette\Controllers\AbstractPluginController;
@@ -59,13 +60,13 @@ class Controller extends AbstractPluginController
     /**
      * Check ACLs for specific member
      *
-     * @param Response     $response Response
-     * @param integer      $id_adh   Members id to check right for
-     * @param string|false $redirect Path to redirect to (myVehiclesList per default)
+     * @param Response          $response Response
+     * @param integer           $id_adh   Members id to check right for
+     * @param string|false|null $redirect Path to redirect to (myVehiclesList per default)
      *
      * @return bool|Response
      */
-    protected function checkAclsFor(Response $response, int $id_adh, string|false $redirect = null): bool|Response
+    protected function checkAclsFor(Response $response, int $id_adh, string|false|null $redirect = null): bool|Response
     {
         //maybe should this be a middleware... but I do not know how to pass redirect :/
         if (
@@ -73,12 +74,12 @@ class Controller extends AbstractPluginController
             && !$this->login->isAdmin()
             && !$this->login->isStaff()
         ) {
-            $deps = array(
+            $deps = [
                 'picture'   => false,
                 'dues'      => false
-            );
+            ];
             $member = new Adherent($this->zdb, $id_adh, $deps);
-            if (!$this->login->isGroupManager($member->groups)) {
+            if (!$this->login->isGroupManager(array_keys($member->groups))) {
                 //no right to see requested member.
                 if ($redirect === false) {
                     return false;
@@ -109,7 +110,7 @@ class Controller extends AbstractPluginController
      *
      * @return Response
      */
-    public function vehiclePhoto(Request $request, Response $response, int $id = null): Response
+    public function vehiclePhoto(Request $request, Response $response, ?int $id = null): Response
     {
         $picture = new Picture($this->plugins, $id);
 
@@ -136,7 +137,7 @@ class Controller extends AbstractPluginController
      *
      * @return Response
      */
-    public function publicVehiclesList(Request $request, Response $response, string $option = null, int $value = null): Response
+    public function publicVehiclesList(Request $request, Response $response, ?string $option = null, ?int $value = null): Response
     {
         $this->public = true;
         return $this->vehiclesList($request, $response, $option, $value);
@@ -152,7 +153,7 @@ class Controller extends AbstractPluginController
      *
      * @return Response
      */
-    public function myVehiclesList(Request $request, Response $response, string $option = null, int $value = null): Response
+    public function myVehiclesList(Request $request, Response $response, ?string $option = null, ?int $value = null): Response
     {
         $this->id_adh = $this->login->id;
         $this->mine = true;
@@ -170,7 +171,7 @@ class Controller extends AbstractPluginController
      *
      * @return Response
      */
-    public function memberVehiclesList(Request $request, Response $response, int $id, string $option = null, int $value = null): Response
+    public function memberVehiclesList(Request $request, Response $response, int $id, ?string $option = null, ?int $value = null): Response
     {
         $this->id_adh = $id;
         return $this->vehiclesList($request, $response, $option, $value);
@@ -186,7 +187,7 @@ class Controller extends AbstractPluginController
      *
      * @return Response
      */
-    public function vehiclesList(Request $request, Response $response, string $option = null, int $value = null): Response
+    public function vehiclesList(Request $request, Response $response, ?string $option = null, ?int $value = null): Response
     {
         $get = $request->getQueryParams();
         $id_adh = null;
@@ -287,7 +288,7 @@ class Controller extends AbstractPluginController
      *
      * @return Response
      */
-    public function showAddEditVehicle(Request $request, Response $response, string $action, int $id = null): Response
+    public function showAddEditVehicle(Request $request, Response $response, string $action, ?int $id = null): Response
     {
         $is_new = ($action === 'add');
 
@@ -411,15 +412,16 @@ class Controller extends AbstractPluginController
      *
      * @return Response
      */
-    public function doAddEditVehicle(Request $request, Response $response, string $action = 'edit', int $id = null): Response
+    public function doAddEditVehicle(Request $request, Response $response, string $action = 'edit', ?int $id = null): Response
     {
         $post = $request->getParsedBody();
 
         $is_new = ($action === 'add' || $action === 'new');
 
         // initialize warnings
-        $error_detected = array();
-        $success_detected = array();
+        $error_detected = [];
+        $warning_detected = [];
+        $success_detected = [];
 
         if (isset($post['id_adh'])) {
             $this->checkAclsFor($response, (int)$post['id_adh']);
@@ -446,6 +448,9 @@ class Controller extends AbstractPluginController
                 if (!$this->checkAclsFor($response, $id_adh, false) || $this->login->id == $id_adh) {
                     $route = $this->routeparser->urlFor('myVehiclesList');
                 }
+                if (!$auto->handleFiles($request->getUploadedFiles())) {
+                    $warning_detected = $auto->getErrors();
+                }
             }
         }
 
@@ -462,6 +467,15 @@ class Controller extends AbstractPluginController
                 $this->flash->addMessage(
                     'error_detected',
                     $error
+                );
+            }
+        }
+
+        if (count($warning_detected) > 0) {
+            foreach ($warning_detected as $warning) {
+                $this->flash->addMessage(
+                    'warning_detected',
+                    $warning
                 );
             }
         }
@@ -523,7 +537,7 @@ class Controller extends AbstractPluginController
     public function ajaxModels(Request $request, Response $response): Response
     {
         $post = $request->getParsedBody();
-        $list = array();
+        $list = [];
         $models = new Models(
             $this->zdb,
             $this->preferences,
@@ -535,9 +549,8 @@ class Controller extends AbstractPluginController
         if (isset($post['brand']) && $post['brand'] != '') {
             $id_brand = (int)$post['brand'];
         }
-        /** @var ArrayObject $list */
+        /** @var array<int, Model>|ResultSet $list */
         $list = $models->getList($id_brand, false);
-        //@phpstan-ignore-next-line
         return $this->withJson($response, $list->toArray());
     }
 
@@ -571,7 +584,7 @@ class Controller extends AbstractPluginController
         $this->view->render(
             $response,
             'modals/confirm_removal.html.twig',
-            array(
+            [
                 'type'          => _T("Vehicle", "auto"),
                 'mode'          => $request->getHeaderLine('X-Requested-With') === 'XMLHttpRequest' ? 'ajax' : '',
                 'page_title'    => sprintf(
@@ -581,7 +594,7 @@ class Controller extends AbstractPluginController
                 'form_url'      => $this->routeparser->urlFor('doRemoveVehicle', ['id' => (string)$auto->id]),
                 'cancel_uri'    => $route,
                 'data'          => $data
-            )
+            ]
         );
         return $response;
     }
@@ -620,7 +633,7 @@ class Controller extends AbstractPluginController
         $this->view->render(
             $response,
             'modals/confirm_removal.html.twig',
-            array(
+            [
                 'type'          => _T("Vehicle", "auto"),
                 'mode'          => $request->getHeaderLine('X-Requested-With') === 'XMLHttpRequest' ? 'ajax' : '',
                 'page_title'    => _T('Remove vehicles', 'auto'),
@@ -632,7 +645,7 @@ class Controller extends AbstractPluginController
                 'form_url'      => $this->routeparser->urlFor('doRemoveVehicle'),
                 'cancel_uri'    => $route,
                 'data'          => $data
-            )
+            ]
         );
         return $response;
     }
@@ -651,9 +664,8 @@ class Controller extends AbstractPluginController
         $ajax = isset($post['ajax']) && $post['ajax'] === 'true';
         $success = false;
 
-        $uri = isset($post['redirect_uri']) ?
-            $post['redirect_uri'] :
-            $this->routeparser->urlFor('slash');
+        $uri = $post['redirect_uri']
+            ?? $this->routeparser->urlFor('slash');
 
         if (!isset($post['confirm'])) {
             $this->flash->addMessage(

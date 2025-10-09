@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright © 2003-2024 The Galette Team
+ * Copyright © 2003-2025 The Galette Team
  *
  * This file is part of Galette (https://galette.eu).
  *
@@ -57,7 +57,7 @@ class Model
      * @param Db                   $zdb  Database instance
      * @param ArrayObject|int|null $args model's id to load or ResultSet. Defaults to null
      */
-    public function __construct(Db $zdb, ArrayObject|int $args = null)
+    public function __construct(Db $zdb, ArrayObject|int|null $args = null)
     {
         $this->zdb = $zdb;
         $this->brand = new Brand($zdb);
@@ -81,9 +81,9 @@ class Model
         try {
             $select = $this->zdb->select(AUTO_PREFIX . self::TABLE);
             $select->where(
-                array(
+                [
                     self::PK => $id
-                )
+                ]
             );
 
             $results = $this->zdb->execute($select);
@@ -95,8 +95,8 @@ class Model
             return true;
         } catch (\Exception $e) {
             Analog::log(
-                '[' . get_class($this) . '] Cannot load model from id `' . $id .
-                '` | ' . $e->getMessage(),
+                '[' . get_class($this) . '] Cannot load model from id `' . $id
+                . '` | ' . $e->getMessage(),
                 Analog::ERROR
             );
             return false;
@@ -128,35 +128,35 @@ class Model
     public function store(bool $new = false): bool
     {
         try {
-            $values = array(
+            $values = [
                 'model'     => $this->model,
                 Brand::PK   => $this->brand->id
-            );
+            ];
             if ($new) {
                 $insert = $this->zdb->insert(AUTO_PREFIX . self::TABLE);
                 $insert->values($values);
                 $this->zdb->execute($insert);
                 /** @phpstan-ignore-next-line */
                 $this->id = (int)$this->zdb->driver->getLastGeneratedValue(
-                    $this->zdb->isPostgres() ?
-                        PREFIX_DB . AUTO_PREFIX . self::TABLE . '_id_seq'
+                    $this->zdb->isPostgres()
+                        ? PREFIX_DB . AUTO_PREFIX . self::TABLE . '_id_seq'
                         : null
                 );
             } else {
                 $update = $this->zdb->update(AUTO_PREFIX . self::TABLE);
                 $update->set($values)->where(
-                    array(
+                    [
                         self::PK => $this->id
-                    )
+                    ]
                 );
                 $this->zdb->execute($update);
             }
             return true;
         } catch (\Exception $e) {
             Analog::log(
-                '[' . get_class($this) . '] Cannot store model' .
-                ' values `' . $this->id . '`, `' . implode('`, `', $values) . '` | ' .
-                $e->getMessage(),
+                '[' . get_class($this) . '] Cannot store model'
+                . ' values `' . $this->id . '`, `' . implode('`, `', $values) . '` | '
+                . $e->getMessage(),
                 Analog::WARNING
             );
             return false;
@@ -179,8 +179,8 @@ class Model
             return true;
         } catch (\Exception $e) {
             Analog::log(
-                '[' . get_class($this) . '] Cannot delete models from ids `' .
-                implode(' - ', $ids) . '` | ' . $e->getMessage(),
+                '[' . get_class($this) . '] Cannot delete models from ids `'
+                . implode(' - ', $ids) . '` | ' . $e->getMessage(),
                 Analog::WARNING
             );
             throw $e;

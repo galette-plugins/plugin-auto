@@ -51,7 +51,7 @@
     {% for auto in autos %}
         {% set brand = auto.model.brand %}
 
-        <tr class="{{ loop.index is odd ? 'odd' : 'even' }}">
+        <tr>
             <td data-col-label="{{ _T("Name", "auto") }}">{{ auto.name }}</td>
             <td data-col-label="{{ _T("Owner", "auto") }}">{{ auto.owner.sfullname }}</td>
             <td data-col-label="{{ _T("Brand", "auto") }}">{{ brand.value }}</td>

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright © 2003-2024 The Galette Team
+ * Copyright © 2003-2025 The Galette Team
  *
  * This file is part of Galette (https://galette.eu).
  *
@@ -25,10 +25,10 @@ $this->register(
     'Galette Auto',                         //Name
     'Plugin to manage Automobile clubs',    //Short description
     'Johan Cwiklinski',                     //Author
-    '2.1.3',                                //Version
-    '1.1.4',                                //Galette compatible version
+    '2.2.0',                                //Version
+    '1.2.0',                                //Galette compatible version
     'auto',                                 //routing name
-    '2024-10-21',                           //Release date
+    '2025-10-09',                           //Release date
     [ //routes permissions
         'vehiclesList'      => 'groupmanager',
         'memberVehiclesList' => 'groupmanager',

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright © 2003-2024 The Galette Team
+ * Copyright © 2003-2025 The Galette Team
  *
  * This file is part of Galette (https://galette.eu).
  *
@@ -43,7 +43,7 @@ class State extends AbstractObject
      * @param Db       $zdb Database instance
      * @param ?integer $id  state's id to load. Defaults to null
      */
-    public function __construct(Db $zdb, int $id = null)
+    public function __construct(Db $zdb, ?int $id = null)
     {
         parent::__construct(
             $zdb,

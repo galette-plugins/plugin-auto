@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright © 2003-2024 The Galette Team
+ * Copyright © 2003-2025 The Galette Team
  *
  * This file is part of Galette (https://galette.eu).
  *
@@ -87,7 +87,7 @@ class ModelsController extends AbstractPluginController
      *
      * @return Response
      */
-    public function list(Request $request, Response $response, string $option = null, string|int $value = null): Response
+    public function list(Request $request, Response $response, ?string $option = null, string|int|null $value = null): Response
     {
         if (isset($this->session->filter_automodels)) {
             $mfilters = $this->session->filter_automodels;
@@ -183,7 +183,7 @@ class ModelsController extends AbstractPluginController
      *
      * @return Response
      */
-    public function edit(Request $request, Response $response, int $id = null, string $action = 'edit'): Response
+    public function edit(Request $request, Response $response, ?int $id = null, string $action = 'edit'): Response
     {
         $model = new Model($this->zdb);
 
@@ -200,7 +200,7 @@ class ModelsController extends AbstractPluginController
         if ($action === 'edit') {
             // initialize model structure with database values
             $model->load($model_id);
-            if ($model->id == '') {
+            if (!$model->id) {
                 //not possible to load, exit
                 throw new \RuntimeException('Model does not exists!');
             }
@@ -247,7 +247,7 @@ class ModelsController extends AbstractPluginController
      *
      * @return Response
      */
-    public function doEdit(Request $request, Response $response, int $id = null, string $action = 'edit'): Response
+    public function doEdit(Request $request, Response $response, ?int $id = null, string $action = 'edit'): Response
     {
         $post = $request->getParsedBody();
         $is_new = ($action === 'add');
@@ -269,8 +269,8 @@ class ModelsController extends AbstractPluginController
                 $error_detected[]
                     = _T("- An error occurred while saving record. Please try again.", "auto");
             } else {
-                $msg = $is_new ? _T("New model has been added!", "auto") :
-                    _T("Model has been saved!", "auto");
+                $msg = $is_new ? _T("New model has been added!", "auto")
+                    : _T("Model has been saved!", "auto");
                 $this->flash->addMessage(
                     'success_detected',
                     $msg

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright © 2003-2024 The Galette Team
+ * Copyright © 2003-2025 The Galette Team
  *
  * This file is part of Galette (https://galette.eu).
  *
@@ -114,7 +114,12 @@ class State extends GaletteTestCase
     public function testLoadError(): void
     {
         $state = new \GaletteAuto\State($this->zdb);
+        $this->expectNoLogEntry();
         $this->assertFalse($state->load(999));
+        $this->expectLogEntry(
+            \Analog::ERROR,
+            '[GaletteAuto\State] Cannot load states from id `999`'
+        );
     }
 
     /**

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright © 2003-2024 The Galette Team
+ * Copyright © 2003-2025 The Galette Team
  *
  * This file is part of Galette (https://galette.eu).
  *
@@ -171,6 +171,11 @@ class Model extends GaletteTestCase
     public function testLoadError(): void
     {
         $brand = new \GaletteAuto\Model($this->zdb);
+        $this->expectNoLogEntry();
         $this->assertFalse($brand->load(999));
+        $this->expectLogEntry(
+            \Analog::ERROR,
+            '[GaletteAuto\Model] Cannot load model from id `999`'
+        );
     }
 }

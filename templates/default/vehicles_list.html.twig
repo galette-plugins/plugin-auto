@@ -52,7 +52,10 @@
 
 {% block header %}
     {% set columns = [
-        {'label': ''},
+        {
+            'label': '',
+            'collapse': true
+        },
         {'label': _T("Name", "auto")},
         {'label': _T("Owner", "auto")},
         {'label': _T("Brand", "auto")},
@@ -66,15 +69,17 @@
         {% set brand = auto.model.brand %}
         {% set edit_link = url_for("vehicleEdit", {"id": auto.id}) %}
 
-        <tr class="{{ loop.index is odd ? 'odd' : 'even' }}">
+        <tr>
             <td class="collapsing" data-scope="row">
-                <input type="checkbox" name="entries_sel[]" value="{{ auto.id }}"/>
+                <span class="ui checkbox">
+                    <input type="checkbox" name="entries_sel[]" value="{{ auto.id }}"/>
+                </span>
             </td>
             <td data-col-label="{{ _T("Name", "auto") }}"><a href="{{ edit_link }}">{{ auto.name }}</a></td>
             <td data-col-label="{{ _T("Owner", "auto") }}"><a href="{{ url_for("member", {"id": auto.owner.id}) }}">{{ auto.owner.sfullname }}</a></td>
             <td data-col-label="{{ _T("Brand", "auto") }}"><a href="{{ edit_link }}">{{ brand.value }}</a></td>
             <td data-col-label="{{ _T("Model", "auto") }}"><a href="{{ edit_link }}">{{ auto.model.model }}</a></td>
-            <td class="center actions_row nowrap">
+            <td class="center actions_row collapsing">
                 {% if login.isAdmin() or login.isStaff() or auto.owner.id == login.id or login.isGroupManager() and preferences.pref_bool_groupsmanagers_edit_member %}
                     {% set actions = [
                         {

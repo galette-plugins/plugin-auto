@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright © 2003-2024 The Galette Team
+ * Copyright © 2003-2025 The Galette Team
  *
  * This file is part of Galette (https://galette.eu).
  *
@@ -65,20 +65,20 @@ class Models extends Repository
     /**
      * Get the list of all models
      *
-     * @param integer $brandId   Optional brand we want models for
-     * @param boolean $as_object Whether to return an array of objects or a ResultSet
+     * @param ?integer $brandId   Optional brand we want models for
+     * @param boolean  $as_object Whether to return an array of objects or a ResultSet
      *
      * @return array<int, Model>|ResultSet
      */
-    public function getList(int $brandId = null, bool $as_object = true): array|ResultSet
+    public function getList(?int $brandId = null, bool $as_object = true): array|ResultSet
     {
         $select = $this->buildSelect();
 
         if ($brandId !== null) {
             $select->where(
-                array(
+                [
                     'm.' . Brand::PK => $brandId
-                )
+                ]
             );
         } else {
             $this->filters->setLimits($select);
@@ -86,7 +86,7 @@ class Models extends Repository
         $results = $this->zdb->execute($select);
 
         if ($as_object) {
-            $models = array();
+            $models = [];
             foreach ($results as $r) {
                 $pk = self::PK;
                 $models[$r->$pk] = new Model($this->zdb, $r);
@@ -107,7 +107,7 @@ class Models extends Repository
         try {
             $select = $this->zdb->select(AUTO_PREFIX . self::TABLE, 'm');
             $select->join(
-                array('b' => PREFIX_DB . AUTO_PREFIX . Brand::TABLE),
+                ['b' => PREFIX_DB . AUTO_PREFIX . Brand::TABLE],
                 'm.' . Brand::PK . '= b.' . Brand::PK
             );
             $select->order(self::buildOrderClause());
@@ -130,15 +130,15 @@ class Models extends Repository
      */
     private function buildOrderClause(): array
     {
-        $order = array();
+        $order = [];
 
         switch ($this->filters->orderby) {
             case ModelsList::ORDERBY_BRAND:
-                $order[] = 'b.brand ' . $this->filters->ordered;
+                $order[] = 'b.brand ' . $this->filters->getDirection();
                 break;
             default:
             case ModelsList::ORDERBY_MODEL:
-                $order[] = 'm.model ' . $this->filters->ordered;
+                $order[] = 'm.model ' . $this->filters->getDirection();
                 break;
         }
 
@@ -160,9 +160,9 @@ class Models extends Repository
             $countSelect->reset($countSelect::JOINS);
             $countSelect->reset($countSelect::ORDER);
             $countSelect->columns(
-                array(
+                [
                     self::PK => new Expression('COUNT(' . self::PK . ')')
-                )
+                ]
             );
 
             $results = $this->zdb->execute($countSelect);

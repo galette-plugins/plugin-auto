@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright © 2003-2024 The Galette Team
+ * Copyright © 2003-2025 The Galette Team
  *
  * This file is part of Galette (https://galette.eu).
  *
@@ -44,14 +44,14 @@ class History
     private Db $zdb;
 
     //fields list and type
-    private array $fields = array(
+    private array $fields = [
         Auto::PK            => 'integer',
         Adherent::PK        => 'integer',
         'history_date'      => 'datetime',
         'car_registration'  => 'text',
         Color::PK           => 'integer',
         State::PK           => 'integer'
-    );
+    ];
 
     /**
      * history entries
@@ -67,10 +67,10 @@ class History
      * @param Db       $zdb Database instance
      * @param ?integer $id  history entry's id to load. Defaults to null
      */
-    public function __construct(Db $zdb, int $id = null)
+    public function __construct(Db $zdb, ?int $id = null)
     {
         $this->zdb = $zdb;
-        if ($id != null && is_int($id)) {
+        if ($id !== null) {
             $this->load($id);
         }
     }
@@ -89,9 +89,9 @@ class History
         try {
             $select = $this->zdb->select(AUTO_PREFIX . self::TABLE);
             $select->where(
-                array(
+                [
                     Auto::PK => $id
-                )
+                ]
             )->order('history_date ASC');
 
             $results = $this->zdb->execute($select);
@@ -99,8 +99,8 @@ class History
             return true;
         } catch (\Exception $e) {
             Analog::log(
-                '[' . get_class($this) . '] Cannot get car\'s history (id was ' .
-                $this->id_car . ') | ' . $e->getMessage(),
+                '[' . get_class($this) . '] Cannot get car\'s history (id was '
+                . $this->id_car . ') | ' . $e->getMessage(),
                 Analog::ERROR
             );
             return false;
@@ -117,9 +117,9 @@ class History
         try {
             $select = $this->zdb->select(AUTO_PREFIX . self::TABLE);
             $select->where(
-                array(
+                [
                     Auto::PK => $this->id_car
-                )
+                ]
             )->order('history_date DESC')->limit(1);
 
             $results = $this->zdb->execute($select);
@@ -130,9 +130,9 @@ class History
             }
         } catch (\Exception $e) {
             Analog::log(
-                '[' . get_class($this) .
-                '] Cannot get car\'s latest history entry | ' .
-                $e->getMessage(),
+                '[' . get_class($this)
+                . '] Cannot get car\'s latest history entry | '
+                . $e->getMessage(),
                 Analog::ERROR
             );
             return false;
@@ -188,7 +188,7 @@ class History
             ksort($fields);
             ksort($props);
 
-            $values = array();
+            $values = [];
             foreach ($props as $key => $prop) {
                 $values[$key] = $prop;
             }
@@ -199,8 +199,8 @@ class History
 
             if ($add->count() > 0) {
                 Analog::log(
-                    '[' . get_class($this) .
-                    '] new AutoHistory entry set successfully.',
+                    '[' . get_class($this)
+                    . '] new AutoHistory entry set successfully.',
                     Analog::DEBUG
                 );
             } else {
@@ -210,8 +210,8 @@ class History
             }
         } catch (\Exception $e) {
             Analog::log(
-                '[' . get_class($this) . '] Cannot register new history entry | ' .
-                $e->getMessage(),
+                '[' . get_class($this) . '] Cannot register new history entry | '
+                . $e->getMessage(),
                 Analog::ERROR
             );
             throw $e;

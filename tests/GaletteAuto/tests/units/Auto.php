@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright © 2003-2024 The Galette Team
+ * Copyright © 2003-2025 The Galette Team
  *
  * This file is part of Galette (https://galette.eu).
  *
@@ -295,7 +295,12 @@ class Auto extends GaletteTestCase
 
         $this->assertTrue($autos->removeVehicles([$auto_id]));
         $this->assertCount(1, $autos->getList());
+        $this->expectNoLogEntry();
         $this->assertFalse($auto->load($auto_id));
+        $this->expectLogEntry(
+            \Analog::ERROR,
+            '[GaletteAuto\Auto] Cannot load car from id `' . $auto_id . '` | Vehicle not found'
+        );
     }
 
     /**
@@ -317,6 +322,11 @@ class Auto extends GaletteTestCase
     public function testLoadError(): void
     {
         $auto = new \GaletteAuto\Auto($this->plugins, $this->zdb);
+        $this->expectNoLogEntry();
         $this->assertFalse($auto->load(999));
+        $this->expectLogEntry(
+            \Analog::ERROR,
+            '[GaletteAuto\Auto] Cannot load car from id `999` | Vehicle not found'
+        );
     }
 }
