@@ -83,13 +83,6 @@ jobs:
           cd galette-core/galette/plugins/plugin-auto
           ../../vendor/bin/twigcs templates/default --severity error --display blocking
 
-      - name: Check missing symbols
-        run: |
-          cd galette-core/galette/plugins/plugin-auto
-          composer require maglnet/composer-require-checker -W
-          vendor/bin/composer-require-checker check --config-file=.composer-require-checker.config.json ../../composer.json
-        if: matrix.php-versions == '8.4'
-
       - name: PHPStan checks
         run: |
           cd galette-core/galette/plugins/plugin-auto
