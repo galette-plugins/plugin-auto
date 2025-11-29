@@ -42,7 +42,7 @@ class Auto extends GaletteTestCase
     public function setUp(): void
     {
         parent::setUp();
-        $this->plugins = $this->container->get('plugins');
+        $this->plugins = $this->container->get(\Galette\Core\Plugins);
         $this->initStatus();
     }
 
