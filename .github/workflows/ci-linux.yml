@@ -25,7 +25,7 @@ jobs:
 
     strategy:
       matrix:
-        php-versions: [ '8.1', '8.5' ]
+        php-versions: [ '8.2', '8.5' ]
         coverage: [none]
       fail-fast: false
 
@@ -73,7 +73,7 @@ jobs:
           ../../vendor/bin/phpcs lib/ ./*.php
 
       - name: CS Fixer
-        if: matrix.php-versions == '8.1'
+        if: matrix.php-versions == '8.2'
         run: |
           cd galette-core/galette/plugins/plugin-auto
           ../../vendor/bin/php-cs-fixer check --show-progress=dots --verbose --diff
@@ -102,12 +102,12 @@ jobs:
           #always tests higher stable php version with lower db version
           #enable coverage on higher stable php version with higher postrgesql version
           #lower php version
-          - { php-version: "8.1", db-image: "mysql:5.7", coverage: none, always: false }
-          - { php-version: "8.1", db-image: "mysql:8.1", coverage: none, always: false }
-          - { php-version: "8.1", db-image: "mariadb:10.4", coverage: none, always: false }
-          - { php-version: "8.1", db-image: "mariadb:11", coverage: none, always: false }
-          - { php-version: "8.1", db-image: "postgres:11", coverage: none, always: false }
-          - { php-version: "8.1", db-image: "postgres:16", coverage: none, always: false }
+          - { php-version: "8.2", db-image: "mysql:5.7", coverage: none, always: false }
+          - { php-version: "8.2", db-image: "mysql:8.1", coverage: none, always: false }
+          - { php-version: "8.2", db-image: "mariadb:10.4", coverage: none, always: false }
+          - { php-version: "8.2", db-image: "mariadb:11", coverage: none, always: false }
+          - { php-version: "8.2", db-image: "postgres:11", coverage: none, always: false }
+          - { php-version: "8.2", db-image: "postgres:16", coverage: none, always: false }
           #higher stable php version
           - { php-version: "8.5", db-image: "mysql:5.7", coverage: none, always: true }
           - { php-version: "8.5", db-image: "mysql:8.1", coverage: none, always: false }
