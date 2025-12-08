@@ -33,7 +33,7 @@ use Galette\Entity\Adherent;
  *
  * @author Johan Cwiklinski <johan@x-tnd.be>
  *
- * @property integer $id_car
+ * @property int $id_car
  * @property array $fields
  * @property array $entries
  */
@@ -64,8 +64,8 @@ class History
     /**
      * Default constructor
      *
-     * @param Db       $zdb Database instance
-     * @param ?integer $id  history entry's id to load. Defaults to null
+     * @param Db   $zdb Database instance
+     * @param ?int $id  history entry's id to load. Defaults to null
      */
     public function __construct(Db $zdb, ?int $id = null)
     {
@@ -78,9 +78,9 @@ class History
     /**
      * Loads history for specified car
      *
-     * @param integer $id car's id we want history for
+     * @param int $id car's id we want history for
      *
-     * @return boolean
+     * @return bool
      */
     public function load(int $id): bool
     {

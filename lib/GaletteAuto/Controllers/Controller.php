@@ -61,7 +61,7 @@ class Controller extends AbstractPluginController
      * Check ACLs for specific member
      *
      * @param Response          $response Response
-     * @param integer           $id_adh   Members id to check right for
+     * @param int               $id_adh   Members id to check right for
      * @param string|false|null $redirect Path to redirect to (myVehiclesList per default)
      *
      * @return bool|Response
@@ -106,7 +106,7 @@ class Controller extends AbstractPluginController
      *
      * @param Request  $request  PSR Request
      * @param Response $response PSR Response
-     * @param ?integer $id       Vehicle id
+     * @param ?int     $id       Vehicle id
      *
      * @return Response
      */
@@ -331,8 +331,7 @@ class Controller extends AbstractPluginController
             'require_calendar'  => true,
             'require_dialog'    => true,
             'car'               => $auto,
-            'models'            => $models->getList($auto->model->brand->id ?? null),
-            'js_init_models'    => !isset($auto->model->brand),
+            'models'            => $models->getList($auto->model->brand->id),
             'brands'            => $auto->model->brand->getList(),
             'colors'            => $auto->color->getList(),
             'bodies'            => $auto->body->getList(),
@@ -499,7 +498,7 @@ class Controller extends AbstractPluginController
      *
      * @param Request  $request  Request
      * @param Response $response Response
-     * @param integer  $id       Vehicle id
+     * @param int      $id       Vehicle id
      *
      * @return Response
      */
@@ -559,7 +558,7 @@ class Controller extends AbstractPluginController
      *
      * @param Request  $request  Request
      * @param Response $response Response
-     * @param integer  $id       Vehicle ID
+     * @param int      $id       Vehicle ID
      *
      * @return Response
      */

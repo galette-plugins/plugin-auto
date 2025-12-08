@@ -33,7 +33,7 @@ use Laminas\Db\ResultSet\ResultSet;
  *
  * @author Johan Cwiklinski <johan@x-tnd.be>
  *
- * @property integer $id
+ * @property int $id
  * @property string  $model
  * @property Brand   $brand
  */
@@ -72,9 +72,9 @@ class Model
     /**
      * Load a model
      *
-     * @param integer $id Id for the model we want
+     * @param int $id Id for the model we want
      *
-     * @return boolean
+     * @return bool
      */
     public function load(int $id): bool
     {
@@ -121,9 +121,9 @@ class Model
     /**
      * Store current model
      *
-     * @param boolean $new New record or existing one
+     * @param bool $new New record or existing one
      *
-     * @return boolean
+     * @return bool
      */
     public function store(bool $new = false): bool
     {
@@ -168,7 +168,7 @@ class Model
      *
      * @param array $ids Array of models id to delete
      *
-     * @return boolean
+     * @return bool
      */
     public function delete(array $ids): bool
     {
@@ -205,7 +205,7 @@ class Model
      *
      * @param string $name name of the property we want to retrieve
      *
-     * @return boolean
+     * @return bool
      */
     public function __isset(string $name): bool
     {
@@ -218,7 +218,7 @@ class Model
      * @param array $post All values to check, basically the $_POST array
      *                    after sending the form
      *
-     * @return boolean
+     * @return bool
      */
     public function check(array $post): bool
     {
@@ -250,7 +250,7 @@ class Model
     /**
      * Set brand from ID
      *
-     * @param integer $id Brand ID
+     * @param int $id Brand ID
      *
      * @return self
      */
