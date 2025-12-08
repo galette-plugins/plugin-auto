@@ -55,12 +55,12 @@ abstract class AbstractObject
     /**
      * Default constructor
      *
-     * @param Db       $zdb   Database instance
-     * @param string   $table table name
-     * @param string   $pk    primary key field
-     * @param string   $field main field name
-     * @param string   $name  name
-     * @param ?integer $id    id to load. Defaults to null
+     * @param Db     $zdb   Database instance
+     * @param string $table table name
+     * @param string $pk    primary key field
+     * @param string $field main field name
+     * @param string $name  name
+     * @param ?int   $id    id to load. Defaults to null
      */
     public function __construct(Db $zdb, string $table, string $pk, string $field, string $name, ?int $id = null)
     {
@@ -102,9 +102,9 @@ abstract class AbstractObject
     /**
      * Loads a record
      *
-     * @param integer $id id of the record
+     * @param int $id id of the record
      *
-     * @return boolean
+     * @return bool
      */
     public function load(int $id): bool
     {
@@ -137,9 +137,9 @@ abstract class AbstractObject
     /**
      * Store current record
      *
-     * @param boolean $new New record or existing one
+     * @param bool $new New record or existing one
      *
-     * @return boolean
+     * @return bool
      */
     public function store(bool $new = false): bool
     {
@@ -183,7 +183,7 @@ abstract class AbstractObject
      *
      * @param int[] $ids Array of records id to delete
      *
-     * @return boolean
+     * @return bool
      */
     public function delete(array $ids): bool
     {
@@ -255,7 +255,7 @@ abstract class AbstractObject
      *
      * @param string $name name of the property we want to retrieve
      *
-     * @return boolean
+     * @return bool
      */
     public function __isset(string $name): bool
     {
@@ -419,7 +419,7 @@ abstract class AbstractObject
     /**
      * Get count for list
      *
-     * @return integer
+     * @return int
      */
     public function getCount(): int
     {

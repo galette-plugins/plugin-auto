@@ -61,9 +61,9 @@ class Autos
     /**
      * Remove specified vehicles
      *
-     * @param integer|array $ids Vehicles identifiers to delete
+     * @param int|array $ids Vehicles identifiers to delete
      *
-     * @return boolean
+     * @return bool
      */
     public function removeVehicles(int|array $ids): bool
     {
@@ -166,14 +166,14 @@ class Autos
     /**
      * Get the list of all vehicles
      *
-     * @param boolean    $as_autos return the results as an array of Auto object.
+     * @param bool       $as_autos return the results as an array of Auto object.
      *                             When true, fields are not relevant
-     * @param boolean    $mine     show only current logged member cars
+     * @param bool       $mine     show only current logged member cars
      * @param ?array     $fields   field(s) name(s) to get.
      *                             or an array. If null, all fields will be returned
      * @param ?AutosList $filters  Filters
      * @param ?int       $id_adh   Member id
-     * @param boolean    $public   Get public list
+     * @param bool       $public   Get public list
      *
      * @return array<int, Autos>|ResultSet
      */
@@ -314,7 +314,7 @@ class Autos
     /**
      * Get count for list
      *
-     * @return integer
+     * @return int
      */
     public function getCount(): int
     {

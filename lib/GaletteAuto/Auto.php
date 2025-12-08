@@ -37,19 +37,19 @@ use Psr\Http\Message\UploadedFileInterface;
  *
  * @author Johan Cwiklinski <johan@x-tnd.be>
  *
- * @property integer $id
+ * @property int $id
  * @property string $registration
  * @property string $name
  * @property string $first_registration_date
  * @property string $first_circulation_date
- * @property integer $mileage
+ * @property int $mileage
  * @property string $comment
  * @property string $chassis_number
- * @property integer $seats
- * @property integer $horsepower
- * @property integer $engine_size
+ * @property int $seats
+ * @property int $horsepower
+ * @property int $engine_size
  * @property string $creation_date
- * @property integer $fuel
+ * @property int $fuel
  * @property Color $color
  * @property Body $body
  * @property State $state
@@ -209,9 +209,9 @@ class Auto
     /**
      * Loads a car from its id
      *
-     * @param integer $id the identifiant for the car to load
+     * @param int $id the identifiant for the car to load
      *
-     * @return boolean
+     * @return bool
      */
     public function load(int $id): bool
     {
@@ -305,10 +305,10 @@ class Auto
     /**
      * Stores the vehicle in the database
      *
-     * @param boolean $new true if it's a new record, false to update on
-     *                     that already exists. Defaults to false
+     * @param bool $new true if it's a new record, false to update on
+     *                  that already exists. Defaults to false
      *
-     * @return boolean
+     * @return bool
      */
     public function store(bool $new = false): bool
     {
@@ -454,8 +454,8 @@ class Auto
     /**
      * List object's properties
      *
-     * @param boolean $restrict true to exclude $this->internals from returned
-     *                          result, false otherwise. Default to false
+     * @param bool $restrict true to exclude $this->internals from returned
+     *                       result, false otherwise. Default to false
      *
      * @return array
      */
@@ -492,7 +492,7 @@ class Auto
     /**
      * Does the current car has a picture?
      *
-     * @return boolean
+     * @return bool
      */
     public function hasPicture(): bool
     {
@@ -637,7 +637,7 @@ class Auto
      *
      * @param string $name name of the property we want to retrieve
      *
-     * @return boolean
+     * @return bool
      */
     public function __isset(string $name): bool
     {
@@ -660,7 +660,7 @@ class Auto
      * @param array $post All values to check, basically the $_POST array
      *                    after sending the form
      *
-     * @return boolean
+     * @return bool
      */
     public function check(array $post): bool
     {

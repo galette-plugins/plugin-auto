@@ -319,7 +319,7 @@ class PropertiesController extends AbstractPluginController
      * @param Request  $request  Request
      * @param Response $response Response
      * @param string   $property Property name
-     * @param ?integer $id       Property ID, if any
+     * @param ?int     $id       Property ID, if any
      * @param string   $action   'add' or 'edit'
      *
      * @return Response
@@ -386,7 +386,7 @@ class PropertiesController extends AbstractPluginController
      * @param Request  $request  Request
      * @param Response $response Response
      * @param string   $property Property name
-     * @param ?integer $id       Property ID, if any
+     * @param ?int     $id       Property ID, if any
      * @param string   $action   'add' or 'edit'
      *
      * @return Response
@@ -478,7 +478,7 @@ class PropertiesController extends AbstractPluginController
      * @param Request  $request  Request
      * @param Response $response Response
      * @param string   $property Property name
-     * @param integer  $id       Property ID, if any
+     * @param int      $id       Property ID, if any
      *
      *
      * @return Response
@@ -524,7 +524,7 @@ class PropertiesController extends AbstractPluginController
      * @param Request  $request  Request
      * @param Response $response Response
      * @param string   $property Property name
-     * @param integer  $id       Property id
+     * @param int      $id       Property id
      *
      * @return Response
      */
@@ -571,7 +571,7 @@ class PropertiesController extends AbstractPluginController
      * @param Request  $request  Request
      * @param Response $response Response
      * @param string   $property Property name
-     * @param ?integer $id       Property id
+     * @param ?int     $id       Property id
      *
      * @return Response
      */

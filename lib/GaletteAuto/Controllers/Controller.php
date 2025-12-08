@@ -61,7 +61,7 @@ class Controller extends AbstractPluginController
      * Check ACLs for specific member
      *
      * @param Response          $response Response
-     * @param integer           $id_adh   Members id to check right for
+     * @param int               $id_adh   Members id to check right for
      * @param string|false|null $redirect Path to redirect to (myVehiclesList per default)
      *
      * @return bool|Response
@@ -106,7 +106,7 @@ class Controller extends AbstractPluginController
      *
      * @param Request  $request  PSR Request
      * @param Response $response PSR Response
-     * @param ?integer $id       Vehicle id
+     * @param ?int     $id       Vehicle id
      *
      * @return Response
      */
@@ -498,7 +498,7 @@ class Controller extends AbstractPluginController
      *
      * @param Request  $request  Request
      * @param Response $response Response
-     * @param integer  $id       Vehicle id
+     * @param int      $id       Vehicle id
      *
      * @return Response
      */
@@ -558,7 +558,7 @@ class Controller extends AbstractPluginController
      *
      * @param Request  $request  Request
      * @param Response $response Response
-     * @param integer  $id       Vehicle ID
+     * @param int      $id       Vehicle ID
      *
      * @return Response
      */
