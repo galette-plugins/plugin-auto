@@ -370,7 +370,7 @@ class ModelsController extends AbstractPluginController
      * @param array $args Route arguments
      * @param array $post POST values
      *
-     * @return boolean
+     * @return bool
      */
     protected function doDelete(array $args, array $post): bool
     {

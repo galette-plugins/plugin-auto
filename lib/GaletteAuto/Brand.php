@@ -37,7 +37,7 @@ use Galette\Core\Db;
  * @link      https://galette.eu
  * @since     Available since 0.7dev - 2009-03-16
  *
- * @property integer $id
+ * @property int $id
  */
 class Brand extends AbstractObject
 {
@@ -49,8 +49,8 @@ class Brand extends AbstractObject
     /**
      * Default constructor
      *
-     * @param Db       $zdb Database instance
-     * @param ?integer $id  brand's id to load. Defaults to null
+     * @param Db   $zdb Database instance
+     * @param ?int $id  brand's id to load. Defaults to null
      */
     public function __construct(Db $zdb, ?int $id = null)
     {

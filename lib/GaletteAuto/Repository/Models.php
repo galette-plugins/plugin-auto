@@ -65,8 +65,8 @@ class Models extends Repository
     /**
      * Get the list of all models
      *
-     * @param ?integer $brandId   Optional brand we want models for
-     * @param boolean  $as_object Whether to return an array of objects or a ResultSet
+     * @param ?int $brandId   Optional brand we want models for
+     * @param bool $as_object Whether to return an array of objects or a ResultSet
      *
      * @return array<int, Model>|ResultSet
      */

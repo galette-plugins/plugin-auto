@@ -40,8 +40,8 @@ class State extends AbstractObject
     /**
      * Default constructor
      *
-     * @param Db       $zdb Database instance
-     * @param ?integer $id  state's id to load. Defaults to null
+     * @param Db   $zdb Database instance
+     * @param ?int $id  state's id to load. Defaults to null
      */
     public function __construct(Db $zdb, ?int $id = null)
     {
