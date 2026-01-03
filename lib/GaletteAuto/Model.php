@@ -54,8 +54,8 @@ class Model
     /**
      * Default constructor
      *
-     * @param Db                   $zdb  Database instance
-     * @param ArrayObject|int|null $args model's id to load or ResultSet. Defaults to null
+     * @param Db                                       $zdb  Database instance
+     * @param ArrayObject<string, int|string>|int|null $args model's id to load or ResultSet. Defaults to null
      */
     public function __construct(Db $zdb, ArrayObject|int|null $args = null)
     {
@@ -104,7 +104,7 @@ class Model
     /**
      * Populate object from a resultset row
      *
-     * @param ArrayObject $r the resultset row
+     * @param ArrayObject<string, int|string> $r the resultset row
      */
     private function loadFromRS(ArrayObject $r): void
     {
@@ -160,7 +160,7 @@ class Model
     /**
      * Delete some models
      *
-     * @param array $ids Array of models id to delete
+     * @param array<int> $ids Array of models id to delete
      */
     public function delete(array $ids): bool
     {
@@ -205,8 +205,8 @@ class Model
     /**
      * Check posted values validity
      *
-     * @param array $post All values to check, basically the $_POST array
-     *                    after sending the form
+     * @param array<string,mixed> $post All values to check, basically the $_POST array
+     *                                  after sending the form
      */
     public function check(array $post): bool
     {

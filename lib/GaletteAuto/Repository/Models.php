@@ -126,7 +126,7 @@ class Models extends Repository
     /**
      * Builds the order clause
      *
-     * @return array SQL ORDER clause
+     * @return array<string> SQL ORDER clause
      */
     private function buildOrderClause(): array
     {

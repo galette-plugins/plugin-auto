@@ -76,6 +76,8 @@ abstract class AbstractObject
 
     /**
      * Get the list
+     *
+     * @return array<int, array<string,mixed>>
      */
     public function getList(): array
     {

@@ -69,6 +69,7 @@ class Auto
     private Plugins $plugins;
     private Db $zdb;
 
+    /** @var array<string, string> */
     private array $fields = [
         'id_car'                        => 'integer',
         'car_name'                      => 'string',
@@ -92,6 +93,7 @@ class Auto
         Adherent::PK                    => 'integer'
     ];
 
+    /** @var array<string, int> */
     private array $required = [
         'name'                      => 1,
         'model'                     => 1,
@@ -145,7 +147,9 @@ class Auto
     //do we have to fire a history entry?
     private bool $fire_history = false;
 
-    //internal properties (not updatable outside the object)
+    /**
+     * @var array<string> internal properties (not updatable outside the object)
+     */
     private array $internals = [
         'id',
         'creation_date',
@@ -158,14 +162,15 @@ class Auto
         'plugins',
         'zdb'
     ];
+    /** @var array<int, string> */
     private array $errors = [];
 
     /**
      * Default constructor
      *
-     * @param Plugins      $plugins Plugins
-     * @param Db           $zdb     Database instance
-     * @param ?ArrayObject $args    A resultset row to load
+     * @param Plugins                          $plugins Plugins
+     * @param Db                               $zdb     Database instance
+     * @param ?ArrayObject<string, int|string> $args    A resultset row to load
      */
     public function __construct(Plugins $plugins, Db $zdb, ?ArrayObject $args = null)
     {
@@ -241,7 +246,7 @@ class Auto
     /**
      * Populate object from a resultset row
      *
-     * @param ArrayObject $r a resultset row
+     * @param ArrayObject<string, int|string> $r a resultset row
      */
     private function loadFromRS(ArrayObject $r): void
     {
@@ -281,6 +286,8 @@ class Auto
 
     /**
      * Return the list of available fuels
+     *
+     * @return array<int, string> List of fuels
      */
     public function listFuels(): array
     {
@@ -448,11 +455,13 @@ class Auto
      *
      * @param bool $restrict true to exclude $this->internals from returned
      *                       result, false otherwise. Default to false
+     *
+     * @return array<string> List of properties
      */
     private function getAllProperties(bool $restrict = false): array
     {
         $result = [];
-        foreach (get_class_vars(static::class) as $key => $value) {
+        foreach (array_keys(get_class_vars(static::class)) as $key) {
             if (
                 !$restrict
                 || !in_array($key, $this->internals)
@@ -466,6 +475,8 @@ class Auto
     /**
      * Get object's properties. List only properties that can be modified
      *   externally (ie. not in $this->internals)
+     *
+     * @return array<string> List of properties
      */
     public function getProperties(): array
     {
@@ -637,8 +648,8 @@ class Auto
     /**
      * Check posted values validity
      *
-     * @param array $post All values to check, basically the $_POST array
-     *                    after sending the form
+     * @param array<string,mixed> $post All values to check, basically the $_POST array
+     *                                  after sending the form
      */
     public function check(array $post): bool
     {
@@ -787,6 +798,8 @@ class Auto
 
     /**
      * Get errors
+     *
+     * @return array<string>
      */
     public function getErrors(): array
     {
@@ -795,6 +808,8 @@ class Auto
 
     /**
      * Get required fields
+     *
+     * @return array<string,int>
      */
     public function getRequired(): array
     {

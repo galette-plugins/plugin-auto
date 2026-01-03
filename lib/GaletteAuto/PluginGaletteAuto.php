@@ -38,7 +38,7 @@ class PluginGaletteAuto extends GalettePlugin
     /**
      * Extra menus entries
      *
-     * @return array|array[]
+     * @return array<string, string|array<string,mixed>>
      */
     public static function getMenusContents(): array
     {
@@ -124,7 +124,7 @@ class PluginGaletteAuto extends GalettePlugin
     /**
      * Extra public menus entries
      *
-     * @return array|array[]
+     * @return array<int, string|array<string,mixed>>
      */
     public static function getPublicMenusItemsList(): array
     {
@@ -142,7 +142,7 @@ class PluginGaletteAuto extends GalettePlugin
     /**
      * Get current logged-in user dashboards contents
      *
-     * @return array|array[]
+     * @return array<int, string|array<string,mixed>>
      */
     public static function getMyDashboardsContents(): array
     {
@@ -167,7 +167,7 @@ class PluginGaletteAuto extends GalettePlugin
     /**
      * Get dashboards contents
      *
-     * @return array|array[]
+     * @return array<int, string|array<string,mixed>>
      */
     public static function getDashboardsContents(): array
     {
@@ -200,7 +200,7 @@ class PluginGaletteAuto extends GalettePlugin
      *
      * @param Adherent $member Member instance
      *
-     * @return array|array[]
+     * @return array<int, string|array<string,mixed>>
      */
     public static function getDetailedActionsContents(Adherent $member): array
     {
@@ -210,7 +210,7 @@ class PluginGaletteAuto extends GalettePlugin
     /**
      * Get batch actions contents
      *
-     * @return array|array[]
+     * @return array<int, string|array<string,mixed>>
      */
     public static function getBatchActionsContents(): array
     {

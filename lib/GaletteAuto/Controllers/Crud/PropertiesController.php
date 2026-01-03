@@ -186,7 +186,6 @@ class PropertiesController extends AbstractPluginController
             case 'brands':
                 $obj = new Brand($this->zdb);
                 $title = _T("Brands list", "auto");
-                $show_title = _T("Brand '%s'", "auto");
                 $add_text = _T("Add new brand", "auto");
                 $can_show = true;
                 break;
@@ -213,7 +212,6 @@ class PropertiesController extends AbstractPluginController
 
         $params = [
             'page_title'    => $title,
-            //'models'        => $models->getList(),
             'list'          => $obj->getList(),
             'set'           => $property,
             'field_name'    => $obj->getFieldLabel(),

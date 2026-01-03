@@ -33,9 +33,9 @@ use Galette\Entity\Adherent;
  *
  * @author Johan Cwiklinski <johan@x-tnd.be>
  *
- * @property int   $id_car
- * @property array $fields
- * @property array $entries
+ * @property int                             $id_car
+ * @property array<string, string>           $fields
+ * @property array<int, array<string,mixed>> $entries
  */
 class History
 {
@@ -43,7 +43,9 @@ class History
 
     private Db $zdb;
 
-    //fields list and type
+    /**
+     * @var array<string, string> $fields fields list and type
+     */
     private array $fields = [
         Auto::PK            => 'integer',
         Adherent::PK        => 'integer',
@@ -108,7 +110,7 @@ class History
     /**
      * Get the most recent history entry
      *
-     * @return ArrayObject|false row
+     * @return ArrayObject<string, int|string>|false row
      */
     public function getLatest(): ArrayObject|false
     {
@@ -168,7 +170,7 @@ class History
     /**
      * Register a new history entry.
      *
-     * @param array $props list of properties to update
+     * @param array<string,mixed> $props list of properties to update
      */
     public function register(array $props): void
     {
