@@ -60,11 +60,7 @@ class Controller extends AbstractPluginController
     /**
      * Check ACLs for specific member
      *
-     * @param Response          $response Response
-     * @param int               $id_adh   Members id to check right for
      * @param string|false|null $redirect Path to redirect to (myVehiclesList per default)
-     *
-     * @return bool|Response
      */
     protected function checkAclsFor(Response $response, int $id_adh, string|false|null $redirect = null): bool|Response
     {
@@ -104,11 +100,7 @@ class Controller extends AbstractPluginController
     /**
      * Vehicle photo
      *
-     * @param Request  $request  PSR Request
-     * @param Response $response PSR Response
-     * @param ?int     $id       Vehicle id
-     *
-     * @return Response
+     * @param ?int $id Vehicle id
      */
     public function vehiclePhoto(Request $request, Response $response, ?int $id = null): Response
     {
@@ -130,12 +122,8 @@ class Controller extends AbstractPluginController
     /**
      * Public vehicles list
      *
-     * @param Request     $request  Request
-     * @param Response    $response Response
-     * @param string|null $option   Either 'page' or 'order'
-     * @param int|null    $value    Option value
-     *
-     * @return Response
+     * @param string|null $option Either 'page' or 'order'
+     * @param int|null    $value  Option value
      */
     public function publicVehiclesList(Request $request, Response $response, ?string $option = null, ?int $value = null): Response
     {
@@ -146,12 +134,8 @@ class Controller extends AbstractPluginController
     /**
      * List my vehicles
      *
-     * @param Request     $request  Request
-     * @param Response    $response Response
-     * @param string|null $option   Either 'page' or 'order'
-     * @param int|null    $value    Option value
-     *
-     * @return Response
+     * @param string|null $option Either 'page' or 'order'
+     * @param int|null    $value  Option value
      */
     public function myVehiclesList(Request $request, Response $response, ?string $option = null, ?int $value = null): Response
     {
@@ -163,13 +147,9 @@ class Controller extends AbstractPluginController
     /**
      * List vehicles for a member
      *
-     * @param Request     $request  Request
-     * @param Response    $response Response
-     * @param int         $id       Member ID
-     * @param string|null $option   Either 'page' or 'order'
-     * @param int|null    $value    Option value
-     *
-     * @return Response
+     * @param int         $id     Member ID
+     * @param string|null $option Either 'page' or 'order'
+     * @param int|null    $value  Option value
      */
     public function memberVehiclesList(Request $request, Response $response, int $id, ?string $option = null, ?int $value = null): Response
     {
@@ -180,12 +160,8 @@ class Controller extends AbstractPluginController
     /**
      * List vehicles
      *
-     * @param Request     $request  Request
-     * @param Response    $response Response
-     * @param string|null $option   Either 'page' or 'order'
-     * @param int|null    $value    Option value
-     *
-     * @return Response
+     * @param string|null $option Either 'page' or 'order'
+     * @param int|null    $value  Option value
      */
     public function vehiclesList(Request $request, Response $response, ?string $option = null, ?int $value = null): Response
     {
@@ -253,11 +229,6 @@ class Controller extends AbstractPluginController
 
     /**
      * Show add vehicle route
-     *
-     * @param Request  $request  Request
-     * @param Response $response Response
-     *
-     * @return Response
      */
     public function showAddVehicle(Request $request, Response $response): Response
     {
@@ -267,11 +238,7 @@ class Controller extends AbstractPluginController
     /**
      * Show edit vehicle route
      *
-     * @param Request  $request  Request
-     * @param Response $response Response
-     * @param int      $id       Vehicle id
-     *
-     * @return Response
+     * @param int $id Vehicle id
      */
     public function showEditVehicle(Request $request, Response $response, int $id): Response
     {
@@ -281,12 +248,8 @@ class Controller extends AbstractPluginController
     /**
      * Show add/edit route
      *
-     * @param Request  $request  Request
-     * @param Response $response Response
-     * @param string   $action   Either 'add' or 'edit'
-     * @param int|null $id       Vehicle id
-     *
-     * @return Response
+     * @param string   $action Either 'add' or 'edit'
+     * @param int|null $id     Vehicle id
      */
     public function showAddEditVehicle(Request $request, Response $response, string $action, ?int $id = null): Response
     {
@@ -376,11 +339,6 @@ class Controller extends AbstractPluginController
 
     /**
      * Do add vehicle route
-     *
-     * @param Request  $request  Request
-     * @param Response $response Response
-     *
-     * @return Response
      */
     public function doAddVehicle(Request $request, Response $response): Response
     {
@@ -390,11 +348,7 @@ class Controller extends AbstractPluginController
     /**
      * Do edit vehicle route
      *
-     * @param Request  $request  Request
-     * @param Response $response Response
-     * @param int      $id       Vehicle id
-     *
-     * @return Response
+     * @param int $id Vehicle id
      */
     public function doEditVehicle(Request $request, Response $response, int $id): Response
     {
@@ -404,12 +358,8 @@ class Controller extends AbstractPluginController
     /**
      * Do add/edit route
      *
-     * @param Request  $request  Request
-     * @param Response $response Response
-     * @param string   $action   Either 'add' or 'edit'
-     * @param int|null $id       Vehicle id
-     *
-     * @return Response
+     * @param string   $action Either 'add' or 'edit'
+     * @param int|null $id     Vehicle id
      */
     public function doAddEditVehicle(Request $request, Response $response, string $action = 'edit', ?int $id = null): Response
     {
@@ -496,11 +446,7 @@ class Controller extends AbstractPluginController
     /**
      * Show vehicle history
      *
-     * @param Request  $request  Request
-     * @param Response $response Response
-     * @param int      $id       Vehicle id
-     *
-     * @return Response
+     * @param int $id Vehicle id
      */
     public function vehicleHistory(Request $request, Response $response, int $id): Response
     {
@@ -527,11 +473,6 @@ class Controller extends AbstractPluginController
 
     /**
      * List models from ajax call
-     *
-     * @param Request  $request  Request
-     * @param Response $response Response
-     *
-     * @return Response
      */
     public function ajaxModels(Request $request, Response $response): Response
     {
@@ -556,11 +497,7 @@ class Controller extends AbstractPluginController
     /**
      * Remove vehicle confirmation page
      *
-     * @param Request  $request  Request
-     * @param Response $response Response
-     * @param int      $id       Vehicle ID
-     *
-     * @return Response
+     * @param int $id Vehicle ID
      */
     public function removeVehicle(Request $request, Response $response, int $id): Response
     {
@@ -600,11 +537,6 @@ class Controller extends AbstractPluginController
 
     /**
      * Remove vehicles confirmation page
-     *
-     * @param Request  $request  Request
-     * @param Response $response Response
-     *
-     * @return Response
      */
     public function removeVehicles(Request $request, Response $response): Response
     {
@@ -651,11 +583,6 @@ class Controller extends AbstractPluginController
 
     /**
      * Do remove vehicles
-     *
-     * @param Request  $request  Request
-     * @param Response $response Response
-     *
-     * @return Response
      */
     public function doRemoveVehicle(Request $request, Response $response): Response
     {
@@ -720,11 +647,6 @@ class Controller extends AbstractPluginController
 
     /**
      * Filtering
-     *
-     * @param Request  $request  PSR Request
-     * @param Response $response PSR Response
-     *
-     * @return Response
      */
     public function filter(Request $request, Response $response): Response
     {

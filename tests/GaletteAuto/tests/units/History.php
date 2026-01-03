@@ -42,8 +42,6 @@ class History extends GaletteTestCase
 
     /**
      * Test load error
-     *
-     * @return void
      */
     public function testLoadError(): void
     {

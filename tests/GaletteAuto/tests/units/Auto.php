@@ -36,8 +36,6 @@ class Auto extends GaletteTestCase
 
     /**
      * Set up tests
-     *
-     * @return void
      */
     public function setUp(): void
     {
@@ -48,8 +46,6 @@ class Auto extends GaletteTestCase
 
     /**
      * Cleanup after each test method
-     *
-     * @return void
      */
     public function tearDown(): void
     {
@@ -75,8 +71,6 @@ class Auto extends GaletteTestCase
 
     /**
      * Test add and update
-     *
-     * @return void
      */
     public function testCrud(): void
     {
@@ -305,8 +299,6 @@ class Auto extends GaletteTestCase
 
     /**
      * Test fuels
-     *
-     * @return void
      */
     public function testListFuels(): void
     {
@@ -316,8 +308,6 @@ class Auto extends GaletteTestCase
 
     /**
      * Test load error
-     *
-     * @return void
      */
     public function testLoadError(): void
     {

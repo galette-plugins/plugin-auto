@@ -54,12 +54,8 @@ class PropertiesController extends AbstractPluginController
     /**
      * List brands
      *
-     * @param Request         $request  Request
-     * @param Response        $response Response
-     * @param string|null     $option   One of 'page' or 'order'
-     * @param string|int|null $value    Value of the option
-     *
-     * @return Response
+     * @param string|null     $option One of 'page' or 'order'
+     * @param string|int|null $value  Value of the option
      */
     public function brandsList(
         Request $request,
@@ -73,12 +69,8 @@ class PropertiesController extends AbstractPluginController
     /**
      * List colors
      *
-     * @param Request         $request  Request
-     * @param Response        $response Response
-     * @param string|null     $option   One of 'page' or 'order'
-     * @param string|int|null $value    Value of the option
-     *
-     * @return Response
+     * @param string|null     $option One of 'page' or 'order'
+     * @param string|int|null $value  Value of the option
      */
     public function colorsList(
         Request $request,
@@ -92,12 +84,8 @@ class PropertiesController extends AbstractPluginController
     /**
      * List states
      *
-     * @param Request         $request  Request
-     * @param Response        $response Response
-     * @param string|null     $option   One of 'page' or 'order'
-     * @param string|int|null $value    Value of the option
-     *
-     * @return Response
+     * @param string|null     $option One of 'page' or 'order'
+     * @param string|int|null $value  Value of the option
      */
     public function statesList(
         Request $request,
@@ -111,12 +99,8 @@ class PropertiesController extends AbstractPluginController
     /**
      * List finitions
      *
-     * @param Request         $request  Request
-     * @param Response        $response Response
-     * @param string|null     $option   One of 'page' or 'order'
-     * @param string|int|null $value    Value of the option
-     *
-     * @return Response
+     * @param string|null     $option One of 'page' or 'order'
+     * @param string|int|null $value  Value of the option
      */
     public function finitionsList(
         Request $request,
@@ -130,12 +114,8 @@ class PropertiesController extends AbstractPluginController
     /**
      * List bodies
      *
-     * @param Request         $request  Request
-     * @param Response        $response Response
-     * @param string|null     $option   One of 'page' or 'order'
-     * @param string|int|null $value    Value of the option
-     *
-     * @return Response
+     * @param string|null     $option One of 'page' or 'order'
+     * @param string|int|null $value  Value of the option
      */
     public function bodiesList(
         Request $request,
@@ -149,12 +129,8 @@ class PropertiesController extends AbstractPluginController
     /**
      * List transmissions
      *
-     * @param Request         $request  Request
-     * @param Response        $response Response
-     * @param string|null     $option   One of 'page' or 'order'
-     * @param string|int|null $value    Value of the option
-     *
-     * @return Response
+     * @param string|null     $option One of 'page' or 'order'
+     * @param string|int|null $value  Value of the option
      */
     public function transmissionsList(
         Request $request,
@@ -168,13 +144,9 @@ class PropertiesController extends AbstractPluginController
     /**
      * List properties
      *
-     * @param Request         $request  Request
-     * @param Response        $response Response
      * @param string          $property Property name
      * @param string|null     $option   One of 'page' or 'order'
      * @param string|int|null $value    Value of the option
-     *
-     * @return Response
      */
     protected function propertiesList(
         Request $request,
@@ -269,11 +241,7 @@ class PropertiesController extends AbstractPluginController
     /**
      * Filtering
      *
-     * @param Request  $request  PSR Request
-     * @param Response $response PSR Response
-     * @param string   $property Property name
-     *
-     * @return Response
+     * @param string $property Property name
      */
     public function filter(Request $request, Response $response, string $property): Response
     {
@@ -302,29 +270,21 @@ class PropertiesController extends AbstractPluginController
     /**
      * Add property
      *
-     * @param Request  $request  Request
-     * @param Response $response Response
-     * @param string   $property Property name
-     *
-     * @return Response
+     * @param string $property Property name
      */
     public function propertyAdd(Request $request, Response $response, string $property): Response
     {
-        return $this->propertyEdit($request, $response, $property, null, 'add');
+        return $this->propertyEdit($response, $property, null, 'add');
     }
 
     /**
      * Add/edit property
      *
-     * @param Request  $request  Request
-     * @param Response $response Response
-     * @param string   $property Property name
-     * @param ?int     $id       Property ID, if any
-     * @param string   $action   'add' or 'edit'
-     *
-     * @return Response
+     * @param string $property Property name
+     * @param ?int   $id       Property ID, if any
+     * @param string $action   'add' or 'edit'
      */
-    public function propertyEdit(Request $request, Response $response, string $property, ?int $id = null, string $action = 'edit'): Response
+    public function propertyEdit(Response $response, string $property, ?int $id = null, string $action = 'edit'): Response
     {
         $is_new = ($action === 'add');
 
@@ -366,11 +326,7 @@ class PropertiesController extends AbstractPluginController
     /**
      * Do add property
      *
-     * @param Request  $request  Request
-     * @param Response $response Response
-     * @param string   $property Property name
-     *
-     * @return Response
+     * @param string $property Property name
      */
     public function doPropertyAdd(
         Request $request,
@@ -383,13 +339,9 @@ class PropertiesController extends AbstractPluginController
     /**
      * Do add/edit property
      *
-     * @param Request  $request  Request
-     * @param Response $response Response
-     * @param string   $property Property name
-     * @param ?int     $id       Property ID, if any
-     * @param string   $action   'add' or 'edit'
-     *
-     * @return Response
+     * @param string $property Property name
+     * @param ?int   $id       Property ID, if any
+     * @param string $action   'add' or 'edit'
      */
     public function doPropertyEdit(
         Request $request,
@@ -475,15 +427,10 @@ class PropertiesController extends AbstractPluginController
     /**
      * Show property
      *
-     * @param Request  $request  Request
-     * @param Response $response Response
-     * @param string   $property Property name
-     * @param int      $id       Property ID, if any
-     *
-     *
-     * @return Response
+     * @param string $property Property name
+     * @param int    $id       Property ID, if any
      */
-    public function propertyShow(Request $request, Response $response, string $property, int $id): Response
+    public function propertyShow(Response $response, string $property, int $id): Response
     {
         $classname = AbstractObject::getClassForPropName($property);
         $object = new $classname($this->zdb);
@@ -521,12 +468,8 @@ class PropertiesController extends AbstractPluginController
     /**
      * Remove property confirmation page
      *
-     * @param Request  $request  Request
-     * @param Response $response Response
-     * @param string   $property Property name
-     * @param int      $id       Property id
-     *
-     * @return Response
+     * @param string $property Property name
+     * @param int    $id       Property id
      */
     public function removeProperty(Request $request, Response $response, string $property, int $id): Response
     {
@@ -568,12 +511,8 @@ class PropertiesController extends AbstractPluginController
     /**
      * Do remove property
      *
-     * @param Request  $request  Request
-     * @param Response $response Response
-     * @param string   $property Property name
-     * @param ?int     $id       Property id
-     *
-     * @return Response
+     * @param string $property Property name
+     * @param ?int   $id       Property id
      */
     public function doRemoveProperty(Request $request, Response $response, string $property, ?int $id = null): Response
     {
@@ -728,8 +667,6 @@ class PropertiesController extends AbstractPluginController
      * Get filters
      *
      * @param AbstractObject|string $class Class name or instance
-     *
-     * @return PropertiesList
      */
     protected function getFilters(AbstractObject|string $class): PropertiesList
     {
@@ -743,8 +680,6 @@ class PropertiesController extends AbstractPluginController
      *
      * @param AbstractObject|string $class   Class name or instance
      * @param PropertiesList        $filters Filters instance
-     *
-     * @return void
      */
     protected function saveFilters(AbstractObject|string $class, PropertiesList $filters): void
     {

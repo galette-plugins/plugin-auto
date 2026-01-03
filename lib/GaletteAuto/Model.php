@@ -33,9 +33,9 @@ use Laminas\Db\ResultSet\ResultSet;
  *
  * @author Johan Cwiklinski <johan@x-tnd.be>
  *
- * @property int $id
- * @property string  $model
- * @property Brand   $brand
+ * @property int    $id
+ * @property string $model
+ * @property Brand  $brand
  */
 class Model
 {
@@ -73,8 +73,6 @@ class Model
      * Load a model
      *
      * @param int $id Id for the model we want
-     *
-     * @return bool
      */
     public function load(int $id): bool
     {
@@ -107,8 +105,6 @@ class Model
      * Populate object from a resultset row
      *
      * @param ArrayObject $r the resultset row
-     *
-     * @return void
      */
     private function loadFromRS(ArrayObject $r): void
     {
@@ -122,8 +118,6 @@ class Model
      * Store current model
      *
      * @param bool $new New record or existing one
-     *
-     * @return bool
      */
     public function store(bool $new = false): bool
     {
@@ -167,8 +161,6 @@ class Model
      * Delete some models
      *
      * @param array $ids Array of models id to delete
-     *
-     * @return bool
      */
     public function delete(array $ids): bool
     {
@@ -204,8 +196,6 @@ class Model
      * Required for twig to access properties via __get
      *
      * @param string $name name of the property we want to retrieve
-     *
-     * @return bool
      */
     public function __isset(string $name): bool
     {
@@ -217,8 +207,6 @@ class Model
      *
      * @param array $post All values to check, basically the $_POST array
      *                    after sending the form
-     *
-     * @return bool
      */
     public function check(array $post): bool
     {
@@ -251,8 +239,6 @@ class Model
      * Set brand from ID
      *
      * @param int $id Brand ID
-     *
-     * @return self
      */
     public function setBrand(int $id): self
     {

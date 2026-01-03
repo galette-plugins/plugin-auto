@@ -48,8 +48,6 @@ class PropertiesList extends Pagination
      * Add SQL limit
      *
      * @param Select $select Original select
-     *
-     * @return self
      */
     public function setLimit(Select $select): self
     {

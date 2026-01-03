@@ -35,7 +35,7 @@ use GaletteAuto\Filters\PropertiesList;
  *
  * @author Johan Cwiklinski <johan@x-tnd.be>
  *
- * @property int $id
+ * @property int    $id
  * @property string $value
  */
 abstract class AbstractObject
@@ -76,8 +76,6 @@ abstract class AbstractObject
 
     /**
      * Get the list
-     *
-     * @return array
      */
     public function getList(): array
     {
@@ -103,8 +101,6 @@ abstract class AbstractObject
      * Loads a record
      *
      * @param int $id id of the record
-     *
-     * @return bool
      */
     public function load(int $id): bool
     {
@@ -138,8 +134,6 @@ abstract class AbstractObject
      * Store current record
      *
      * @param bool $new New record or existing one
-     *
-     * @return bool
      */
     public function store(bool $new = false): bool
     {
@@ -182,8 +176,6 @@ abstract class AbstractObject
      * Delete some records
      *
      * @param int[] $ids Array of records id to delete
-     *
-     * @return bool
      */
     public function delete(array $ids): bool
     {
@@ -206,8 +198,6 @@ abstract class AbstractObject
      * Set filters
      *
      * @param PropertiesList $filters Filters
-     *
-     * @return self
      */
     public function setFilters(PropertiesList $filters): self
     {
@@ -217,15 +207,11 @@ abstract class AbstractObject
 
     /**
      * Get field label
-     *
-     * @return string
      */
     abstract public function getFieldLabel(): string;
 
     /**
      * Get property route name
-     *
-     * @return string
      */
     abstract public function getRouteName(): string;
 
@@ -254,8 +240,6 @@ abstract class AbstractObject
      * Required for twig to access properties via __get
      *
      * @param string $name name of the property we want to retrieve
-     *
-     * @return bool
      */
     public function __isset(string $name): bool
     {
@@ -267,8 +251,6 @@ abstract class AbstractObject
      *
      * @param string $name  name of the property we want to assign a value to
      * @param mixed  $value a relevant value for the property
-     *
-     * @return void
      */
     public function __set(string $name, mixed $value): void
     {
@@ -284,8 +266,6 @@ abstract class AbstractObject
      *
      * @param RouteParser $routeparser Route parser instance
      * @param string      $property    Property name
-     *
-     * @return string
      */
     public static function getListRoute(RouteParser $routeparser, string $property): string
     {
@@ -319,8 +299,6 @@ abstract class AbstractObject
      * Get object name from route property
      *
      * @param string $property Route property
-     *
-     * @return string
      */
     public static function getClassForPropName(string $property): string
     {
@@ -378,8 +356,6 @@ abstract class AbstractObject
      * Count objects from the query
      *
      * @param Select $select Original select
-     *
-     * @return void
      */
     private function proceedCount(Select $select): void
     {
@@ -418,8 +394,6 @@ abstract class AbstractObject
 
     /**
      * Get count for list
-     *
-     * @return int
      */
     public function getCount(): int
     {
@@ -428,8 +402,6 @@ abstract class AbstractObject
 
     /**
      * Display localized count for object
-     *
-     * @return string
      */
     public function displayCount(): string
     {
@@ -442,8 +414,6 @@ abstract class AbstractObject
 
     /**
      * Get localized count string for object list
-     *
-     * @return string
      */
     abstract protected function getLocalizedCount(): string;
 }

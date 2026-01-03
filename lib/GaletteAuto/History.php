@@ -33,7 +33,7 @@ use Galette\Entity\Adherent;
  *
  * @author Johan Cwiklinski <johan@x-tnd.be>
  *
- * @property int $id_car
+ * @property int   $id_car
  * @property array $fields
  * @property array $entries
  */
@@ -79,8 +79,6 @@ class History
      * Loads history for specified car
      *
      * @param int $id car's id we want history for
-     *
-     * @return bool
      */
     public function load(int $id): bool
     {
@@ -143,8 +141,6 @@ class History
      * Format entries dates, also loads Member
      *
      * @param array<int, array<string,mixed>> $entries list of entries to format
-     *
-     * @return void
      */
     private function formatEntries(array $entries): void
     {
@@ -173,8 +169,6 @@ class History
      * Register a new history entry.
      *
      * @param array $props list of properties to update
-     *
-     * @return void
      */
     public function register(array $props): void
     {

@@ -62,8 +62,6 @@ class Autos
      * Remove specified vehicles
      *
      * @param int|array $ids Vehicles identifiers to delete
-     *
-     * @return bool
      */
     public function removeVehicles(int|array $ids): bool
     {
@@ -155,8 +153,6 @@ class Autos
      *
      * @param int        $id_adh  Members id
      * @param ?AutosList $filters Filters
-     *
-     * @return array
      */
     public function getMemberList(int $id_adh, ?AutosList $filters): array
     {
@@ -274,8 +270,6 @@ class Autos
      *
      * @param Select     $select  Original select
      * @param ?AutosList $filters Filters
-     *
-     * @return void
      */
     private function proceedCount(Select $select, ?AutosList $filters): void
     {
@@ -313,8 +307,6 @@ class Autos
 
     /**
      * Get count for list
-     *
-     * @return int
      */
     public function getCount(): int
     {

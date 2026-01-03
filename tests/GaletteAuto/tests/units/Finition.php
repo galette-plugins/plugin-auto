@@ -34,8 +34,6 @@ class Finition extends GaletteTestCase
 
     /**
      * Cleanup after each test method
-     *
-     * @return void
      */
     public function tearDown(): void
     {
@@ -46,8 +44,6 @@ class Finition extends GaletteTestCase
 
     /**
      * Test empty
-     *
-     * @return void
      */
     public function testEmpty(): void
     {
@@ -60,8 +56,6 @@ class Finition extends GaletteTestCase
 
     /**
      * Test add and update
-     *
-     * @return void
      */
     public function testCrud(): void
     {
@@ -108,8 +102,6 @@ class Finition extends GaletteTestCase
 
     /**
      * Test load error
-     *
-     * @return void
      */
     public function testLoadError(): void
     {
@@ -124,8 +116,6 @@ class Finition extends GaletteTestCase
 
     /**
      * Test getClassName
-     *
-     * @return void
      */
     public function testGetClassName(): void
     {

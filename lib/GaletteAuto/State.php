@@ -57,8 +57,6 @@ class State extends AbstractObject
 
     /**
      * Get field label
-     *
-     * @return string
      */
     public function getFieldLabel(): string
     {
@@ -67,8 +65,6 @@ class State extends AbstractObject
 
     /**
      * Get property route name
-     *
-     * @return string
      */
     public function getRouteName(): string
     {
@@ -93,8 +89,6 @@ class State extends AbstractObject
 
     /**
      * Get localized count string for object list
-     *
-     * @return string
      */
     protected function getLocalizedCount(): string
     {

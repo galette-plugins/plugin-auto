@@ -30,7 +30,6 @@ use Galette\Core\Db;
  *
  * @category  Plugins
  * @name      AutoBrands
- * @package   GaletteAuto
  * @author Johan Cwiklinski <johan@x-tnd.be>
  * @copyright 2009-2014 The Galette Team
  * @license   http://www.gnu.org/licenses/gpl-3.0.html GPL License 3.0 or (at your option) any later version
@@ -66,8 +65,6 @@ class Brand extends AbstractObject
 
     /**
      * Get field label
-     *
-     * @return string
      */
     public function getFieldLabel(): string
     {
@@ -76,8 +73,6 @@ class Brand extends AbstractObject
 
     /**
      * Get property route name
-     *
-     * @return string
      */
     public function getRouteName(): string
     {
@@ -105,8 +100,6 @@ class Brand extends AbstractObject
 
     /**
      * Get localized count string for object list
-     *
-     * @return string
      */
     protected function getLocalizedCount(): string
     {

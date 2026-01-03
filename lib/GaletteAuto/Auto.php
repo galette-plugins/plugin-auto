@@ -37,29 +37,29 @@ use Psr\Http\Message\UploadedFileInterface;
  *
  * @author Johan Cwiklinski <johan@x-tnd.be>
  *
- * @property int $id
- * @property string $registration
- * @property string $name
- * @property string $first_registration_date
- * @property string $first_circulation_date
- * @property int $mileage
- * @property string $comment
- * @property string $chassis_number
- * @property int $seats
- * @property int $horsepower
- * @property int $engine_size
- * @property string $creation_date
- * @property int $fuel
- * @property Color $color
- * @property Body $body
- * @property State $state
+ * @property int          $id
+ * @property string       $registration
+ * @property string       $name
+ * @property string       $first_registration_date
+ * @property string       $first_circulation_date
+ * @property int          $mileage
+ * @property string       $comment
+ * @property string       $chassis_number
+ * @property int          $seats
+ * @property int          $horsepower
+ * @property int          $engine_size
+ * @property string       $creation_date
+ * @property int          $fuel
+ * @property Color        $color
+ * @property Body         $body
+ * @property State        $state
  * @property Transmission $transmission
- * @property Finition $finition
- * @property Model $model
- * @property int $owner_id
- * @property Adherent $owner
- * @property Picture $picture
- * @property History $history
+ * @property Finition     $finition
+ * @property Model        $model
+ * @property int          $owner_id
+ * @property Adherent     $owner
+ * @property Picture      $picture
+ * @property History      $history
  */
 class Auto
 {
@@ -210,8 +210,6 @@ class Auto
      * Loads a car from its id
      *
      * @param int $id the identifiant for the car to load
-     *
-     * @return bool
      */
     public function load(int $id): bool
     {
@@ -244,8 +242,6 @@ class Auto
      * Populate object from a resultset row
      *
      * @param ArrayObject $r a resultset row
-     *
-     * @return void
      */
     private function loadFromRS(ArrayObject $r): void
     {
@@ -285,8 +281,6 @@ class Auto
 
     /**
      * Return the list of available fuels
-     *
-     * @return array
      */
     public function listFuels(): array
     {
@@ -307,8 +301,6 @@ class Auto
      *
      * @param bool $new true if it's a new record, false to update on
      *                  that already exists. Defaults to false
-     *
-     * @return bool
      */
     public function store(bool $new = false): bool
     {
@@ -456,8 +448,6 @@ class Auto
      *
      * @param bool $restrict true to exclude $this->internals from returned
      *                       result, false otherwise. Default to false
-     *
-     * @return array
      */
     private function getAllProperties(bool $restrict = false): array
     {
@@ -476,8 +466,6 @@ class Auto
     /**
      * Get object's properties. List only properties that can be modified
      *   externally (ie. not in $this->internals)
-     *
-     * @return array
      */
     public function getProperties(): array
     {
@@ -491,8 +479,6 @@ class Auto
 
     /**
      * Does the current car has a picture?
-     *
-     * @return bool
      */
     public function hasPicture(): bool
     {
@@ -503,8 +489,6 @@ class Auto
      * Set car's owner to current logged user
      *
      * @param Login $login Login instance
-     *
-     * @return void
      */
     public function appropriateCar(Login $login): void
     {
@@ -589,8 +573,6 @@ class Auto
      *
      * @param string $name  name of the property we want to assign a value to
      * @param mixed  $value a relevant value for the property
-     *
-     * @return void
      */
     public function __set(string $name, mixed $value): void
     {
@@ -636,8 +618,6 @@ class Auto
      * Required for twig to access properties via __get
      *
      * @param string $name name of the property we want to retrieve
-     *
-     * @return bool
      */
     public function __isset(string $name): bool
     {
@@ -659,8 +639,6 @@ class Auto
      *
      * @param array $post All values to check, basically the $_POST array
      *                    after sending the form
-     *
-     * @return bool
      */
     public function check(array $post): bool
     {
@@ -809,8 +787,6 @@ class Auto
 
     /**
      * Get errors
-     *
-     * @return array
      */
     public function getErrors(): array
     {
@@ -819,8 +795,6 @@ class Auto
 
     /**
      * Get required fields
-     *
-     * @return array
      */
     public function getRequired(): array
     {
@@ -837,8 +811,6 @@ class Auto
      * Handle car picture upload
      *
      * @param array<UploadedFileInterface> $files Files sent
-     *
-     * @return bool
      */
     public function handleFiles(array $files): bool
     {

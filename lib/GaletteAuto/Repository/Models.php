@@ -149,8 +149,6 @@ class Models extends Repository
      * Count contributions from the query
      *
      * @param Select $select Original select
-     *
-     * @return void
      */
     private function proceedCount(Select $select): void
     {
@@ -187,8 +185,6 @@ class Models extends Repository
      * Add default values in database
      *
      * @param bool $check_first Check first if it seems initialized, defaults to true
-     *
-     * @return bool
      */
     public function installInit(bool $check_first = true): bool
     {
@@ -197,8 +193,6 @@ class Models extends Repository
 
     /**
      * Get count for current query
-     *
-     * @return int
      */
     public function getCount(): int
     {

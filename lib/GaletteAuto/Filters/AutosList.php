@@ -48,8 +48,6 @@ class AutosList extends Pagination
      * Add SQL limit
      *
      * @param Select $select Original select
-     *
-     * @return self
      */
     public function setLimit(Select $select): self
     {
@@ -62,8 +60,6 @@ class AutosList extends Pagination
      * Build href
      *
      * @param int $page Page
-     *
-     * @return string
      */
     protected function getHref(int $page): string
     {

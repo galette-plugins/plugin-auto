@@ -75,8 +75,6 @@ class Picture extends GalettePicture
      * Gets the default picture to show, anyway
      *
      * @see Logo::getDefaultPicture()
-     *
-     * @return void
      */
     protected function getDefaultPicture(): void
     {
