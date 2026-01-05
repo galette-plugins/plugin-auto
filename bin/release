@@ -7,7 +7,7 @@ from termcolor import colored
 from urllib.parse import urlparse
 
 ssh_path = '/var/www/galette.eu/download/plugins/'
-ssh_host = 'galette.eu'
+ssh_host = 'ssh.galette.eu'
 galette_dl_repo = 'https://galette.eu/download/plugins/'
 is_local = False
 
