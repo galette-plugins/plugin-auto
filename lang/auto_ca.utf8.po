@@ -1,12 +1,13 @@
 # Pol Casares Civit <pol.casares@e-campus.uab.cat>, 2020.
 # Johan Cwiklinski <trasher@x-tnd.be>, 2021.
+# Laura Quintana Marín <2001lauraquintana@gmail.com>, 2026.
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"Report-Msgid-Bugs-To: \n"
+"Report-Msgid-Bugs-To: translations@galette.eu\n"
 "POT-Creation-Date: 2024-02-23 08:39+0100\n"
-"PO-Revision-Date: 2021-11-21 13:11+0000\n"
-"Last-Translator: Johan Cwiklinski <trasher@x-tnd.be>\n"
+"PO-Revision-Date: 2026-01-28 11:39+0000\n"
+"Last-Translator: Laura Quintana Marín <2001lauraquintana@gmail.com>\n"
 "Language-Team: Catalan <https://hosted.weblate.org/projects/galette/auto-"
 "plugin/ca/>\n"
 "Language: ca\n"
@@ -14,7 +15,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.10-dev\n"
+"X-Generator: Weblate 5.16-dev\n"
 
 #: ../_routes.php:125
 msgid "No vehicle was selected, please check at least one name."
@@ -63,12 +64,11 @@ msgstr ""
 
 #. TRANS: first parameter is the number of models
 #: ../lib/GaletteAuto/Controllers/Crud/ModelsController.php:351
-#, fuzzy, php-format
-#| msgid "Remove %1$s %2$s"
+#, php-format
 msgid "Remove %1$s model"
 msgid_plural "Remove %1$s models"
-msgstr[0] "Elimina %1$s %2$s"
-msgstr[1] "Elimina %1$s %2$s"
+msgstr[0] "Elimina %1$s model"
+msgstr[1] "Elimina %1$s models"
 
 #. TRANS: first parameter is the model name
 #: ../lib/GaletteAuto/Controllers/Crud/ModelsController.php:359
@@ -415,7 +415,7 @@ msgstr ""
 #: ../tempcache/public_vehicles_list.html.twig:78
 #: ../tempcache/public_vehicles_list.html.twig:120
 msgid "Name"
-msgstr ""
+msgstr "Nom"
 
 #: ../lib/GaletteAuto/Auto.php:172 ../tempcache/vehicles.html.twig:135
 #: ../tempcache/vehicles_list.html.twig:108
@@ -641,12 +641,11 @@ msgstr ""
 
 #: ../tempcache/vehicles_list.html.twig:72
 #: ../tempcache/public_vehicles_list.html.twig:60
-#, fuzzy, php-format
-#| msgid "Vehicle"
+#, php-format
 msgid "%count vehicle"
 msgid_plural "%count vehicles"
-msgstr[0] "Vehicle"
-msgstr[1] "Vehicle"
+msgstr[0] "%count vehicle"
+msgstr[1] "%count vehicles"
 
 #: ../tempcache/vehicles_list.html.twig:96
 msgid "Add new vehicle"
