@@ -3,13 +3,14 @@
 # This file is distributed under the same license as the PACKAGE package.
 # Ahmet Aylin Öztürk <ahmetaylinozturk@gmail.com>, 2021.
 # Hüseyin Gökhun Göktaş <gokhunfb@gmail.com>, 2021.
+# Kehribar <103407696+dpentx@users.noreply.github.com>, 2026.
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"Report-Msgid-Bugs-To: \n"
+"Report-Msgid-Bugs-To: translations@galette.eu\n"
 "POT-Creation-Date: 2024-02-23 08:39+0100\n"
-"PO-Revision-Date: 2021-09-02 19:34+0000\n"
-"Last-Translator: Hüseyin Gökhun Göktaş <gokhunfb@gmail.com>\n"
+"PO-Revision-Date: 2026-02-06 16:01+0000\n"
+"Last-Translator: Kehribar <103407696+dpentx@users.noreply.github.com>\n"
 "Language-Team: Turkish <https://hosted.weblate.org/projects/galette/auto-"
 "plugin/tr/>\n"
 "Language: tr\n"
@@ -17,11 +18,11 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.8.1-dev\n"
+"X-Generator: Weblate 5.16-dev\n"
 
 #: ../_routes.php:125
 msgid "No vehicle was selected, please check at least one name."
-msgstr ""
+msgstr "Herhangi bir araç seçilmedi. Lütfen en az bir tanesini kontrol edin."
 
 #: ../lib/GaletteAuto/State.php:63 ../lib/GaletteAuto/Auto.php:181
 #: ../tempcache/vehicles.html.twig:397 ../tempcache/history.html.twig:82
