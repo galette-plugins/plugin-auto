@@ -33,16 +33,6 @@ class State extends GaletteTestCase
     protected int $seed = 20240130141727;
 
     /**
-     * Cleanup after each test method
-     */
-    public function tearDown(): void
-    {
-        $delete = $this->zdb->delete(AUTO_PREFIX . \GaletteAuto\State::TABLE);
-        $this->zdb->execute($delete);
-        parent::tearDown();
-    }
-
-    /**
      * Test empty
      */
     public function testEmpty(): void

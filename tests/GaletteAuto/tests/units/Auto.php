@@ -41,32 +41,6 @@ class Auto extends GaletteTestCase
     {
         parent::setUp();
         $this->plugins = $this->container->get(\Galette\Core\Plugins::class);
-        $this->initStatus();
-    }
-
-    /**
-     * Cleanup after each test method
-     */
-    public function tearDown(): void
-    {
-        $tables = [
-            \GaletteAuto\History::TABLE,
-            \GaletteAuto\Auto::TABLE,
-            \GaletteAuto\Model::TABLE,
-            \GaletteAuto\Brand::TABLE,
-            \GaletteAuto\Color::TABLE,
-            \GaletteAuto\Body::TABLE,
-            \GaletteAuto\Finition::TABLE,
-            \GaletteAuto\State::TABLE,
-            \GaletteAuto\Transmission::TABLE,
-        ];
-
-        foreach ($tables as $table) {
-            $delete = $this->zdb->delete(AUTO_PREFIX . $table);
-            $this->zdb->execute($delete);
-        }
-
-        parent::tearDown();
     }
 
     /**
