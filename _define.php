@@ -21,15 +21,16 @@
 
 declare(strict_types=1);
 
+/** @var \Galette\Core\Plugins $this */
 $this->register(
-    'Galette Auto',                         //Name
-    'Plugin to manage Automobile clubs',    //Short description
-    'Johan Cwiklinski',                     //Author
-    '2.2.1',                                //Version
-    '1.2.0',                                //Galette compatible version
-    'auto',                                 //routing name
-    '2025-12-08',                           //Release date
-    [ //routes permissions
+    name: 'Galette Auto',                      //Name
+    desc: 'Plugin to manage Automobile clubs', //Short description
+    author: 'Johan Cwiklinski',                //Author
+    version: '2.2.1',                          //Version
+    compver: '1.2.0',                          //Galette compatible version
+    route: 'auto',                             //routing name
+    date: '2025-12-08',                        //Release date
+    acls: [                                    //routes permissions
         'vehiclesList'      => 'groupmanager',
         'memberVehiclesList' => 'groupmanager',
         'myVehiclesList'    => 'member',
