@@ -4,21 +4,22 @@
 # Languages add-on <noreply-addon-languages@weblate.org>, 2024.
 # Manuela Silva <mmsrs@sky.com>, 2024.
 # Nelson JESUS <jesus.nels@gmail.com>, 2025.
+# Edson Wolf <edsonwolf@vivaldi.net>, 2026.
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: translations@galette.eu\n"
 "POT-Creation-Date: 2024-02-23 08:39+0100\n"
-"PO-Revision-Date: 2025-09-15 15:52+0000\n"
-"Last-Translator: Nelson JESUS <jesus.nels@gmail.com>\n"
-"Language-Team: Portuguese <https://hosted.weblate.org/projects/galette/"
-"auto-plugin/pt/>\n"
+"PO-Revision-Date: 2026-03-30 19:09+0000\n"
+"Last-Translator: Edson Wolf <edsonwolf@vivaldi.net>\n"
+"Language-Team: Portuguese <https://hosted.weblate.org/projects/galette/auto-"
+"plugin/pt/>\n"
 "Language: pt\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 5.14-dev\n"
+"X-Generator: Weblate 5.17-dev\n"
 
 #: ../_routes.php:125
 msgid "No vehicle was selected, please check at least one name."
@@ -35,8 +36,8 @@ msgstr "Estado"
 #, php-format
 msgid "%count state"
 msgid_plural "%count states"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "%contagem de estado"
+msgstr[1] "% > 1 contagens de estado"
 
 #: ../lib/GaletteAuto/Controllers/Crud/ModelsController.php:127
 #: ../lib/GaletteAuto/PluginGaletteAuto.php:86
