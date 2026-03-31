@@ -10,7 +10,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: translations@galette.eu\n"
 "POT-Creation-Date: 2024-02-23 08:39+0100\n"
-"PO-Revision-Date: 2026-03-30 19:09+0000\n"
+"PO-Revision-Date: 2026-04-01 12:09+0000\n"
 "Last-Translator: Edson Wolf <edsonwolf@vivaldi.net>\n"
 "Language-Team: Portuguese <https://hosted.weblate.org/projects/galette/auto-"
 "plugin/pt/>\n"
@@ -37,7 +37,7 @@ msgstr "Estado"
 msgid "%count state"
 msgid_plural "%count states"
 msgstr[0] "%contagem de estado"
-msgstr[1] "% > 1 contagens de estado"
+msgstr[1] "%c > 1 contagens de estado"
 
 #: ../lib/GaletteAuto/Controllers/Crud/ModelsController.php:127
 #: ../lib/GaletteAuto/PluginGaletteAuto.php:86
