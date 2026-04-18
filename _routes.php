@@ -110,7 +110,7 @@ $app->post(
 //Batch actions on vehicles list
 $app->post(
     '/vehicles/batch',
-    function ($request, $response) use ($container) {
+    function ($request, $response) use ($app, $container) {
         $post = $request->getParsedBody();
 
         if (isset($post['entries_sel'])) {
