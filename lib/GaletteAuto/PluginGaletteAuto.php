@@ -23,7 +23,13 @@ declare(strict_types=1);
 
 namespace GaletteAuto;
 
+use DI\Attribute\Inject;
+use Galette\Core\Db;
 use Galette\Core\Login;
+use Galette\Core\Plugins\DashboardProviderInterface;
+use Galette\Core\Plugins\InstallableInterface;
+use Galette\Core\Plugins\MemberActionProviderInterface;
+use Galette\Core\Plugins\MenuProviderInterface;
 use Galette\Entity\Adherent;
 use Galette\Core\GalettePlugin;
 
@@ -33,14 +39,17 @@ use Galette\Core\GalettePlugin;
  * @author Johan Cwiklinski <johan@x-tnd.be>
  */
 
-class PluginGaletteAuto extends GalettePlugin
+class PluginGaletteAuto extends GalettePlugin implements MenuProviderInterface, DashboardProviderInterface, MemberActionProviderInterface, InstallableInterface
 {
+    #[Inject]
+    private readonly Db $zdb; //@phpstan-ignore property.uninitializedReadonly,property.onlyRead (injected from DI)
+
     /**
-     * Extra menus entries
+     * Get plugins menus
      *
      * @return array<string, string|array<string,mixed>>
      */
-    public static function getMenusContents(): array
+    public function getMenus(): array
     {
         /** @var Login $login */
         global $login;
@@ -122,11 +131,11 @@ class PluginGaletteAuto extends GalettePlugin
     }
 
     /**
-     * Extra public menus entries
+     * Get plugins public menus
      *
      * @return array<int, string|array<string,mixed>>
      */
-    public static function getPublicMenusItemsList(): array
+    public function getPublicMenus(): array
     {
         return [
             [
@@ -140,11 +149,11 @@ class PluginGaletteAuto extends GalettePlugin
     }
 
     /**
-     * Get current logged-in user dashboards contents
+     * Get current logged-in user plugins dashboards
      *
      * @return array<int, string|array<string,mixed>>
      */
-    public static function getMyDashboardsContents(): array
+    public function getMyDashboards(): array
     {
         /** @var Login $login */
         global $login;
@@ -165,11 +174,11 @@ class PluginGaletteAuto extends GalettePlugin
     }
 
     /**
-     * Get dashboards contents
+     * Get plugins dashboards
      *
      * @return array<int, string|array<string,mixed>>
      */
-    public static function getDashboardsContents(): array
+    public function getDashboards(): array
     {
         return [];
     }
@@ -181,7 +190,7 @@ class PluginGaletteAuto extends GalettePlugin
      *
      * @return array<int, string|array<string,mixed>>
      */
-    public static function getListActionsContents(Adherent $member): array
+    public function getListActions(Adherent $member): array
     {
         return [
             [
@@ -202,9 +211,9 @@ class PluginGaletteAuto extends GalettePlugin
      *
      * @return array<int, string|array<string,mixed>>
      */
-    public static function getDetailedActionsContents(Adherent $member): array
+    public function getDetailedActions(Adherent $member): array
     {
-        return static::getListActionsContents($member);
+        return $this->getListActions($member);
     }
 
     /**
@@ -212,8 +221,25 @@ class PluginGaletteAuto extends GalettePlugin
      *
      * @return array<int, string|array<string,mixed>>
      */
-    public static function getBatchActionsContents(): array
+    public function getBatchActions(): array
     {
         return [];
+    }
+
+    /**
+     * Is the plugin fully installed (including database, extra configuration, etc.)?
+     */
+    public function isInstalled(): bool
+    {
+        return
+            $this->zdb->tableExists(AUTO_PREFIX . Auto::TABLE) &&
+            $this->zdb->tableExists(AUTO_PREFIX . Body::TABLE) &&
+            $this->zdb->tableExists(AUTO_PREFIX . Brand::TABLE) &&
+            $this->zdb->tableExists(AUTO_PREFIX . Color::TABLE) &&
+            $this->zdb->tableExists(AUTO_PREFIX . Finition::TABLE) &&
+            $this->zdb->tableExists(AUTO_PREFIX . Model::TABLE) &&
+            $this->zdb->tableExists(AUTO_PREFIX . State::TABLE) &&
+            $this->zdb->tableExists(AUTO_PREFIX . Transmission::TABLE)
+        ;
     }
 }
