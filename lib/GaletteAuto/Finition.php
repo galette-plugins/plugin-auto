@@ -32,10 +32,10 @@ use Galette\Core\Db;
  */
 class Finition extends AbstractObject
 {
-    public const TABLE = 'finitions';
-    public const PK = 'id_finition';
-    public const FIELD = 'finition';
-    public const NAME = 'finitions';
+    public const string TABLE = 'finitions';
+    public const string PK = 'id_finition';
+    public const string FIELD = 'finition';
+    public const string NAME = 'finitions';
 
     /**
      * Default constructor

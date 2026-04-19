@@ -40,10 +40,10 @@ use Galette\Core\Db;
  */
 class Brand extends AbstractObject
 {
-    public const TABLE = 'brands';
-    public const PK = 'id_brand';
-    public const FIELD = 'brand';
-    public const NAME = 'brands';
+    public const string TABLE = 'brands';
+    public const string PK = 'id_brand';
+    public const string FIELD = 'brand';
+    public const string NAME = 'brands';
 
     /**
      * Default constructor

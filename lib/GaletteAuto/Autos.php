@@ -39,8 +39,8 @@ use Laminas\Db\Sql\Select;
  */
 class Autos
 {
-    public const TABLE = Auto::TABLE;
-    public const PK = Auto::PK;
+    public const string TABLE = Auto::TABLE;
+    public const string PK = Auto::PK;
 
     private Plugins $plugins;
     private Db $zdb;

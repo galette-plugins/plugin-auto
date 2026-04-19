@@ -32,10 +32,10 @@ use Galette\Core\Db;
  */
 class Color extends AbstractObject
 {
-    public const TABLE = 'colors';
-    public const PK = 'id_color';
-    public const FIELD = 'color';
-    public const NAME = 'colors';
+    public const string TABLE = 'colors';
+    public const string PK = 'id_color';
+    public const string FIELD = 'color';
+    public const string NAME = 'colors';
 
     /**
      * Default constructor

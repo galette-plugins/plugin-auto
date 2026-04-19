@@ -32,10 +32,10 @@ use Galette\Core\Db;
  */
 class State extends AbstractObject
 {
-    public const TABLE = 'states';
-    public const PK = 'id_state';
-    public const FIELD = 'state';
-    public const NAME = 'states';
+    public const string TABLE = 'states';
+    public const string PK = 'id_state';
+    public const string FIELD = 'state';
+    public const string NAME = 'states';
 
     /**
      * Default constructor

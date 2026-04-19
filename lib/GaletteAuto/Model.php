@@ -39,9 +39,9 @@ use Laminas\Db\ResultSet\ResultSet;
  */
 class Model
 {
-    public const TABLE = 'models';
-    public const PK = 'id_model';
-    public const FIELD = 'model';
+    public const string TABLE = 'models';
+    public const string PK = 'id_model';
+    public const string FIELD = 'model';
 
     protected int $id;
     protected string $model;

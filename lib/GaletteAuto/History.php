@@ -39,7 +39,7 @@ use Galette\Entity\Adherent;
  */
 class History
 {
-    public const TABLE = 'history';
+    public const string TABLE = 'history';
 
     private Db $zdb;
 

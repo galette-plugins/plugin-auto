@@ -63,8 +63,8 @@ use Psr\Http\Message\UploadedFileInterface;
  */
 class Auto
 {
-    public const TABLE = 'cars';
-    public const PK = 'id_car';
+    public const string TABLE = 'cars';
+    public const string PK = 'id_car';
 
     private Plugins $plugins;
     private Db $zdb;
@@ -134,12 +134,12 @@ class Auto
     private int $owner_id;
     private Adherent $owner;
 
-    public const FUEL_PETROL = 1;
-    public const FUEL_DIESEL = 2;
-    public const FUEL_GAS = 3;
-    public const FUEL_ELECTRICITY = 4;
-    public const FUEL_BIO = 5;
-    public const FUEL_HYBRID = 6;
+    public const int FUEL_PETROL = 1;
+    public const int FUEL_DIESEL = 2;
+    public const int FUEL_GAS = 3;
+    public const int FUEL_ELECTRICITY = 4;
+    public const int FUEL_BIO = 5;
+    public const int FUEL_HYBRID = 6;
 
     /** @var array<string, string> */
     private array $propnames; //textual properties names

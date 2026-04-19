@@ -43,8 +43,8 @@ use Laminas\Db\Sql\Select;
 
 class Models extends Repository
 {
-    public const TABLE = Model::TABLE;
-    public const PK = Model::PK;
+    public const string TABLE = Model::TABLE;
+    public const string PK = Model::PK;
 
     private int $count;
 
