@@ -1,0 +1,17 @@
+version: 2
+updates:
+  # Keep GitHub Actions up-to-date
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    groups: #all in one PR
+      github-actions-all:
+        patterns:
+          - "*"
+
+  # Keep Composer dependencies up-to-date
+  - package-ecosystem: "composer"
+    directory: "/"
+    schedule:
+      interval: "weekly"
