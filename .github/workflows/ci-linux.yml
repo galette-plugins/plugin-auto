@@ -5,9 +5,6 @@ on:
     branches:
       - master
       - develop
-      - 'feature/*'
-      - 'hotfix/*'
-      - 'release/*'
     tags:
       - '*'
   pull_request:
@@ -25,7 +22,7 @@ jobs:
 
     strategy:
       matrix:
-        php-versions: [ '8.2', '8.5' ]
+        php-versions: [ '8.3', '8.5' ]
         coverage: [none]
       fail-fast: false
 
@@ -100,21 +97,23 @@ jobs:
       matrix:
         include:
           #always tests higher stable php version with lower db version
-          #enable coverage on higher stable php version with higher postrgesql version
-          #lower php version
-          - { php-version: "8.2", db-image: "mysql:5.7", coverage: none, always: false }
-          - { php-version: "8.2", db-image: "mysql:8.1", coverage: none, always: false }
-          - { php-version: "8.2", db-image: "mariadb:10.4", coverage: none, always: false }
-          - { php-version: "8.2", db-image: "mariadb:11", coverage: none, always: false }
-          - { php-version: "8.2", db-image: "postgres:11", coverage: none, always: false }
-          - { php-version: "8.2", db-image: "postgres:16", coverage: none, always: false }
+          #enable coverage on higher stable php version with higher PostgreSQL version
+          #cache must be disabled on one always enabled build (not coverage one, this already takes much time than others)
           #higher stable php version
-          - { php-version: "8.5", db-image: "mysql:5.7", coverage: none, always: true }
-          - { php-version: "8.5", db-image: "mysql:8.1", coverage: none, always: false }
-          - { php-version: "8.5", db-image: "mariadb:10.4", coverage: none, always: true }
-          - { php-version: "8.5", db-image: "mariadb:11", coverage: none, always: false }
-          - { php-version: "8.5", db-image: "postgres:11", coverage: none, always: true }
-          - { php-version: "8.5", db-image: "postgres:16", coverage: none, always: true }
+          - { php-version: "8.5", db-image: "postgres:13", coverage: none, cache: true, always: true }
+          - { php-version: "8.5", db-image: "postgres:17", coverage: none, cache: true, always: true }
+          - { php-version: "8.5", db-image: "mysql:8.0", coverage: none, cache: true, always: true }
+          - { php-version: "8.5", db-image: "mysql:9.1", coverage: none, cache: true, always: false }
+          - { php-version: "8.5", db-image: "mariadb:10.5", coverage: none, cache: false, always: true }
+          - { php-version: "8.5", db-image: "mariadb:11.6", coverage: none, cache: true, always: false }
+          #always one test with lower php version
+          #lower php version
+          - { php-version: "8.3", db-image: "postgres:13", coverage: none, cache: true, always: false }
+          - { php-version: "8.3", db-image: "postgres:17", coverage: none, cache: true, always: true }
+          - { php-version: "8.3", db-image: "mysql:8.0", coverage: none, cache: true, always: false }
+          - { php-version: "8.3", db-image: "mysql:9.1", coverage: none, cache: true, always: false }
+          - { php-version: "8.3", db-image: "mariadb:10.5", coverage: none, cache: true, always: false }
+          - { php-version: "8.3", db-image: "mariadb:11.6", coverage: none, cache: true, always: false }
       fail-fast: false
 
     env:
@@ -168,36 +167,16 @@ jobs:
           echo "npm $(npm --version)"
           docker exec ${{ job.services.db.id }} bash -c "if [[ -n \$(command -v psql) ]]; then psql --version; else if [[ -n \$(command -v mysql) ]]; then mysql --version; else mariadb --version; fi fi"
 
-      - name: Checkout Galette core
+      - name: Build Galette
         if: env.skip != 'true'
-        uses: actions/checkout@v4
+        uses: galette/.github/actions/build-galette@main
         with:
-          repository: galette/galette
-          path: galette-core
-          fetch-depth: 1
-          ref: develop
+          php-version: ${{ matrix.php-version }}
 
       - name: Checkout plugin
         uses: actions/checkout@v4
         with:
           path: galette-core/galette/plugins/plugin-auto
-
-      - name: "Restore dependencies cache"
-        if: env.skip != 'true'
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.composer/cache/
-            ~/.npm/_cacache/
-          key: "${{ runner.os }}-galette-${{ matrix.php-version }}-${{ hashFiles('galette/composer.lock', 'package-lock.json') }}"
-          restore-keys: |
-            ${{ runner.os }}-galette-${{ matrix.php-version }}-
-
-      - name: Install dependencies
-        if: env.skip != 'true'
-        run: |
-          cd galette-core
-          bin/install_deps
 
       - name: Init for PostgreSQL
         env:
