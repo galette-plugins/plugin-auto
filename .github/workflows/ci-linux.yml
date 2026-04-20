@@ -35,7 +35,7 @@ jobs:
           coverage: ${{ matrix.coverage }}
 
       - name: Checkout Galette core
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           repository: galette/galette
           path: galette-core
@@ -43,7 +43,7 @@ jobs:
           ref: develop
 
       - name: Checkout plugin
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           path: galette-core/galette/plugins/plugin-auto
 
@@ -53,7 +53,7 @@ jobs:
           echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
 
       - name: Cache dependencies
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ${{ steps.composer-cache.outputs.dir }}
           key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.json') }}
@@ -174,7 +174,7 @@ jobs:
           php-version: ${{ matrix.php-version }}
 
       - name: Checkout plugin
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           path: galette-core/galette/plugins/plugin-auto
 
