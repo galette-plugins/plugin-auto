@@ -16,21 +16,43 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  setup-phpunit-matrix:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.gen.outputs.matrix }}
+    steps:
+      - uses: actions/checkout@v6
+      - id: gen
+        uses: galette/.github/actions/matrix-generator@main
+        with:
+          all-jobs: ${{ github.event_name != 'pull_request' && github.repository == 'galette/galette-auto' && (github.event_name == 'workflow_dispatch' || github.ref == 'refs/heads/master' || github.ref == 'refs/heads/develop' || startsWith(github.ref, 'refs/tags')) }}
+
+  setup-lint-matrix:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.gen.outputs.matrix }}
+    steps:
+      - uses: actions/checkout@v6
+      - id: gen
+        uses: galette/.github/actions/matrix-generator@main
+        with:
+          target: lint
+          all-jobs: ${{ github.event_name != 'pull_request' && github.repository == 'galette/galette-auto' && (github.event_name == 'workflow_dispatch' || github.ref == 'refs/heads/master' || github.ref == 'refs/heads/develop' || startsWith(github.ref, 'refs/tags')) }}
+
   lint:
     runs-on: ubuntu-latest
-    name: "Lint on PHP ${{ matrix.php-versions }}"
+    needs: setup-lint-matrix
+    name: "Lint on PHP ${{ matrix.php-version }}"
 
     strategy:
-      matrix:
-        php-versions: [ '8.3', '8.5' ]
-        coverage: [none]
+      matrix: ${{ fromJSON(needs.setup-lint-matrix.outputs.matrix) }}
       fail-fast: false
 
     steps:
       - name: PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: ${{ matrix.php-versions }}
+          php-version: ${{ matrix.php-version }}
           tools: composer
           coverage: ${{ matrix.coverage }}
 
@@ -70,7 +92,7 @@ jobs:
           ../../vendor/bin/phpcs lib/ ./*.php
 
       - name: CS Fixer
-        if: matrix.php-versions == '8.3'
+        if: matrix.php-is-min
         run: |
           cd galette-core/galette/plugins/plugin-auto
           ../../vendor/bin/php-cs-fixer check --show-progress=dots --verbose --diff
@@ -90,34 +112,16 @@ jobs:
           cd galette-core/galette/plugins/plugin-auto
           ../../vendor/bin/docheader --docheader=../../../.docheader check lib ./*.php
 
+
   unit-tests:
     runs-on: ubuntu-latest
+    needs: setup-phpunit-matrix
 
     strategy:
-      matrix:
-        include:
-          #always tests higher stable php version with lower db version
-          #enable coverage on higher stable php version with higher PostgreSQL version
-          #cache must be disabled on one always enabled build (not coverage one, this already takes much time than others)
-          #higher stable php version
-          - { php-version: "8.5", db-image: "postgres:13", coverage: none, cache: true, always: true }
-          - { php-version: "8.5", db-image: "postgres:17", coverage: none, cache: true, always: true }
-          - { php-version: "8.5", db-image: "mysql:8.0", coverage: none, cache: true, always: true }
-          - { php-version: "8.5", db-image: "mysql:9.1", coverage: none, cache: true, always: false }
-          - { php-version: "8.5", db-image: "mariadb:10.5", coverage: none, cache: false, always: true }
-          - { php-version: "8.5", db-image: "mariadb:11.6", coverage: none, cache: true, always: false }
-          #always one test with lower php version
-          #lower php version
-          - { php-version: "8.3", db-image: "postgres:13", coverage: none, cache: true, always: false }
-          - { php-version: "8.3", db-image: "postgres:17", coverage: none, cache: true, always: true }
-          - { php-version: "8.3", db-image: "mysql:8.0", coverage: none, cache: true, always: false }
-          - { php-version: "8.3", db-image: "mysql:9.1", coverage: none, cache: true, always: false }
-          - { php-version: "8.3", db-image: "mariadb:10.5", coverage: none, cache: true, always: false }
-          - { php-version: "8.3", db-image: "mariadb:11.6", coverage: none, cache: true, always: false }
+      matrix: ${{ fromJSON(needs.setup-phpunit-matrix.outputs.matrix) }}
       fail-fast: false
 
     env:
-      skip: ${{ matrix.always == false && (github.event_name == 'pull_request' || github.repository != 'galette/plugin-auto' || !(github.event_name == 'workflow_dispatch' || github.ref == 'refs/heads/master' || github.ref == 'refs/heads/develop' || startsWith(github.ref, 'refs/tags'))) }}
       DB: ${{ matrix.db-image }}
 
     services:
@@ -149,17 +153,15 @@ jobs:
 
     steps:
       - name: PHP
-        if: env.skip != 'true'
         uses: shivammathur/setup-php@v2
         with:
-          php-version: ${{ matrix.php-versions }}
+          php-version: ${{ matrix.php-version }}
           tools: composer, pecl
           coverage: ${{ matrix.coverage }}
           extensions: apcu
           ini-values: apc.enable_cli=1
 
       - name: "Show versions"
-        if: env.skip != 'true'
         run: |
           php --version
           composer --version
@@ -168,7 +170,6 @@ jobs:
           docker exec ${{ job.services.db.id }} bash -c "if [[ -n \$(command -v psql) ]]; then psql --version; else if [[ -n \$(command -v mysql) ]]; then mysql --version; else mariadb --version; fi fi"
 
       - name: Build Galette
-        if: env.skip != 'true'
         uses: galette/.github/actions/build-galette@main
         with:
           php-version: ${{ matrix.php-version }}
@@ -186,7 +187,7 @@ jobs:
           cd galette-core
           bin/console galette:install -v --dbtype=pgsql --dbhost=localhost --dbname=galette_tests --dbuser=galette_tests --dbpass=g@l3tte --admin=admin --password=admin --no-interaction -w
           bin/console galette:plugins:install-db --all
-        if: env.skip != 'true' && startsWith(matrix.db-image, 'postgres')
+        if: startsWith(matrix.db-image, 'postgres')
 
       - name: Init for MariaDB
         run: |
@@ -194,10 +195,9 @@ jobs:
           mysql -e 'create database IF NOT EXISTS galette_tests;' -u galette_tests --password=g@l3tte -h 127.0.0.1 -P 3306
           bin/console galette:install -v --dbtype=mysql --dbhost=127.0.0.1 --dbname=galette_tests --dbuser=galette_tests --dbpass=g@l3tte --admin=admin --password=admin --no-interaction -w
           bin/console galette:plugins:install-db --all
-        if: env.skip != 'true' && (startsWith(matrix.db-image, 'mysql') || startsWith(matrix.db-image, 'mariadb'))
+        if: startsWith(matrix.db-image, 'mysql') || startsWith(matrix.db-image, 'mariadb')
 
       - name: Unit tests
-        if: env.skip != 'true'
         run: |
           cd galette-core/galette/plugins/plugin-auto
           ../../vendor/bin/phpunit --test-suffix=.php --bootstrap tests/TestsBootstrap.php --no-coverage --process-isolation tests/GaletteAuto/
