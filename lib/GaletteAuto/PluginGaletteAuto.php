@@ -232,14 +232,14 @@ class PluginGaletteAuto extends GalettePlugin implements MenuProviderInterface, 
     public function isInstalled(): bool
     {
         return
-            $this->zdb->tableExists(AUTO_PREFIX . Auto::TABLE) &&
-            $this->zdb->tableExists(AUTO_PREFIX . Body::TABLE) &&
-            $this->zdb->tableExists(AUTO_PREFIX . Brand::TABLE) &&
-            $this->zdb->tableExists(AUTO_PREFIX . Color::TABLE) &&
-            $this->zdb->tableExists(AUTO_PREFIX . Finition::TABLE) &&
-            $this->zdb->tableExists(AUTO_PREFIX . Model::TABLE) &&
-            $this->zdb->tableExists(AUTO_PREFIX . State::TABLE) &&
-            $this->zdb->tableExists(AUTO_PREFIX . Transmission::TABLE)
+            $this->zdb->tableExists(AUTO_PREFIX . Auto::TABLE)
+            && $this->zdb->tableExists(AUTO_PREFIX . Body::TABLE)
+            && $this->zdb->tableExists(AUTO_PREFIX . Brand::TABLE)
+            && $this->zdb->tableExists(AUTO_PREFIX . Color::TABLE)
+            && $this->zdb->tableExists(AUTO_PREFIX . Finition::TABLE)
+            && $this->zdb->tableExists(AUTO_PREFIX . Model::TABLE)
+            && $this->zdb->tableExists(AUTO_PREFIX . State::TABLE)
+            && $this->zdb->tableExists(AUTO_PREFIX . Transmission::TABLE)
         ;
     }
 }
