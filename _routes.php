@@ -21,6 +21,7 @@
 
 declare(strict_types=1);
 
+use Galette\Middleware\Authenticate;
 use GaletteAuto\Controllers\Controller;
 use GaletteAuto\Controllers\Crud\PropertiesController;
 use GaletteAuto\Controllers\Crud\ModelsController;
@@ -37,17 +38,17 @@ $app->get(
 $app->get(
     '/vehicles[/{option:page|order}/{value:\d+}]',
     [Controller::class, 'vehiclesList']
-)->setName('vehiclesList')->add($authenticate);
+)->setName('vehiclesList')->add(Authenticate::class);
 
 $app->post(
     '/vehicle/filter',
     [Controller::class, 'filter']
-)->setName('vehiclesFilter')->add($authenticate);
+)->setName('vehiclesFilter')->add(Authenticate::class);
 
 $app->get(
     '/member/{id:\d+}/vehicles[/{option:page|order}/{value:\d+}]',
     [Controller::class, 'memberVehiclesList']
-)->setName('memberVehiclesList')->add($authenticate);
+)->setName('memberVehiclesList')->add(Authenticate::class);
 
 $app->group('/public', function () use ($app): void {
     $app->get(
@@ -59,53 +60,53 @@ $app->group('/public', function () use ($app): void {
 $app->get(
     '/my-vehicles',
     [Controller::class, 'myVehiclesList']
-)->setName('myVehiclesList')->add($authenticate);
+)->setName('myVehiclesList')->add(Authenticate::class);
 
 $app->get(
     '/vehicle/add',
     [Controller::class, 'showAddVehicle']
-)->setName('vehicleAdd')->add($authenticate);
+)->setName('vehicleAdd')->add(Authenticate::class);
 
 $app->get(
     '/vehicle/edit/{id:\d+}',
     [Controller::class, 'showEditVehicle']
-)->setName('vehicleEdit')->add($authenticate);
+)->setName('vehicleEdit')->add(Authenticate::class);
 
 $app->post(
     '/vehicle/add',
     [Controller::class, 'doAddVehicle']
-)->setName('doVehicleAdd')->add($authenticate);
+)->setName('doVehicleAdd')->add(Authenticate::class);
 
 $app->post(
     '/vehicle/edit/{id:\d+}',
     [Controller::class, 'doEditVehicle']
-)->setName('doVehicleEdit')->add($authenticate);
+)->setName('doVehicleEdit')->add(Authenticate::class);
 
 $app->get(
     '/vehicle/history/{id:\d+}',
     [Controller::class, 'vehicleHistory']
-)->setName('vehicleHistory')->add($authenticate);
+)->setName('vehicleHistory')->add(Authenticate::class);
 
 $app->post(
     '/ajax/models',
     [Controller::class, 'ajaxModels']
-)->setName('ajaxModels')->add($authenticate);
+)->setName('ajaxModels')->add(Authenticate::class);
 
 $app->get(
     '/vehicle/remove/{id:\d+}',
     [Controller::class, 'removeVehicle']
-)->setName('removeVehicle')->add($authenticate);
+)->setName('removeVehicle')->add(Authenticate::class);
 
 $app->map(
     ['GET', 'POST'],
     '/vehicles/remove',
     [Controller::class, 'removeVehicles']
-)->setName('removeVehicles')->add($authenticate);
+)->setName('removeVehicles')->add(Authenticate::class);
 
 $app->post(
     '/vehicle/remove[/{id:\d+}]',
     [Controller::class, 'doRemoveVehicle']
-)->setName('doRemoveVehicle')->add($authenticate);
+)->setName('doRemoveVehicle')->add(Authenticate::class);
 
 //Batch actions on vehicles list
 $app->post(
@@ -132,124 +133,124 @@ $app->post(
                 ->withHeader('Location', $container->get(RouteParser::class)->urlFor('myVehiclesList'));
         }
     }
-)->setName('batch-vehicleslist')->add($authenticate);
+)->setName('batch-vehicleslist')->add(Authenticate::class);
 
 $app->get(
     '/models[/{option:page|order}/{value:\d+}]',
     [ModelsController::class, 'list']
-)->setName('modelsList')->add($authenticate);
+)->setName('modelsList')->add(Authenticate::class);
 
 $app->post(
     '/models/filter',
     [ModelsController::class, 'filter']
-)->setName('modelsFilter')->add($authenticate);
+)->setName('modelsFilter')->add(Authenticate::class);
 
 $app->get(
     '/models/add',
     [ModelsController::class, 'add']
-)->setName('modelAdd')->add($authenticate);
+)->setName('modelAdd')->add(Authenticate::class);
 
 $app->get(
     '/models/edit/{id:\d+}',
     [ModelsController::class, 'edit']
-)->setName('modelEdit')->add($authenticate);
+)->setName('modelEdit')->add(Authenticate::class);
 
 $app->post(
     '/models/add',
     [ModelsController::class, 'doAdd']
-)->setName('doModelAdd')->add($authenticate);
+)->setName('doModelAdd')->add(Authenticate::class);
 
 $app->post(
     '/models/edit/{id:\d+}',
     [ModelsController::class, 'doEdit']
-)->setName('doModelEdit')->add($authenticate);
+)->setName('doModelEdit')->add(Authenticate::class);
 
 $app->get(
     '/model/remove/{id:\d+}',
     [ModelsController::class, 'confirmDelete']
-)->setName('removeModel')->add($authenticate);
+)->setName('removeModel')->add(Authenticate::class);
 
 $app->post(
     '/models/remove',
     [ModelsController::class, 'confirmDelete']
-)->setName('removeModels')->add($authenticate);
+)->setName('removeModels')->add(Authenticate::class);
 
 $app->post(
     '/model/remove[/{id:\d+}]',
     [ModelsController::class, 'delete']
-)->setName('doRemoveModel')->add($authenticate);
+)->setName('doRemoveModel')->add(Authenticate::class);
 
 $app->get(
     '/brands[/{option:page|order}/{value:\d+}]',
     [PropertiesController::class, 'brandsList']
-)->setName('brandsList')->add($authenticate);
+)->setName('brandsList')->add(Authenticate::class);
 
 $app->get(
     '/colors[/{option:page|order}/{value:\d+}]',
     [PropertiesController::class, 'colorsList']
-)->setName('colorsList')->add($authenticate);
+)->setName('colorsList')->add(Authenticate::class);
 
 $app->get(
     '/states[/{option:page|order}/{value:\d+}]',
     [PropertiesController::class, 'statesList']
-)->setName('statesList')->add($authenticate);
+)->setName('statesList')->add(Authenticate::class);
 
 $app->get(
     '/finitions[/{option:page|order}/{value:\d+}]',
     [PropertiesController::class, 'finitionsList']
-)->setName('finitionsList')->add($authenticate);
+)->setName('finitionsList')->add(Authenticate::class);
 
 $app->get(
     '/bodies[/{option:page|order}/{value:\d+}]',
     [PropertiesController::class, 'bodiesList']
-)->setName('bodiesList')->add($authenticate);
+)->setName('bodiesList')->add(Authenticate::class);
 
 $app->get(
     '/transmissions[/{option:page|order}/{value:\d+}]',
     [PropertiesController::class, 'transmissionsList']
-)->setName('transmissionsList')->add($authenticate);
+)->setName('transmissionsList')->add(Authenticate::class);
 
 $app->post(
     '/{property:brand|color|state|finition|body|transmission}/filter',
     [PropertiesController::class, 'filter']
-)->setName('propertyFilter')->add($authenticate);
+)->setName('propertyFilter')->add(Authenticate::class);
 
 $app->get(
     '/{property:brand|color|state|finition|body|transmission}/add',
     [PropertiesController::class, 'propertyAdd']
-)->setName('propertyAdd')->add($authenticate);
+)->setName('propertyAdd')->add(Authenticate::class);
 
 $app->get(
     '/{property:brand|color|state|finition|body|transmission}/edit/{id:\d+}',
     [PropertiesController::class, 'propertyEdit']
-)->setName('propertyEdit')->add($authenticate);
+)->setName('propertyEdit')->add(Authenticate::class);
 
 $app->post(
     '/{property:brand|color|state|finition|body|transmission}/add',
     [PropertiesController::class, 'doPropertyAdd']
-)->setName('doPropertyAdd')->add($authenticate);
+)->setName('doPropertyAdd')->add(Authenticate::class);
 
 $app->post(
     '/{property:brand|color|state|finition|body|transmission}/edit/{id:\d+}',
     [PropertiesController::class, 'doPropertyEdit']
-)->setName('doPropertyEdit')->add($authenticate);
+)->setName('doPropertyEdit')->add(Authenticate::class);
 
 $app->get(
     '/{property:brand}/show/{id:\d+}',
     [PropertiesController::class, 'propertyShow']
-)->setName('propertyShow')->add($authenticate);
+)->setName('propertyShow')->add(Authenticate::class);
 
 $app->get(
     '/{property:brand|color|state|finition|body|transmission}/remove/{id:\d+}',
     [PropertiesController::class, 'removeProperty']
-)->setName('removeProperty')->add($authenticate);
+)->setName('removeProperty')->add(Authenticate::class);
 
 $app->get(
     '/{property:brand|color|state|finition|body|transmission}' . '/remove',
     [PropertiesController::class, 'removeProperties']
-)->setName('removeProperties')->add($authenticate);
+)->setName('removeProperties')->add(Authenticate::class);
 
 $app->post(
     '/{property:brand|color|state|finition|body|transmission}/remove[/{id:\d+}]',
     [PropertiesController::class, 'doRemoveProperty']
-)->setName('doRemoveProperty')->add($authenticate);
+)->setName('doRemoveProperty')->add(Authenticate::class);
