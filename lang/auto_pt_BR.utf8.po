@@ -2,13 +2,14 @@
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
 # Edson Wolf <edsonwolf@vivaldi.net>, 2026.
+# n-qber <nmkbertozzo@gmail.com>, 2026.
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: translations@galette.eu\n"
 "POT-Creation-Date: 2024-02-23 08:39+0100\n"
-"PO-Revision-Date: 2026-05-09 22:11+0000\n"
-"Last-Translator: Edson Wolf <edsonwolf@vivaldi.net>\n"
+"PO-Revision-Date: 2026-05-13 15:11+0000\n"
+"Last-Translator: n-qber <nmkbertozzo@gmail.com>\n"
 "Language-Team: Portuguese (Brazil) <https://hosted.weblate.org/projects/"
 "galette/auto-plugin/pt_BR/>\n"
 "Language: pt_BR\n"
@@ -16,17 +17,17 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 2026.5-dev\n"
+"X-Generator: Weblate 2026.5.dev0\n"
 
 #: ../_routes.php:125
 msgid "No vehicle was selected, please check at least one name."
-msgstr ""
+msgstr "Nenhum veículo foi selecionado, por favor selecione pelo menos um nome."
 
 #: ../lib/GaletteAuto/State.php:63 ../lib/GaletteAuto/Auto.php:181
 #: ../tempcache/vehicles.html.twig:397 ../tempcache/history.html.twig:82
 #: ../tempcache/history.html.twig:154
 msgid "State"
-msgstr ""
+msgstr "Estado"
 
 #: ../lib/GaletteAuto/State.php:100
 #, php-format
@@ -38,69 +39,69 @@ msgstr[1] ""
 #: ../lib/GaletteAuto/Controllers/Crud/ModelsController.php:127
 #: ../lib/GaletteAuto/PluginGaletteAuto.php:86
 msgid "Models list"
-msgstr ""
+msgstr "Lista de modelos"
 
 #: ../lib/GaletteAuto/Controllers/Crud/ModelsController.php:210
 #, php-format
 msgid "Change model '%s'"
-msgstr ""
+msgstr "Alterar modelo '%s'"
 
 #: ../lib/GaletteAuto/Controllers/Crud/ModelsController.php:214
 msgid "New model"
-msgstr ""
+msgstr "Novo modelo"
 
 #: ../lib/GaletteAuto/Controllers/Crud/ModelsController.php:268
 #: ../lib/GaletteAuto/Controllers/Crud/PropertiesController.php:427
 msgid "- An error occurred while saving record. Please try again."
-msgstr ""
+msgstr "- Um erro ocorreu ao salvar o registro. Por favor, tente novamente."
 
 #: ../lib/GaletteAuto/Controllers/Crud/ModelsController.php:270
 msgid "New model has been added!"
-msgstr ""
+msgstr "Um novo modelo foi adicionado!"
 
 #: ../lib/GaletteAuto/Controllers/Crud/ModelsController.php:271
 msgid "Model has been saved!"
-msgstr ""
+msgstr "O modelo foi salvo!"
 
 #. TRANS: first parameter is the number of models
 #: ../lib/GaletteAuto/Controllers/Crud/ModelsController.php:351
 #, php-format
 msgid "Remove %1$s model"
 msgid_plural "Remove %1$s models"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "Remover %1$s modelo"
+msgstr[1] "Remover %1$s modelos"
 
 #. TRANS: first parameter is the model name
 #: ../lib/GaletteAuto/Controllers/Crud/ModelsController.php:359
 #, php-format
 msgid "Remove model \"%1$s\""
-msgstr ""
+msgstr "Remover modelo \"%1$s\""
 
 #: ../lib/GaletteAuto/Controllers/Crud/ModelsController.php:389
 msgid "This model is used by one or more vehicles, it cannot be deleted."
-msgstr ""
+msgstr "Este modelo é usado por um ou mais veículos, não pode ser excluído."
 
 #: ../lib/GaletteAuto/Controllers/Crud/ModelsController.php:394
 msgid "An error occurred while deleting model."
-msgstr ""
+msgstr "Um erro ocorreu ao excluir o modelo."
 
 #: ../lib/GaletteAuto/Controllers/Crud/PropertiesController.php:189
 #: ../lib/GaletteAuto/PluginGaletteAuto.php:61
 msgid "Colors list"
-msgstr ""
+msgstr "Lista de cores"
 
 #: ../lib/GaletteAuto/Controllers/Crud/PropertiesController.php:190
 msgid "Add new color"
-msgstr ""
+msgstr "Adicionar nova cor"
 
 #: ../lib/GaletteAuto/Controllers/Crud/PropertiesController.php:194
 #: ../lib/GaletteAuto/PluginGaletteAuto.php:65
 msgid "States list"
-msgstr ""
+msgstr "Lista de Estados"
 
 #: ../lib/GaletteAuto/Controllers/Crud/PropertiesController.php:195
 msgid "Add new state"
-msgstr ""
+msgstr "Adicionar novo estado"
 
 #: ../lib/GaletteAuto/Controllers/Crud/PropertiesController.php:199
 #: ../lib/GaletteAuto/PluginGaletteAuto.php:69
