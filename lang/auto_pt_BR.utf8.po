@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: translations@galette.eu\n"
 "POT-Creation-Date: 2024-02-23 08:39+0100\n"
-"PO-Revision-Date: 2026-05-16 02:11+0000\n"
+"PO-Revision-Date: 2026-05-19 13:11+0000\n"
 "Last-Translator: Edson Wolf <edsonwolf@vivaldi.net>\n"
 "Language-Team: Portuguese (Brazil) <https://hosted.weblate.org/projects/"
 "galette/auto-plugin/pt_BR/>\n"
@@ -324,36 +324,36 @@ msgstr "Histórico do carro #%d"
 #: ../lib/GaletteAuto/Controllers/Controller.php:574
 #: ../lib/GaletteAuto/Controllers/Controller.php:623
 msgid "Vehicle"
-msgstr ""
+msgstr "Veículo"
 
 #: ../lib/GaletteAuto/Controllers/Controller.php:577
 #, php-format
 msgid "Remove vehicle %1$s"
-msgstr ""
+msgstr "Remover veículo %1$s"
 
 #: ../lib/GaletteAuto/Controllers/Controller.php:625
 msgid "Remove vehicles"
-msgstr ""
+msgstr "Remover veículos"
 
 #: ../lib/GaletteAuto/Controllers/Controller.php:629
 #, php-format
 msgid "You are about to remove %count vehicle."
 msgid_plural "You are about to remove %count vehicles."
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "Você está prestes a remover %count veículo."
+msgstr[1] "Você está prestes a remover %count veículos."
 
 #: ../lib/GaletteAuto/Controllers/Controller.php:673
 msgid "An error occurred trying to remove vehicles :/"
-msgstr ""
+msgstr "Ocorreu um erro ao tentar remover veículos :/"
 
 #: ../lib/GaletteAuto/Controllers/Controller.php:683
 #, php-format
 msgid "%count vehicles have been successfully deleted."
-msgstr ""
+msgstr "%count veículos foram excluídos com sucesso."
 
 #: ../lib/GaletteAuto/Model.php:225
 msgid "- You must select a brand!"
-msgstr ""
+msgstr "- Você precisa selecionar uma marca!"
 
 #: ../lib/GaletteAuto/Color.php:63 ../lib/GaletteAuto/Auto.php:180
 #: ../tempcache/vehicles.html.twig:370 ../tempcache/history.html.twig:76
@@ -365,8 +365,8 @@ msgstr "Cor"
 #, php-format
 msgid "%count color"
 msgid_plural "%count colors"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "%count cor"
+msgstr[1] "%count corres"
 
 #: ../lib/GaletteAuto/Brand.php:72 ../tempcache/vehicles.html.twig:108
 #: ../tempcache/vehicles_list.html.twig:108
@@ -376,26 +376,26 @@ msgstr[1] ""
 #: ../tempcache/models_list.html.twig:93 ../tempcache/models_list.html.twig:141
 #: ../tempcache/model.html.twig:98
 msgid "Brand"
-msgstr ""
+msgstr "Marca"
 
 #: ../lib/GaletteAuto/Brand.php:112
 #, php-format
 msgid "%count brand"
 msgid_plural "%count brands"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "%count marca"
+msgstr[1] "%count marcas"
 
 #: ../lib/GaletteAuto/Transmission.php:63 ../lib/GaletteAuto/Auto.php:183
 #: ../tempcache/vehicles.html.twig:470
 msgid "Transmission"
-msgstr ""
+msgstr "Transmissão"
 
 #: ../lib/GaletteAuto/Transmission.php:100
 #, php-format
 msgid "%count transmission"
 msgid_plural "%count transmissions"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "%count transmissão"
+msgstr[1] "%count transmissões"
 
 #: ../lib/GaletteAuto/Body.php:63 ../lib/GaletteAuto/Auto.php:184
 #: ../tempcache/vehicles.html.twig:443
