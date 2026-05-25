@@ -489,7 +489,7 @@ class PropertiesController extends AbstractPluginController
             'modals/confirm_removal.html.twig',
             [
                 'type'          => $object->getFieldLabel(),
-                'mode'          => $request->getHeaderLine('X-Requested-With') === 'XMLHttpRequest' ? 'ajax' : '',
+                'mode'          => $this->isAjax($request) ? 'ajax' : '',
                 'page_title'    => sprintf(
                     _T('Remove %1$s %2$s', 'auto'),
                     $object->getFieldLabel(),

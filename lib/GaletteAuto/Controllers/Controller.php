@@ -459,7 +459,7 @@ class Controller extends AbstractPluginController
         $params = [
             'entries'       => $history->getEntries(),
             'page_title'    => str_replace('%d', (string)$history->$apk, _T("History of car #%d", "auto")),
-            'mode'          => $request->getHeaderLine('X-Requested-With') === 'XMLHttpRequest' ? 'ajax' : ''
+            'mode'          => $this->isAjax($request) ? 'ajax' : ''
         ];
 
         // display page
@@ -522,7 +522,7 @@ class Controller extends AbstractPluginController
             'modals/confirm_removal.html.twig',
             [
                 'type'          => _T("Vehicle", "auto"),
-                'mode'          => $request->getHeaderLine('X-Requested-With') === 'XMLHttpRequest' ? 'ajax' : '',
+                'mode'          => $this->isAjax($request) ? 'ajax' : '',
                 'page_title'    => sprintf(
                     _T('Remove vehicle %1$s', 'auto'),
                     $auto->name
@@ -566,7 +566,7 @@ class Controller extends AbstractPluginController
             'modals/confirm_removal.html.twig',
             [
                 'type'          => _T("Vehicle", "auto"),
-                'mode'          => $request->getHeaderLine('X-Requested-With') === 'XMLHttpRequest' ? 'ajax' : '',
+                'mode'          => $this->isAjax($request) ? 'ajax' : '',
                 'page_title'    => _T('Remove vehicles', 'auto'),
                 'message'       => str_replace(
                     '%count',
