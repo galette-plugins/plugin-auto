@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: translations@galette.eu\n"
 "POT-Creation-Date: 2024-02-23 08:39+0100\n"
-"PO-Revision-Date: 2026-05-19 13:11+0000\n"
+"PO-Revision-Date: 2026-05-30 15:01+0000\n"
 "Last-Translator: Edson Wolf <edsonwolf@vivaldi.net>\n"
 "Language-Team: Portuguese (Brazil) <https://hosted.weblate.org/projects/"
 "galette/auto-plugin/pt_BR/>\n"
@@ -411,7 +411,7 @@ msgstr[1] ""
 
 #: ../lib/GaletteAuto/Autos.php:133
 msgid "Delete vehicles cards"
-msgstr ""
+msgstr "Excluir cartões de veículos"
 
 #: ../lib/GaletteAuto/Auto.php:171 ../tempcache/vehicles.html.twig:81
 #: ../tempcache/vehicles_list.html.twig:108
@@ -434,110 +434,110 @@ msgstr "Modelo"
 #: ../lib/GaletteAuto/Auto.php:173 ../tempcache/vehicles.html.twig:404
 #: ../tempcache/history.html.twig:70 ../tempcache/history.html.twig:142
 msgid "Registration"
-msgstr ""
+msgstr "Inscrição"
 
 #: ../lib/GaletteAuto/Auto.php:174 ../tempcache/vehicles.html.twig:142
 msgid "First registration date"
-msgstr ""
+msgstr "Data da primeira inscrição"
 
 #: ../lib/GaletteAuto/Auto.php:175 ../tempcache/vehicles.html.twig:148
 msgid "First circulation date"
-msgstr ""
+msgstr "Data da primeira circulação"
 
 #: ../lib/GaletteAuto/Auto.php:176 ../tempcache/vehicles.html.twig:154
 msgid "Mileage"
-msgstr ""
+msgstr "Quilometragem"
 
 #: ../lib/GaletteAuto/Auto.php:177 ../tempcache/vehicles.html.twig:161
 msgid "Seats"
-msgstr ""
+msgstr "Assentos"
 
 #: ../lib/GaletteAuto/Auto.php:178 ../tempcache/vehicles.html.twig:511
 msgid "Horsepower"
-msgstr ""
+msgstr "Potência em cavalos"
 
 #: ../lib/GaletteAuto/Auto.php:179 ../tempcache/vehicles.html.twig:518
 msgid "Engine size"
-msgstr ""
+msgstr "Tamanho do motor"
 
 #: ../lib/GaletteAuto/Auto.php:182 ../lib/GaletteAuto/Finition.php:63
 #: ../tempcache/vehicles.html.twig:497
 msgid "Finition"
-msgstr ""
+msgstr "Acabamento"
 
 #: ../lib/GaletteAuto/Auto.php:185 ../tempcache/vehicles.html.twig:545
 msgid "Fuel"
-msgstr ""
+msgstr "Combustível"
 
 #: ../lib/GaletteAuto/Auto.php:289
 msgid "Petrol"
-msgstr ""
+msgstr "Gasolina"
 
 #: ../lib/GaletteAuto/Auto.php:290
 msgid "Diesel"
-msgstr ""
+msgstr "Diesel"
 
 #: ../lib/GaletteAuto/Auto.php:291
 msgid "Gas"
-msgstr ""
+msgstr "Gás"
 
 #: ../lib/GaletteAuto/Auto.php:292
 msgid "Hybrid"
-msgstr ""
+msgstr "Híbrido"
 
 #: ../lib/GaletteAuto/Auto.php:293
 msgid "Electricity"
-msgstr ""
+msgstr "Eletricidade"
 
 #: ../lib/GaletteAuto/Auto.php:294
 msgid "Bio"
-msgstr ""
+msgstr "Bio"
 
 #: ../lib/GaletteAuto/Auto.php:380
 msgid "New car added"
-msgstr ""
+msgstr "Novo carro adicionado"
 
 #: ../lib/GaletteAuto/Auto.php:389
 msgid "Fail to add new car."
-msgstr ""
+msgstr "Falha ao adicionar novo carro."
 
 #: ../lib/GaletteAuto/Auto.php:406
 msgid "Car updated"
-msgstr ""
+msgstr "Carro atualizado"
 
 #: ../lib/GaletteAuto/Auto.php:698
 msgid "- Maximum size for %field is %maxsize (current %cursize)!"
-msgstr ""
+msgstr "- O tamanho máximo para %field é %maxsize (tamanho atual %cursize)!"
 
 #: ../lib/GaletteAuto/Auto.php:741
 #, php-format
 msgid "- You must enter a positive integer for %s"
-msgstr ""
+msgstr "- Você deve inserir um número inteiro positivo para %s"
 
 #: ../lib/GaletteAuto/Auto.php:750
 msgid "- You must choose a fuel in the list"
-msgstr ""
+msgstr "- Você deve escolher um combustível na lista"
 
 #: ../lib/GaletteAuto/Auto.php:768
 #, php-format
 msgid "- You must choose a %s in the list"
-msgstr ""
+msgstr "- Você deve escolher um %s na lista"
 
 #: ../lib/GaletteAuto/Auto.php:778
 msgid "- you must attach an owner to this car"
-msgstr ""
+msgstr "- Você precisa associar um proprietário a este carro"
 
 #: ../lib/GaletteAuto/Auto.php:802
 msgid "An error occurred while trying to delete car's photo"
-msgstr ""
+msgstr "Ocorreu um erro ao tentar excluir a foto do carro"
 
 #: ../lib/GaletteAuto/PluginGaletteAuto.php:50
 msgid "Cars"
-msgstr ""
+msgstr "Carros"
 
 #: ../lib/GaletteAuto/PluginGaletteAuto.php:132
 msgid "Vehicles"
-msgstr ""
+msgstr "Veículos"
 
 #: ../lib/GaletteAuto/Finition.php:100
 #, php-format
