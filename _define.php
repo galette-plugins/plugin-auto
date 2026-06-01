@@ -71,5 +71,6 @@ $this->register(
         'removeProperty'    => 'staff',
         'removeProperties'  => 'staff',
         'doRemoveProperty'  => 'staff'
-    ]
+    ],
+    dbver: 1.00
 );
