@@ -109,9 +109,11 @@ jobs:
 
       - name: Headers checks
         run: |
-          cd galette-core/galette/plugins/plugin-auto
-          ../../vendor/bin/docheader --docheader=../../../.docheader check lib ./*.php
-
+          cd galette-core
+          ./bin/console galette:headers:check \
+            --project-name="Galette Auto plugin" \
+            --start-year="2009" \
+            --directory="galette/plugins/plugin-auto"
 
   unit-tests:
     runs-on: ubuntu-latest

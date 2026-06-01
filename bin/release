@@ -1,5 +1,11 @@
 #!/usr/bin/python
 
+#
+# This file is part of Galette Auto plugin (https://galette.eu).
+# SPDX-FileCopyrightText: Copyright © 2009-2026 The Galette Team
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+
 import os, sys, argparse, re, git, http.client, subprocess
 import urlgrabber.progress, tarfile, shutil, gitdb, time, fnmatch
 from datetime import datetime
