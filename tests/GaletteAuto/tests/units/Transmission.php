@@ -28,7 +28,7 @@ class Transmission extends GaletteTestCase
         $this->assertSame('Transmission', $transmission->getFieldLabel());
 
         $this->assertCount(0, $transmission->getList());
-        $this->assertSame('0 transmission', $transmission->displayCount());
+        $this->assertSame('0 transmissions', $transmission->displayCount());
     }
 
     /**

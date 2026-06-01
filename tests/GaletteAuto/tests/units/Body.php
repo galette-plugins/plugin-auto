@@ -28,7 +28,7 @@ class Body extends GaletteTestCase
         $this->assertSame('Body', $body->getFieldLabel());
 
         $this->assertCount(0, $body->getList());
-        $this->assertSame('0 body', $body->displayCount());
+        $this->assertSame('0 bodies', $body->displayCount());
     }
 
     /**

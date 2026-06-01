@@ -28,7 +28,7 @@ class Brand extends GaletteTestCase
         $this->assertSame('Brand', $brand->getFieldLabel());
 
         $this->assertCount(0, $brand->getList());
-        $this->assertSame('0 brand', $brand->displayCount());
+        $this->assertSame('0 brands', $brand->displayCount());
     }
 
     /**

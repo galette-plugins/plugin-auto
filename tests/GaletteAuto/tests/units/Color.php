@@ -28,7 +28,7 @@ class Color extends GaletteTestCase
         $this->assertSame('Color', $color->getFieldLabel());
 
         $this->assertCount(0, $color->getList());
-        $this->assertSame('0 color', $color->displayCount());
+        $this->assertSame('0 colors', $color->displayCount());
     }
 
     /**

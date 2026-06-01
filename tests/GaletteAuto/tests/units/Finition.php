@@ -28,7 +28,7 @@ class Finition extends GaletteTestCase
         $this->assertSame('Finition', $finition->getFieldLabel());
 
         $this->assertCount(0, $finition->getList());
-        $this->assertSame('0 finition', $finition->displayCount());
+        $this->assertSame('0 finitions', $finition->displayCount());
     }
 
     /**

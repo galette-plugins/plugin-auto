@@ -28,7 +28,7 @@ class State extends GaletteTestCase
         $this->assertSame('State', $state->getFieldLabel());
 
         $this->assertCount(0, $state->getList());
-        $this->assertSame('0 state', $state->displayCount());
+        $this->assertSame('0 states', $state->displayCount());
     }
 
     /**
