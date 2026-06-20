@@ -8,13 +8,14 @@
 # Der_Unterhaendler <Lukas.Engelschalk@gmx.de>, 2022.
 # klausellus-wallace <muetze.polka0e@icloud.com>, 2023.
 # Noah <mail.radondev@gmail.com>, 2023.
+# Poly <robloxlucak@gmail.com>, 2026.
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: translations@galette.eu\n"
 "POT-Creation-Date: 2024-02-23 08:39+0100\n"
-"PO-Revision-Date: 2026-02-15 15:09+0000\n"
-"Last-Translator: CryptKid <CryptKiddie@chaospott.de>\n"
+"PO-Revision-Date: 2026-06-21 03:01+0000\n"
+"Last-Translator: Poly <robloxlucak@gmail.com>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/galette/auto-"
 "plugin/de/>\n"
 "Language: de_DE\n"
@@ -22,7 +23,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.16-dev\n"
+"X-Generator: Weblate 2026.7.dev0\n"
 
 #: ../_routes.php:125
 msgid "No vehicle was selected, please check at least one name."
@@ -89,12 +90,12 @@ msgstr "Modell %1$s entfernen"
 #: ../lib/GaletteAuto/Controllers/Crud/ModelsController.php:389
 msgid "This model is used by one or more vehicles, it cannot be deleted."
 msgstr ""
+"Dieses Modell wird von einem oder mehreren Fahrzeugen verwendet und kann "
+"daher nicht gelöscht werden."
 
 #: ../lib/GaletteAuto/Controllers/Crud/ModelsController.php:394
-#, fuzzy
-#| msgid "An error occurred while trying to delete car's photo"
 msgid "An error occurred while deleting model."
-msgstr "Ein Fehler ist beim Löschen vom Foto des Autos aufgetreten"
+msgstr "Beim Löschen des Modells ist ein Fehler aufgetreten."
 
 #: ../lib/GaletteAuto/Controllers/Crud/PropertiesController.php:189
 #: ../lib/GaletteAuto/PluginGaletteAuto.php:61
@@ -117,7 +118,7 @@ msgstr "Neuen Status hinzufügen"
 #: ../lib/GaletteAuto/Controllers/Crud/PropertiesController.php:199
 #: ../lib/GaletteAuto/PluginGaletteAuto.php:69
 msgid "Finitions list"
-msgstr ""
+msgstr "Liste der Finitionen"
 
 #: ../lib/GaletteAuto/Controllers/Crud/PropertiesController.php:200
 msgid "Add new finition"
