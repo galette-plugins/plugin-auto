@@ -21,7 +21,7 @@ jobs:
     outputs:
       matrix: ${{ steps.gen.outputs.matrix }}
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - id: gen
         uses: galette/.github/actions/matrix-generator@main
         with:
@@ -32,7 +32,7 @@ jobs:
     outputs:
       matrix: ${{ steps.gen.outputs.matrix }}
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - id: gen
         uses: galette/.github/actions/matrix-generator@main
         with:
@@ -57,7 +57,7 @@ jobs:
           coverage: ${{ matrix.coverage }}
 
       - name: Checkout Galette core
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           repository: galette/galette
           path: galette-core
@@ -65,7 +65,7 @@ jobs:
           ref: develop
 
       - name: Checkout plugin
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           path: galette-core/galette/plugins/plugin-auto
 
@@ -177,7 +177,7 @@ jobs:
           php-version: ${{ matrix.php-version }}
 
       - name: Checkout plugin
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           path: galette-core/galette/plugins/plugin-auto
 
