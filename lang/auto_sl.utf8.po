@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: translations@galette.eu\n"
 "POT-Creation-Date: 2024-02-23 08:39+0100\n"
-"PO-Revision-Date: 2026-07-09 11:25+0000\n"
+"PO-Revision-Date: 2026-07-10 17:01+0000\n"
 "Last-Translator: Jože Felicijan <joze@felicijan.com>\n"
 "Language-Team: Slovenian <https://hosted.weblate.org/projects/galette/auto-"
 "plugin/sl/>\n"
@@ -179,7 +179,7 @@ msgstr ""
 #: ../lib/GaletteAuto/Controllers/Crud/PropertiesController.php:551
 #, php-format
 msgid "Remove %1$s %2$s"
-msgstr ""
+msgstr "Odstrani %1$s %2$s"
 
 #: ../lib/GaletteAuto/Controllers/Crud/PropertiesController.php:607
 #, php-format
