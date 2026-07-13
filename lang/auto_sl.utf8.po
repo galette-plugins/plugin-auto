@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: translations@galette.eu\n"
 "POT-Creation-Date: 2024-02-23 08:39+0100\n"
-"PO-Revision-Date: 2026-07-11 10:39+0000\n"
+"PO-Revision-Date: 2026-07-14 11:01+0000\n"
 "Last-Translator: Jože Felicijan <joze@felicijan.com>\n"
 "Language-Team: Slovenian <https://hosted.weblate.org/projects/galette/auto-"
 "plugin/sl/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=4; plural=n%100==1 ? 0 : n%100==2 ? 1 : n%100==3 || "
 "n%100==4 ? 2 : 3;\n"
-"X-Generator: Weblate 2026.7.1.dev0\n"
+"X-Generator: Weblate 2026.8.dev0\n"
 
 #: ../_routes.php:125
 msgid "No vehicle was selected, please check at least one name."
@@ -147,7 +147,7 @@ msgstr ""
 
 #: ../lib/GaletteAuto/Controllers/Crud/PropertiesController.php:332
 msgid "New"
-msgstr ""
+msgstr "Novo"
 
 #: ../lib/GaletteAuto/Controllers/Crud/PropertiesController.php:338
 #, php-format
