@@ -36,7 +36,6 @@
             <input type="hidden" name="set" value="{{ set }}"/>
             <input type="hidden" name="{{ mode }}" value="1"/>
             <input type="hidden" name="{{ pk }}" value="{{ obj.id }}"/>
-            {% include "components/forms/csrf.html.twig" %}
         </div>
     </form>
 {% endblock %}

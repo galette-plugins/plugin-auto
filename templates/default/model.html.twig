@@ -51,7 +51,6 @@
             {% if mode != "new" %}
                 <input type="hidden" name="{{ constant('GaletteAuto\\Model::PK') }}" value="{{ model.id }}"/>
             {% endif %}
-            {% include "components/forms/csrf.html.twig" %}
         </div>
     </form>
 {% endblock %}
