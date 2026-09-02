@@ -1,36 +1,37 @@
 ---
-title: Documentation
+title: Documentazione
 description: Plugin to manage Automobile clubs
 ---
 
-This plugin provides vehicles management for automobile clubs, you can manage:
+Questo componente aggiuntivo fornisce la gestione del parco auto per gli
+automobile club. Puoi gestire:
 
-* vehicles (owner, several information, photo, etc),
-* vehicle history modification (owner, color, ...),
-* brands,
-* models,
-* transmission types,
-* body types,
-* colors,
-* finitions,
-* states.
+* veicoli (proprietario, altre informazioni, foto, etc),
+* storia delle modifiche del veicolo (proprietari, colore, ...),
+* marche,
+* modelli,
+* tipo di trasmissione,
+* tipo di carrozzeria,
+* colori,
+* finiture,
+* condizioni.
 
-This plugin has been initially developed in collaboration with Anatole from
-[Club 404](https://www.leclub404.com/), and François from [club Fiat
-500](http://www.club500.fr/). A big thanks to them for their precious help
-during plugin development :)
+Questo componente aggiuntivo è stato inizialmente sviluppato in collaborazione
+con Anatole del [Club 404](https://www.leclub404.com/), e François del [club
+Fiat 500](http://www.club500.fr/). Un grande grazie per il loro prezioso aiuto
+durante lo sviluppo :)
 
-## Installation
+## Installazione
 
-First of all, download the plugin:
+Prima di tutto, scaricare il plugin:
 
 * [Get latest Auto
   plugin!](https://github.com/galette-plugins/plugin-auto/releases/latest)
 * [Get Auto plugin nightly
   build!](https://github.com/galette-plugins/plugin-auto/releases/tag/nightly)
 
-Extract the downloaded archive in Galette `plugins` directory. For example,
-under linux (replacing `{url}` and `{version}` with correct values):
+Estrai l'archivio scaricato nella cartella `plugins` di Galette. Per esempio, su
+Linux (sostituendo `{url}` e `{version}` con i rispettivi valori):
 
 ```bash
 $ cd /var/www/html/galette/plugins
@@ -38,24 +39,24 @@ $ wget {url}
 $ tar xjvf galette-plugin-auto-{version}.tar.bz2
 ```
 
-## Database initialisation
+## Inizializzazione del database
 
-In order to work, this plugin requires several tables in the database. See
-[Galette plugins management
-interface](https://doc.galette.eu/en/master/plugins/index.html#plugins-managment).
+Per poter funzionare, questo componente aggiuntivo richiede diverse nuove
+tabelle nel database. Vedi [Interfaccia di gestione dei componenti aggiuntivi di
+Galette](https://doc.galette.eu/en/master/plugins/index.html#plugins-managment).
 
-And this is finished; Auto plugin is installed :)
+Abbiamo finito; il componente aggiuntivo Auto è stato installato :)
 
-There is no particular setup required, you can just enter data in the database.
+Non ci sono particolari impostazioni richieste, puoi direttamente inserire i
+dati nel database.
 
-## Configure required fields
+## Configura i campi necessari
 
-When adding a new vehicle in database, there are several fields that are
-required, but that may not fit your needs. In such case, you can define your own
-required fields: just create a `local_auto_required.inc.php` file in your
-Galette `config` directory and declare an array of the fields you want to
-require. As example, if you just want to require name and model for a car, you
-will need:
+Quando aggiungi un nuovo veicolo nel database, ci sono diversi campi necessari,
+ma che potrebbero non interessarti. In questi casi, puoi definire i tuoi campi
+personalizzati: crea un file `local_auto_required.inc.php` nella cartella
+`config` di Galette e dichiara un vettore di campi di cui necessiti. Per
+esempio, se hai bisogno solo il nome e il modello di un'auto, avrai bisogno di:
 
 ```php
 <?php
