@@ -1,36 +1,37 @@
 ---
-title: Documentation
+title: Документація
 description: Plugin to manage Automobile clubs
 ---
 
-This plugin provides vehicles management for automobile clubs, you can manage:
+Це розширення забезпечує управління транспортними засобами для автомобільних
+клубів, ви можете управляти:
 
-* vehicles (owner, several information, photo, etc),
-* vehicle history modification (owner, color, ...),
-* brands,
-* models,
-* transmission types,
-* body types,
-* colors,
-* finitions,
-* states.
+* транспортні засоби (власник, кілька відомостей, світлина тощо),
+* модифікація історії автомобіля (власник, колір, ...),
+* бренди,
+* моделі,
+* види передачі,
+* види кузова,
+* кольори,
+* оздоблення,
+* функції.
 
-This plugin has been initially developed in collaboration with Anatole from
-[Club 404](https://www.leclub404.com/), and François from [club Fiat
-500](http://www.club500.fr/). A big thanks to them for their precious help
-during plugin development :)
+Це розширення було спочатку розроблене у співпраці з Anatole з [Club
+404](https://www.leclub404.com/), та François з [club Fiat
+500](http://www.club500.fr/). Красно дякуємо їм за дорогоцінну допомогу під час
+розвитку розширення :)
 
-## Installation
+## Встановлення
 
-First of all, download the plugin:
+Перш за все, завантажте розширення:
 
 * [Get latest Auto
   plugin!](https://github.com/galette-plugins/plugin-auto/releases/latest)
 * [Get Auto plugin nightly
   build!](https://github.com/galette-plugins/plugin-auto/releases/tag/nightly)
 
-Extract the downloaded archive in Galette `plugins` directory. For example,
-under linux (replacing `{url}` and `{version}` with correct values):
+Витягніть завантажений архів у каталог Galette `plugins`. Наприклад, ось
+вказівки під Linux (замініть `{url}` та `{version}` правильними значеннями):
 
 ```bash
 $ cd /var/www/html/galette/plugins
@@ -38,24 +39,23 @@ $ wget {url}
 $ tar xjvf galette-plugin-auto-{version}.tar.bz2
 ```
 
-## Database initialisation
+## Започаткування бази даних
 
-In order to work, this plugin requires several tables in the database. See
-[Galette plugins management
-interface](https://doc.galette.eu/en/master/plugins/index.html#plugins-managment).
+Для роботи цього розширення потрібно кілька таблиць у базі даних. Див [Інтерфейс
+управління розширеннями
+Galette](https://doc.galette.eu/en/master/plugins/index.html#plugins-managment).
 
-And this is finished; Auto plugin is installed :)
+Усе завершено. Розширення "Auto" встановлено :)
 
-There is no particular setup required, you can just enter data in the database.
+Особливого налаштування не потрібно, ви можете просто ввести дані в базу даних.
 
-## Configure required fields
+## Налаштуйте обов’язкові поля
 
-When adding a new vehicle in database, there are several fields that are
-required, but that may not fit your needs. In such case, you can define your own
-required fields: just create a `local_auto_required.inc.php` file in your
-Galette `config` directory and declare an array of the fields you want to
-require. As example, if you just want to require name and model for a car, you
-will need:
+При додаванні нового автомобіля в базу даних є кілька полів, які необхідні, але
+які можуть не відповідати вашим потребам. В цьому випадку ви можете визначити
+свої власні обов'язкові поля: просто створіть `local_auto_required.inc.php` файл
+у вашім каталозі Galette `config` і оголосіть масив необхідних полів. Наприклад,
+якщо ви просто хочете вимагати назву і модель автомобіля, вам це знадобиться:
 
 ```php
 <?php
