@@ -1,36 +1,38 @@
 ---
-title: Documentation
+title: ஆவணமாக்கல்
 description: Plugin to manage Automobile clubs
 ---
 
-This plugin provides vehicles management for automobile clubs, you can manage:
+இந்த சொருகி ஆட்டோமொபைல் கிளப்புகளுக்கான வாகன நிர்வாகத்தை வழங்குகிறது, நீங்கள்
+நிர்வகிக்கலாம்:
 
-* vehicles (owner, several information, photo, etc),
-* vehicle history modification (owner, color, ...),
-* brands,
-* models,
-* transmission types,
-* body types,
-* colors,
-* finitions,
-* states.
+* வாகனங்கள் (உரிமையாளர், பல தகவல்கள், புகைப்படம் போன்றவை)
+* வாகன வரலாறு மாற்றம் (உரிமையாளர், நிறம், ...),
+* பிராண்டுகள்,
+* மாதிரிகள்,
+* பரிமாற்ற வகைகள்,
+* உடல் வகைகள்,
+* நிறங்கள்,
+* முடிகிறது,
+* மாநிலங்கள்.
 
-This plugin has been initially developed in collaboration with Anatole from
-[Club 404](https://www.leclub404.com/), and François from [club Fiat
-500](http://www.club500.fr/). A big thanks to them for their precious help
-during plugin development :)
+இந்தச் செருகுநிரல் ஆரம்பத்தில் [கிளப் 404](https://www.leclub404.com/) இலிருந்து
+அனடோல் மற்றும் [கிளப் ஃபியட் 500](http://www.club500.fr/) இலிருந்து François
+உடன் இணைந்து உருவாக்கப்பட்டது. சொருகி மேம்பாட்டின் போது அவர்களின் விலைமதிப்பற்ற
+உதவிக்கு அவர்களுக்கு ஒரு பெரிய நன்றி :)
 
-## Installation
+## நிறுவல்
 
-First of all, download the plugin:
+முதலில், சொருகி பதிவிறக்கவும்:
 
 * [Get latest Auto
   plugin!](https://github.com/galette-plugins/plugin-auto/releases/latest)
 * [Get Auto plugin nightly
   build!](https://github.com/galette-plugins/plugin-auto/releases/tag/nightly)
 
-Extract the downloaded archive in Galette `plugins` directory. For example,
-under linux (replacing `{url}` and `{version}` with correct values):
+பதிவிறக்கம் செய்யப்பட்ட காப்பகத்தைக் கேலட் `செருகுநிரல்கள்` கோப்பகத்தில்
+பிரித்தெடுக்கவும். எடுத்துக்காட்டாக, லினக்சின் கீழ் (`{url}` மற்றும் `{version}`
+ஆகியவற்றை சரியான மதிப்புகளுடன் மாற்றுகிறது):
 
 ```bash
 $ cd /var/www/html/galette/plugins
@@ -38,24 +40,24 @@ $ wget {url}
 $ tar xjvf galette-plugin-auto-{version}.tar.bz2
 ```
 
-## Database initialisation
+## தரவுத்தள துவக்கம்
 
-In order to work, this plugin requires several tables in the database. See
-[Galette plugins management
-interface](https://doc.galette.eu/en/master/plugins/index.html#plugins-managment).
+வேலை செய்ய, இந்தச் சொருகி தரவுத்தளத்தில் பல அட்டவணைகள் தேவை. காண்க [கேலட்
+செருகுநிரல்கள் மேலாண்மை
+இடைமுகம்](https://doc.galette.eu/en/master/plugins/index.html#plugins-managment).
 
-And this is finished; Auto plugin is installed :)
+மேலும் இது முடிந்தது; தானியங்கு செருகுநிரல் நிறுவப்பட்டது :)
 
-There is no particular setup required, you can just enter data in the database.
+குறிப்பிட்ட அமைப்பு எதுவும் தேவையில்லை, நீங்கள் தரவுத்தளத்தில் தரவை உள்ளிடலாம்.
 
-## Configure required fields
+## தேவையான புலங்களை உள்ளமைக்கவும்
 
-When adding a new vehicle in database, there are several fields that are
-required, but that may not fit your needs. In such case, you can define your own
-required fields: just create a `local_auto_required.inc.php` file in your
-Galette `config` directory and declare an array of the fields you want to
-require. As example, if you just want to require name and model for a car, you
-will need:
+தரவுத்தளத்தில் புதிய வாகனத்தைச் சேர்க்கும் போது, பல துறைகள் தேவைப்படும், ஆனால்
+அது உங்கள் தேவைகளுக்குப் பொருந்தாமல் போகலாம். இதுபோன்ற சந்தர்ப்பங்களில்,
+உங்களுக்குத் தேவையான புலங்களை நீங்கள் வரையறுக்கலாம்: உங்கள் Galette `config`
+கோப்பகத்தில் `local_auto_required.inc.php` கோப்பை உருவாக்கி, உங்களுக்குத்
+தேவைப்படும் புலங்களின் வரிசையை அறிவிக்கவும். உதாரணமாக, நீங்கள் ஒரு காருக்கு
+பெயர் மற்றும் மாதிரி தேவை என்றால், உங்களுக்கு இது தேவைப்படும்:
 
 ```php
 <?php
