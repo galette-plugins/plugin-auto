@@ -6,17 +6,17 @@ description: Plugin to manage Automobile clubs
 A [Galette](https://galette.eu) plugin to manage cars and owners for automobile
 clubs.
 
-This plugin provides vehicles management for automobile clubs, you can manage:
+Ta vtičnik omogoča upravljanje vozil za avtomobilske klube, upravljate lahko:
 
-* vehicles (owner, several information, photo, etc),
-* vehicle history modification (owner, color, ...),
-* brands,
-* models,
-* transmission types,
-* body types,
-* colors,
-* finitions,
-* states.
+* vozila (lastnik, več informacij, fotografija itd.),
+* sprememba zgodovine vozila (lastnik, barva, ...),
+* blagovne znamke,
+* modeli,
+* vrste prenosov,
+* tipi telesa,
+* barve,
+* sklepi,
+* države.
 
 * [documentation](documentation.html)
 * [bugs and features](https://bugs.galette.eu/projects/galette-plugin-auto)
