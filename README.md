@@ -1,16 +1,16 @@
 # Galette Auto plugin
 
-[![GitHub license](https://img.shields.io/github/license/galette/galette.svg)](https://github.com/galette/plugin-auto/blob/master/COPYING)
+[![GitHub license](https://img.shields.io/github/license/galette/plugin-auto)](https://github.com/galette/plugin-auto/blob/master/COPYING)
 
 ### English
 
 A [Galette](https://galette.eu) plugin to manage cars and owners for automobile clubs.
 
 * website: https://galette.eu - https://doc.galette.eu/en/master/plugins/auto.html
-* bugs and features: http://bugs.galette.eu/projects/galette-plugin-auto
+* bugs and features: https://bugs.galette.eu/projects/galette-plugin-auto
 * mailing lists:
-  * users: https://listengine.tuxfamily.org/lists.galette.eu/users/
-  * developpers: https://listengine.tuxfamily.org/lists.galette.eu/devel/
+  * users: https://lists.mailman3.com/postorius/lists/galette-users.mailman3.com/
+  * developpers: https://lists.mailman3.com/postorius/lists/galette-devel.mailman3.com/
 * documentation: https://doc.galette.eu/en/master/plugins/auto.html
 
 To use Galette Auto plugin, you'll need a reliable Galette version, and of course the plugin itself by either:
@@ -23,10 +23,10 @@ To use Galette Auto plugin, you'll need a reliable Galette version, and of cours
 Un plugin [Galette](https://galette.eu) pour gérer voitures et propriétaires de clubs automobile.
 
 * site web : https://galette.eu - https://doc.galette.eu/fr/master/plugins/auto.html
-* bogues et fonctionnalités : http://bugs.galette.eu/projects/galette-plugin-auto
+* bogues et fonctionnalités : https://bugs.galette.eu/projects/galette-plugin-auto
 * liste de diffusion :
-  * utilisateurs : https://listengine.tuxfamily.org/lists.galette.eu/users/
-  * développeurs : https://listengine.tuxfamily.org/lists.galette.eu/devel/
+  * utilisateurs : https://lists.mailman3.com/postorius/lists/galette-users.mailman3.com/
+  * développeurs : https://lists.mailman3.com/postorius/lists/galette-devel.mailman3.com/
 * documentation : https://doc.galette.eu/fr/master/plugins/auto.html
 
 Pour utiliser le plugin Auto pour Galette, vous aurez besoin d'une version adéquate de Galette, ainsi que du plugin lui même :
