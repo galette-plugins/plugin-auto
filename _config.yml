@@ -1,0 +1,36 @@
+remote_theme: galette/theme-ghpages
+
+title: Galette Auto
+description: Plugin to manage Automobile clubs
+author: Johan Cwiklinski
+
+# Developed and maintained by the Galette team, unlike most of the repositories
+# in this organisation — hence the pill in the header.
+maintainer: core
+
+# No version: releases are built by GitHub Actions, so the theme reads the latest
+# one and derives both download URLs from `archive`. Nothing to bump here, and
+# nothing written into a page, where it would become a string every translator
+# has to carry.
+plugin:
+  name: Auto
+  archive: galette-plugin-auto
+  min_galette: "1.3.0"
+
+# GitHub issues are disabled on this repository; the tracker is the Redmine
+# project, as for Galette itself.
+tracker_url: https://bugs.galette.eu/projects/galette-plugin-auto
+
+# The theme takes the language from the first path segment and the page identity
+# from the file name, so a translation Weblate adds needs nothing here. No `lang`
+# — it would override the derivation for every page.
+defaults:
+  - scope: {path: ""}
+    values: {layout: default}
+
+# Without this, README.md would be copied into the published site.
+exclude:
+  - README.md
+  - Gemfile
+  - Gemfile.lock
+  - vendor
