@@ -1,0 +1,55 @@
+name: Release
+
+on:
+  push:
+    tags:
+      # bin/release only accepts digits joined by dots
+      - '[0-9]+.[0-9]+.[0-9]+'
+      - '[0-9]+.[0-9]+.[0-9]+.[0-9]+'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Tag to build'
+        required: true
+      dry-run:
+        description: 'Build only, publish nothing'
+        type: boolean
+        default: true
+
+concurrency:
+  group: "release-${{ github.ref }}"
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+  id-token: write
+  attestations: write
+  artifact-metadata: write
+  # the plugin page reads the latest release, so it has to be rebuilt after one
+  pages: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      # The default branch, not the tag: bin/release archives the tag's tree
+      # (git archive <tag>) but the tooling that does it has to be the current
+      # one, exactly as when a maintainer runs it from their own checkout.
+      # Not fetch-depth: 0 nor fetch-tags: true either, they would bring in
+      # every tag, lightweight ones included, which bin/release cannot read.
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+          fetch-depth: 1
+
+      - name: Fetch the annotated tag
+        env:
+          TAG: ${{ inputs.version || github.ref_name }}
+        run: git fetch --no-tags --force --depth=1 origin "+refs/tags/${TAG}:refs/tags/${TAG}"
+
+      - name: Build and publish
+        uses: galette/.github/actions/release-plugin@main
+        with:
+          version: ${{ inputs.version || github.ref_name }}
+          dry-run: ${{ inputs.dry-run || false }}
