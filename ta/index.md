@@ -6,17 +6,18 @@ description: Plugin to manage Automobile clubs
 A [Galette](https://galette.eu) plugin to manage cars and owners for automobile
 clubs.
 
-This plugin provides vehicles management for automobile clubs, you can manage:
+இந்த சொருகி ஆட்டோமொபைல் கிளப்புகளுக்கான வாகன நிர்வாகத்தை வழங்குகிறது, நீங்கள்
+நிர்வகிக்கலாம்:
 
-* vehicles (owner, several information, photo, etc),
-* vehicle history modification (owner, color, ...),
-* brands,
-* models,
-* transmission types,
-* body types,
-* colors,
-* finitions,
-* states.
+* வாகனங்கள் (உரிமையாளர், பல தகவல்கள், புகைப்படம் போன்றவை)
+* வாகன வரலாறு மாற்றம் (உரிமையாளர், நிறம், ...),
+* பிராண்டுகள்,
+* மாதிரிகள்,
+* பரிமாற்ற வகைகள்,
+* உடல் வகைகள்,
+* நிறங்கள்,
+* முடிகிறது,
+* மாநிலங்கள்.
 
 * [documentation](documentation.html)
 * [bugs and features](https://bugs.galette.eu/projects/galette-plugin-auto)
