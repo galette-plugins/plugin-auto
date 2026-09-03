@@ -1,10 +1,10 @@
 ---
 title: Galette Auto
-description: Plugin to manage Automobile clubs
+description: Plugin pour gérer des clubs automobiles
 ---
 
-A [Galette](https://galette.eu) plugin to manage cars and owners for automobile
-clubs.
+Un plugin [Galette](https://galette.eu) pour gérer des voitures et propriétaires
+pour les clubs automobiles.
 
 Ce plugin fournit une gestion de véhicules pour des clubs automobiles, vous
 pouvez gérer :
@@ -20,18 +20,19 @@ pouvez gérer :
 * états.
 
 * [documentation](documentation.html)
-* [bugs and features](https://bugs.galette.eu/projects/galette-plugin-auto)
-* [source code](https://github.com/galette-plugins/plugin-auto)
-* mailing lists:
-  [users](https://lists.mailman3.com/postorius/lists/galette-users.mailman3.com/),
-  [developers](https://lists.mailman3.com/postorius/lists/galette-devel.mailman3.com/)
+* [bogues et
+  fonctionnalités](https://bugs.galette.eu/projects/galette-plugin-auto)
+* [code source](https://github.com/galette-plugins/plugin-auto)
+* listes de diffusion :
+  [utilisateurs](https://lists.mailman3.com/postorius/lists/galette-users.mailman3.com/),
+  [développeurs](https://lists.mailman3.com/postorius/lists/galette-devel.mailman3.com/)
 
-To use it you need a recent enough Galette — the required version is shown at
-the top of this page — and the plugin itself, either by:
+Pour l'utiliser, vous avez besoin d'une Galette assez récente — la version
+requise est affichée en haut de cette page — et le plugin lui-même, soit par :
 
-* downloading it with the buttons at the top of this page,
-* or using the [source code from the
-  repository](https://github.com/galette-plugins/plugin-auto), which requires
-  some technical skills.
+* le télécharger à l'aide des boutons en haut de la page,
+* ou utiliser le [code source depuis le
+  dépôt](https://github.com/galette-plugins/plugin-auto), ce qui demandes
+  quelques compétences techniques.
 
-See the [documentation](documentation.html) for the installation steps.
+Voir la [documentation](documentation.html) pour les étapes d'installation.
