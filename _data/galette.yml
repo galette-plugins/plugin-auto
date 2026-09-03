@@ -1,0 +1,19 @@
+# GENERATED at each release by galette/.github/actions/release-plugin, from
+# `compver` in _define.php at the released tag. Do not edit it: the next
+# release overwrites it.
+#
+# `compver` is the Galette generation this release targets, not a floor with
+# no ceiling: Galette disables a plugin whose compver is lower than its own
+# GALETTE_COMPAT_VERSION. So the page reads "Compatible Galette 1.2",
+# and the generation after that one refuses this release.
+#
+# `release` is what the theme checks the rest against: it ignores these
+# values unless they describe the release the download cartouche names.
+#
+# `rank` is compver packed into an integer, because Liquid has no version
+# comparison. The page shows a verdict only on a value it can rank, so an
+# unrankable compver is published without one rather than judged wrongly.
+release: "2.2.1"
+compver: "1.2.0"
+series: "1.2"
+rank: 1002000
