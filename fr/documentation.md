@@ -1,6 +1,6 @@
 ---
 title: Documentation
-description: Plugin to manage Automobile clubs
+description: Plugin pour gérer des clubs automobiles
 ---
 
 Ce plugin fournit une gestion de véhicules pour des clubs automobiles, vous
@@ -25,10 +25,10 @@ durant le développement du plugin :)
 
 Tout d'abord, téléchargez le plugin :
 
-* [Get latest Auto
-  plugin!](https://github.com/galette-plugins/plugin-auto/releases/latest)
-* [Get Auto plugin nightly
-  build!](https://github.com/galette-plugins/plugin-auto/releases/tag/nightly)
+* [Obtenir le dernier plugin Auto
+  !](https://github.com/galette-plugins/plugin-auto/releases/latest)
+* [Obtenir la nightly du plugin Auto
+  !](https://github.com/galette-plugins/plugin-auto/releases/tag/nightly)
 
 Extrayez l'archive téléchargée dans le dossier `plugins` de Galette. Par
 exemple, sous linux (en remplaçant `{url}` et `{version}` par les valeurs
