@@ -23,16 +23,15 @@ wertvolle Hilfe bei der Plugin-Entwicklung :)
 
 ## Installation
 
-Laden Sie zunächst das Plugin herunter:
+Als erstes, Lade das Plugin herunter:
 
 * [Get latest Auto
   plugin!](https://github.com/galette-plugins/plugin-auto/releases/latest)
 * [Get Auto plugin nightly
   build!](https://github.com/galette-plugins/plugin-auto/releases/tag/nightly)
 
-Extrahieren Sie das heruntergeladene Archiv im Verzeichnis Galette `plugins`.
-Zum Beispiel unter Linux (Ersetzen Sie `{url}` und `{version}` durch korrekte
-Werte):
+Extract the downloaded archive in Galette `plugins` directory. For example,
+under linux (replacing `{url}` and `{version}` with correct values):
 
 ```bash
 $ cd /var/www/html/galette/plugins
@@ -42,9 +41,9 @@ $ tar xjvf galette-plugin-auto-{version}.tar.bz2
 
 ## Datenbank Initialisierung
 
-Um zu funktionieren, benötigt dieses Plugin mehrere Tabellen in der Datenbank.
-Siehe [Galette Plugins
-Management-Schnittstelle](https://doc.galette.eu/en/master/plugins/index.html#plugins-managment).
+Damit es Funktioniert, benötigt dieses Plugin verschiedene Tabellen in der
+Datenbank. Weiteres sehen sie hier [Galette plugins management
+interface](https://doc.galette.eu/en/master/plugins/index.html#plugins-managment).
 
 Und es ist abgeschlossen; Auto Plugin ist installiert :)
 
