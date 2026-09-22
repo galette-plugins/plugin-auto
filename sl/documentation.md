@@ -1,6 +1,6 @@
 ---
 title: Dokumentacija
-description: Plugin to manage Automobile clubs
+description: Vtičnik za upravljanje avtomobilskih klubov
 ---
 
 Ta vtičnik omogoča upravljanje vozil za avtomobilske klube, upravljate lahko:
@@ -24,10 +24,10 @@ vtičnika :)
 
 Najprej prenesite vtičnik:
 
-* [Get latest Auto
-  plugin!](https://github.com/galette-plugins/plugin-auto/releases/latest)
-* [Get Auto plugin nightly
-  build!](https://github.com/galette-plugins/plugin-auto/releases/tag/nightly)
+* [Pridobite najnovejši vtičnik
+  Auto!](https://github.com/galette-plugins/plugin-auto/releases/latest)
+* [Pridobite najnovejši vtičnik
+  Auto!](https://github.com/galette-plugins/plugin-auto/releases/tag/nightly)
 
 Razširite prenesen arhiv v imenik Galette `plugins`. Na primer v Linuxu
 (zamenjajte `{url}` in `{version}` s pravilnimi vrednostmi):
