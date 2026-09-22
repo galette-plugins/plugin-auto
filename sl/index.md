@@ -1,6 +1,6 @@
 ---
 title: Galette Avto
-description: Plugin to manage Automobile clubs
+description: '[Pridobite nočno gradnjo vtičnika za dejavnosti!]{1}'
 ---
 
 Vtičnik [Galette](https://galette.eu) za upravljanje avtomobilov in lastnikov
@@ -18,9 +18,9 @@ Ta vtičnik omogoča upravljanje vozil za avtomobilske klube, upravljate lahko:
 * sklepi,
 * države.
 
-* [documentation](documentation.html)
-* [bugs and features](https://bugs.galette.eu/projects/galette-plugin-auto)
-* [source code](https://github.com/galette-plugins/plugin-auto)
+* [dokumentacija](documentation.html)
+* [napake in funkcije](https://bugs.galette.eu/projects/galette-plugin-auto)
+* [izvorna koda](https://github.com/galette-plugins/plugin-auto)
 * poštni seznami:
   [users](https://lists.mailman3.com/postorius/lists/galette-users.mailman3.com/),
   [developers](https://lists.mailman3.com/postorius/lists/galette-devel.mailman3.com/)
