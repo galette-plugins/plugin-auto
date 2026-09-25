@@ -79,19 +79,19 @@ class PluginGaletteAuto extends GalettePlugin implements MenuProviderInterface, 
                             'label' => _T("Brands list", "auto"),
                             'route' => ['name' => 'brandsList']
                         ],
-                        [
-                            'label' => _T("Models list", "auto"),
-                            'route' => [
-                                'name' => 'modelsList',
-                                'aliases' => ['modelAdd', 'modelEdit']
-                            ]
-                        ],
-
                     ]
                 );
             }
 
             if ($login->isAdmin() || $login->isStaff() || $login->isGroupManager()) {
+                //group managers can manage models, but not other properties
+                $menus['plugin_auto']['items'][] = [
+                    'label' => _T("Models list", "auto"),
+                    'route' => [
+                        'name' => 'modelsList',
+                        'aliases' => ['modelAdd', 'modelEdit']
+                    ]
+                ];
                 $menus['plugin_auto']['items'][] = [
                     'label' => _T("Cars list", "auto"),
                     'route' => [
