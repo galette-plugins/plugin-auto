@@ -11,7 +11,6 @@ declare(strict_types=1);
 namespace GaletteAuto\Filters;
 
 use Galette\Core\Pagination;
-use Laminas\Db\Sql\Select;
 
 /**
  * Autos list filters and paginator
@@ -30,18 +29,6 @@ class AutosList extends Pagination
     {
         return 'car_name';
     }
-
-    /**
-     * Add SQL limit
-     *
-     * @param Select $select Original select
-     */
-    public function setLimit(Select $select): self
-    {
-        $this->setLimits($select);
-        return $this;
-    }
-
 
     /**
      * Build href

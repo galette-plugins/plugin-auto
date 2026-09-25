@@ -248,7 +248,7 @@ class Controller extends AbstractPluginController
         ];
 
         if ($id_adh === null) {
-            $params['autos'] = $auto->getList(true, $this->mine, null, $afilters, null, $this->public);
+            $params['autos'] = $auto->getList(true, $this->mine, $afilters, null, $this->public);
         } else {
             $params['id_adh'] = $id_adh;
             $params['autos'] = $auto->getMemberList($id_adh, $afilters);

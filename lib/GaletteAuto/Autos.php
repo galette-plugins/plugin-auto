@@ -145,7 +145,7 @@ class Autos
      */
     public function getMemberList(int $id_adh, ?AutosList $filters): array
     {
-        return $this->getList(true, false, null, $filters, $id_adh);
+        return $this->getList(true, false, $filters, $id_adh);
     }
 
     /**
@@ -154,8 +154,6 @@ class Autos
      * @param bool           $as_autos return the results as an array of Auto object.
      *                                 When true, fields are not relevant
      * @param bool           $mine     show only current logged member cars
-     * @param ?array<string> $fields   field(s) name(s) to get.
-     *                                 or an array. If null, all fields will be returned
      * @param ?AutosList     $filters  Filters
      * @param ?int           $id_adh   Member id
      * @param bool           $public   Get public list
@@ -165,21 +163,14 @@ class Autos
     public function getList(
         bool $as_autos = false,
         bool $mine = false,
-        ?array $fields = null,
         ?AutosList $filters = null,
         ?int $id_adh = null,
         bool $public = false
     ): array|ResultSet {
         global $login;
 
-        $fieldsList = ['*'];
-        if (is_array($fields) && count($fields)) {
-            $fieldsList = $fields;
-        }
-
         try {
             $select = $this->zdb->select(AUTO_PREFIX . self::TABLE, 'a');
-            $select->columns($fieldsList);
 
             //restrict on user self vehicles when not admin, or if admin and requested 'my vehicles'
             //restrict on public authorized users if public list
@@ -232,7 +223,7 @@ class Autos
             $select->order(['a.car_name ASC', 'a.' . self::PK . ' ASC']);
 
             if ($filters !== null) {
-                $filters->setLimit($select);
+                $filters->setLimits($select);
             }
 
             $results = $this->zdb->execute($select);

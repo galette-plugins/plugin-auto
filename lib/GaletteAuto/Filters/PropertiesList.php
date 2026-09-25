@@ -11,7 +11,6 @@ declare(strict_types=1);
 namespace GaletteAuto\Filters;
 
 use Galette\Core\Pagination;
-use Laminas\Db\Sql\Select;
 
 /**
  * Properties list filters and paginator
@@ -29,16 +28,5 @@ class PropertiesList extends Pagination
     protected function getDefaultOrder(): string
     {
         return 'field';
-    }
-
-    /**
-     * Add SQL limit
-     *
-     * @param Select $select Original select
-     */
-    public function setLimit(Select $select): self
-    {
-        $this->setLimits($select);
-        return $$this;
     }
 }
