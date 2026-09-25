@@ -98,7 +98,7 @@ class Autos
                         );
                     } else {
                         $hist->add(
-                            "Vehicle Picture deleted",
+                            _T("Vehicle picture deleted", "auto"),
                             $str_v
                         );
                     }
