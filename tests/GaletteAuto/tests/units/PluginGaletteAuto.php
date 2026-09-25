@@ -83,4 +83,37 @@ class PluginGaletteAuto extends GaletteTestCase
         $this->assertTrue($this->login->login($mdata['login_adh'], $mdata['mdp_adh']));
         $this->assertSame([], $this->getMenuRoutes());
     }
+
+    /**
+     * The public vehicles page is declared to the core, with a visibility of its own
+     */
+    public function testPublicPage(): void
+    {
+        $name = 'pref_auto_publicpages_visibility_vehicles';
+        $plugin = $this->container->get(\GaletteAuto\PluginGaletteAuto::class);
+
+        $this->assertSame(['vehicles' => ['routes' => ['publicVehiclesList']]], $plugin->getPublicPages());
+        $this->assertSame('Vehicles', $plugin->getPublicPageLabel('vehicles'));
+        $this->assertTrue(\Galette\Core\PreferencesSchema::isPublicPage($name));
+        $this->assertSame($name, \Galette\Core\PreferencesSchema::getPublicPageRight('publicVehiclesList'));
+        $this->assertSame(
+            \Galette\Enums\PublicPageVisibility::Inherit->value,
+            \Galette\Core\PreferencesSchema::get($name)['default']
+        );
+
+        //the public menu entry follows it, not the default visibility
+        $this->setRawPreference('pref_bool_publicpages', true);
+        $this->setRawPreference(
+            'pref_publicpages_visibility_generic',
+            \Galette\Enums\PublicPageVisibility::Hidden->value
+        );
+        $this->setRawPreference($name, \Galette\Enums\PublicPageVisibility::Everyone->value);
+        $this->assertSame(['publicVehiclesList'], array_map(
+            fn($item) => $item['route']['name'],
+            $plugin->getPublicMenuItems()
+        ));
+
+        $this->setRawPreference($name, \Galette\Enums\PublicPageVisibility::Inherit->value);
+        $this->assertSame([], $plugin->getPublicMenuItems());
+    }
 }

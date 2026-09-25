@@ -17,6 +17,7 @@ use Galette\Core\Plugins\DashboardProviderInterface;
 use Galette\Core\Plugins\InstallableInterface;
 use Galette\Core\Plugins\MemberActionProviderInterface;
 use Galette\Core\Plugins\MenuProviderInterface;
+use Galette\Core\Plugins\PublicPagesProviderInterface;
 use Galette\Entity\Adherent;
 use Galette\Core\GalettePlugin;
 
@@ -26,7 +27,7 @@ use Galette\Core\GalettePlugin;
  * @author Johan Cwiklinski <johan@x-tnd.be>
  */
 
-class PluginGaletteAuto extends GalettePlugin implements MenuProviderInterface, DashboardProviderInterface, MemberActionProviderInterface, InstallableInterface
+class PluginGaletteAuto extends GalettePlugin implements MenuProviderInterface, DashboardProviderInterface, MemberActionProviderInterface, InstallableInterface, PublicPagesProviderInterface
 {
     #[Inject]
     private readonly Db $zdb; //@phpstan-ignore property.uninitializedReadonly,property.onlyRead (injected from DI)
@@ -133,6 +134,28 @@ class PluginGaletteAuto extends GalettePlugin implements MenuProviderInterface, 
                 'icon' => 'car'
             ]
         ];
+    }
+
+    /**
+     * Get the public pages the plugin declares
+     *
+     * @return array<string, array{routes: list<string>, default?: int}>
+     */
+    public function getPublicPages(): array
+    {
+        return [
+            'vehicles' => ['routes' => ['publicVehiclesList']],
+        ];
+    }
+
+    /**
+     * Get the label of a declared public page
+     *
+     * @param string $id Page identifier
+     */
+    public function getPublicPageLabel(string $id): string
+    {
+        return _T("Vehicles", "auto");
     }
 
     /**
