@@ -509,11 +509,16 @@ class Controller extends GaletteRoutingTestCase
         $content = file_get_contents(GALETTE_ROOT . '../tests/fixtures/galette_pro.png');
         $insert = $this->zdb->insert(AUTO_PREFIX . \GaletteAuto\Picture::TABLE);
         $insert->values([
-            Auto::PK => $car_id,
-            'picture' => $content,
-            'format' => 'png',
+            Auto::PK => ':' . Auto::PK,
+            'picture' => ':picture',
+            'format' => ':format',
         ]);
-        $this->zdb->execute($insert);
+        //binary content must be sent as a LOB for PostgreSQL
+        $stmt = $this->zdb->sql->prepareStatementForSqlObject($insert);
+        $container = $stmt->getParameterContainer();
+        $container->offsetSet('picture', ':picture', $container::TYPE_LOB);
+        $stmt->setParameterContainer($container);
+        $stmt->execute([Auto::PK => $car_id, 'picture' => $content, 'format' => 'png']);
         return md5($content);
     }
 
