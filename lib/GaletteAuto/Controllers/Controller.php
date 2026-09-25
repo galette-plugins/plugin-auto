@@ -397,7 +397,9 @@ class Controller extends AbstractPluginController
 
         $auto = new Auto($this->plugins, $this->zdb);
         if (!$is_new) {
-            $auto->load((int)$post[Auto::PK]);
+            if (!$auto->load((int)$id) || !$this->getAccess()->canManageMember($auto->owner_id)) {
+                return $this->accessDenied($response, 'Trying to store vehicle #' . $id);
+            }
         }
 
         $res = $auto->check($post);

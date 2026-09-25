@@ -98,6 +98,46 @@ class Controller extends GaletteRoutingTestCase
     }
 
     /**
+     * Get vehicle name from database
+     *
+     * @param int $car_id Vehicle ID
+     */
+    private function getVehicleName(int $car_id): string
+    {
+        $select = $this->zdb->select(AUTO_PREFIX . Auto::TABLE);
+        $select->where([Auto::PK => $car_id]);
+        return $this->zdb->execute($select)->current()['car_name'];
+    }
+
+    /**
+     * Build vehicle store request
+     *
+     * @param array<string,mixed> $data     Posted data
+     * @param ?int                $car_id   Vehicle ID, null for a new one
+     */
+    private function storeRequest(array $data, ?int $car_id = null): \Slim\Psr7\Request
+    {
+        $request = $car_id === null
+            ? $this->createRequest('doVehicleAdd', [], 'POST')
+            : $this->createRequest('doVehicleEdit', ['id' => (string)$car_id], 'POST');
+        return $request->withParsedBody(
+            $data + [
+                'registration' => 'GA-456-TE',
+                'name' => 'Changed',
+                'first_registration_date' => '2001-02-12',
+                'first_circulation_date' => '2001-02-13',
+                'fuel' => (string)Auto::FUEL_PETROL,
+                'model' => (string)$this->props['model'],
+                'color' => (string)$this->props['color'],
+                'body' => (string)$this->props['body'],
+                'finition' => (string)$this->props['finition'],
+                'state' => (string)$this->props['state'],
+                'transmission' => (string)$this->props['transmission'],
+            ]
+        );
+    }
+
+    /**
      * Log in given member
      *
      * @param array<string,mixed> $mdata Member data
@@ -267,5 +307,40 @@ class Controller extends GaletteRoutingTestCase
         $request = $this->createRequest('removeVehicles', [], 'POST');
         $request = $request->withParsedBody(['entries_sel' => [(string)$own_id]]);
         $this->expectOK($this->app->handle($request));
+    }
+
+    /**
+     * A member cannot modify the vehicle of another member
+     */
+    public function testMemberCannotStoreOtherVehicle(): void
+    {
+        $car_id = $this->createVehicle($this->getMemberOne()->id);
+        $this->getMemberTwo();
+
+        $this->logMember($this->dataAdherentTwo());
+        $this->expectAccessDenied(
+            $this->app->handle($this->storeRequest([], $car_id)),
+            'Trying to store vehicle #' . $car_id
+        );
+        $this->assertSame('Titine', $this->getVehicleName($car_id));
+    }
+
+    /**
+     * Stored vehicle is the one from the route, not the posted one
+     */
+    public function testStoreUsesRouteVehicle(): void
+    {
+        $member_two = $this->getMemberTwo();
+        $own_id = $this->createVehicle($member_two->id, 'Mine');
+        $other_id = $this->createVehicle($this->getMemberOne()->id);
+
+        $this->logMember($this->dataAdherentTwo());
+        $test_response = $this->app->handle(
+            $this->storeRequest([Auto::PK => (string)$other_id], $own_id)
+        );
+        $this->assertSame(301, $test_response->getStatusCode());
+        $this->expectFlashData(['success_detected' => ['Vehicle has been saved!']]);
+        $this->assertSame('Titine', $this->getVehicleName($other_id));
+        $this->assertSame('Changed', $this->getVehicleName($own_id));
     }
 }
