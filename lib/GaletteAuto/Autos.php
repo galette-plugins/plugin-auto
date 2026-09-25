@@ -151,12 +151,11 @@ class Autos
     /**
      * Get the list of all vehicles
      *
-     * @param bool           $as_autos return the results as an array of Auto object.
-     *                                 When true, fields are not relevant
-     * @param bool           $mine     show only current logged member cars
-     * @param ?AutosList     $filters  Filters
-     * @param ?int           $id_adh   Member id
-     * @param bool           $public   Get public list
+     * @param bool       $as_autos return the results as an array of Auto object
+     * @param bool       $mine     show only current logged member cars
+     * @param ?AutosList $filters  Filters
+     * @param ?int       $id_adh   Member id
+     * @param bool       $public   Get public list
      *
      * @return array<int, Autos>|ResultSet
      */
