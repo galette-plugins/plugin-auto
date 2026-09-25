@@ -40,7 +40,17 @@
 
         <tr>
             <td data-col-label="{{ _T("Car's photo", "auto") }}">
-                <img src="{{ url_for("vehiclePhoto", {"id": auto.id}) }}" class="ui tiny image" loading="lazy" alt="{{ auto.name }}"/>
+                {# a thumbnail: the picture scaled down to 80 pixels wide at most #}
+                {% set photo_width = auto.picture.getOptimalWidth() %}
+                {% set thumb_width = min(photo_width, 80) %}
+                <img
+                    src="{{ url_for("vehiclePhoto", {"id": auto.id}) }}"
+                    class="ui image"
+                    width="{{ thumb_width }}"
+                    height="{{ photo_width > 0 ? (auto.picture.getOptimalHeight() * thumb_width / photo_width)|round : thumb_width }}"
+                    loading="lazy"
+                    alt="{{ auto.name }}"
+                />
             </td>
             <td data-col-label="{{ _T("Name", "auto") }}">{{ auto.name }}</td>
             {# members kept out of the members list are not named #}
