@@ -698,4 +698,42 @@ class Controller extends GaletteRoutingTestCase
         $request = $this->createRequest('vehicleEdit', ['id' => (string)$car_id]);
         $this->expectOK($this->app->handle($request));
     }
+
+    /**
+     * Public list shows vehicles of every public member, and only them
+     */
+    public function testPublicList(): void
+    {
+        $member_one = $this->getMemberOne();
+        $member_two = $this->getMemberTwo();
+        $this->createVehicle($member_one->id, 'First public');
+        $this->createVehicle($member_two->id, 'Second public');
+
+        $this->setRawPreference('pref_bool_publicpages', true);
+        $this->setRawPreference(
+            'pref_publicpages_visibility_generic',
+            \Galette\Enums\PublicPageVisibility::Everyone->value
+        );
+
+        //no public member yet
+        $request = $this->createRequest('publicVehiclesList');
+        $test_response = $this->app->handle($request);
+        $this->expectOK($test_response);
+        $body = (string)$test_response->getBody();
+        $this->assertStringNotContainsString('First public', $body);
+        $this->assertStringNotContainsString('Second public', $body);
+
+        //both members public, more than one page of public members
+        $update = $this->zdb->update(Adherent::TABLE)
+            ->set(['bool_display_info' => true, 'bool_exempt_adh' => true]);
+        $update->where->in(Adherent::PK, [$member_one->id, $member_two->id]);
+        $this->zdb->execute($update);
+        $this->setRawPreference('pref_numrows', 1);
+
+        $test_response = $this->app->handle($request);
+        $this->expectOK($test_response);
+        $body = (string)$test_response->getBody();
+        $this->assertStringContainsString('First public', $body);
+        $this->assertStringContainsString('Second public', $body);
+    }
 }

@@ -187,17 +187,17 @@ class Autos
             if ($mine) {
                 $on_logged = true;
             } elseif ($public) {
-                $members = new \Galette\Repository\Members();
+                //all public members, not only the first page of them
+                $mfilters = new \Galette\Filters\MembersList();
+                $mfilters->show = 0;
+                $members = new \Galette\Repository\Members($mfilters);
                 $allpublic = $members->getPublicList(false);
-                $public_members = array_merge($allpublic['members'], $allpublic['staff']);
-                if (count($public_members)) {
-                    foreach ($public_members as $p) {
-                        $adhs[] = $p->id;
-                    }
-                    $select->where->in(Adherent::PK, $adhs);
-                } else {
-                    $on_logged = true;
+                //no public member: no vehicle to show
+                $adhs = [0];
+                foreach (array_merge($allpublic['members'], $allpublic['staff']) as $p) {
+                    $adhs[] = $p->id;
                 }
+                $select->where->in(Adherent::PK, $adhs);
             } elseif (!$login->isAdmin() && !$login->isStaff() && $login->isGroupManager()) {
                 $groups = new \Galette\Repository\Groups($this->zdb, $login);
                 $managed_users = $groups->getManagerUsers();
