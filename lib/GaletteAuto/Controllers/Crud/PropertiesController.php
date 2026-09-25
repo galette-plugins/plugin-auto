@@ -343,13 +343,9 @@ class PropertiesController extends AbstractPluginController
 
         $error_detected = [];
 
-        if (!$is_new) {
-            if (isset($post[$object->pk])) {
-                $object->load((int)$post[$object->pk]);
-            } else {
-                $error_detected[]
-                    = _T("- No id provided for modifying this record! (internal)", "auto");
-            }
+        if (!$is_new && !$object->load((int)$id)) {
+            $error_detected[]
+                = _T("- An error occurred while saving record. Please try again.", "auto");
         }
 
         $value = $post[$object->field] ?? null;
@@ -384,17 +380,17 @@ class PropertiesController extends AbstractPluginController
             //store entity in session
             $session_oname = 'auto_' . $property;
             $this->session->$session_oname = $object;
-            if (!$is_new) {
-                $id = $post[$object->pk];
+            if ($is_new) {
+                $route = $this->routeparser->urlFor('propertyAdd', ['property' => $property]);
+            } else {
+                $route = $this->routeparser->urlFor(
+                    'propertyEdit',
+                    [
+                        'property' => $property,
+                        'id' => (string)$id
+                    ]
+                );
             }
-            $route = $this->routeparser->urlFor(
-                'propertyEdit',
-                [
-                    'action' => $action,
-                    'property' => $property,
-                    'id' => $id
-                ]
-            );
 
             foreach ($error_detected as $error) {
                 $this->flash->addMessage(

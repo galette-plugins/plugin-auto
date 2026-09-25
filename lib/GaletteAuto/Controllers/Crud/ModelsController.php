@@ -164,23 +164,18 @@ class ModelsController extends AbstractPluginController
     {
         $model = new Model($this->zdb);
 
-        if ($this->session->auto_model !== null) {
-            $model->check($this->session->auto_model);
-            unset($this->session->auto_model);
-        }
-
-        $model_id = null;
-        if ($id !== null) {
-            $model_id = $id;
-        }
-
         if ($action === 'edit') {
             // initialize model structure with database values
-            $model->load($model_id);
-            if (!$model->id) {
+            if (!$model->load((int)$id)) {
                 //not possible to load, exit
                 throw new \RuntimeException('Model does not exists!');
             }
+        }
+
+        //values from a failed submission
+        if (isset($this->session->auto_model)) {
+            $model->check($this->session->auto_model);
+            unset($this->session->auto_model);
         }
 
         // template variable declaration
@@ -230,8 +225,8 @@ class ModelsController extends AbstractPluginController
         $model = new Model($this->zdb);
         $error_detected = [];
 
-        if (!$is_new) {
-            $model->load($post[Model::PK]);
+        if (!$is_new && !$model->load((int)$id)) {
+            throw new \RuntimeException('Model does not exists!');
         }
 
         if (!$model->check($post)) {
@@ -258,11 +253,10 @@ class ModelsController extends AbstractPluginController
             //store entity in session
             $this->session->auto_model = $post;
             if (!$is_new) {
-                $id = $post[Model::PK];
                 $route = $this->routeparser->urlFor(
                     'modelEdit',
                     [
-                        'id' => $id
+                        'id' => (string)$id
                     ]
                 );
             } else {
