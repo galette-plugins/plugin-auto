@@ -572,13 +572,47 @@ class Controller extends AbstractPluginController
     }
 
     /**
+     * Batch actions on vehicles list
+     */
+    public function batch(Request $request, Response $response): Response
+    {
+        $post = $request->getParsedBody();
+        $list_route = $this->routeparser->urlFor(
+            $this->getAccess()->isManager() ? 'vehiclesList' : 'myVehiclesList'
+        );
+
+        if (empty($post['entries_sel'])) {
+            return $this->redirectWithErrors(
+                $response,
+                [_T("No vehicle was selected, please check at least one name.", "auto")],
+                $list_route
+            );
+        }
+
+        $this->session->filter_vehicles = array_map('intval', (array)$post['entries_sel']);
+        if (isset($post['delete'])) {
+            return $response
+                ->withStatus(301)
+                ->withHeader('Location', $this->routeparser->urlFor('removeVehicles'));
+        }
+
+        Analog::log(
+            'Unknown batch action on vehicles list: ' . implode(', ', array_keys($post)),
+            Analog::WARNING
+        );
+        return $response
+            ->withStatus(301)
+            ->withHeader('Location', $list_route);
+    }
+
+    /**
      * Remove vehicles confirmation page
      */
     public function removeVehicles(Request $request, Response $response): Response
     {
         $post = $request->getParsedBody();
         $route = $this->routeparser->urlFor('vehiclesList');
-        $ids = $this->session->filter_vehicles ?? $post['entries_sel'] ?? [];
+        $ids = $post['entries_sel'] ?? $this->session->filter_vehicles ?? [];
         $ids = array_map('intval', (array)$ids);
 
         if (!$this->canManageVehicles($ids)) {
@@ -639,6 +673,7 @@ class Controller extends AbstractPluginController
 
             $autos = new Autos($this->plugins, $this->zdb);
             $del = $autos->removeVehicles($ids);
+            unset($this->session->filter_vehicles);
 
             if ($del !== true) {
                 $error_detected = _T("An error occurred trying to remove vehicles :/", "auto");

@@ -12,7 +12,6 @@ use Galette\Middleware\Authenticate;
 use GaletteAuto\Controllers\Controller;
 use GaletteAuto\Controllers\Crud\PropertiesController;
 use GaletteAuto\Controllers\Crud\ModelsController;
-use Slim\Routing\RouteParser;
 
 //Constants and classes from plugin
 require_once $module['root'] . '/_config.inc.php';
@@ -98,28 +97,7 @@ $app->post(
 //Batch actions on vehicles list
 $app->post(
     '/vehicles/batch',
-    function ($request, $response) use ($app, $container) {
-        $post = $request->getParsedBody();
-
-        if (isset($post['entries_sel'])) {
-            $container->get('session')->filter_vehicles = $post['entries_sel'];
-
-            if (isset($post['delete'])) {
-                return $response
-                    ->withStatus(301)
-                    ->withHeader('Location', $container->get(RouteParser::class)->urlFor('removeVehicles'));
-            }
-        } else {
-            $app->flash->addMessage(
-                'error_detected',
-                _T("No vehicle was selected, please check at least one name.", "auto")
-            );
-
-            return $response
-                ->withStatus(301)
-                ->withHeader('Location', $container->get(RouteParser::class)->urlFor('myVehiclesList'));
-        }
-    }
+    [Controller::class, 'batch']
 )->setName('batch-vehicleslist')->add(Authenticate::class);
 
 $app->get(

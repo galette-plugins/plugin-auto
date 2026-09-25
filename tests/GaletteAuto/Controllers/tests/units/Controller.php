@@ -634,4 +634,52 @@ class Controller extends GaletteRoutingTestCase
         );
         $this->assertSame((int)$this->preferences->pref_numrows, $this->session->vehicles_filters->show);
     }
+
+    /**
+     * Batch actions on vehicles list
+     */
+    public function testBatch(): void
+    {
+        $this->logSuperAdmin();
+
+        //no selection
+        $request = $this->createRequest('batch-vehicleslist', [], 'POST')->withParsedBody(['delete' => '1']);
+        $test_response = $this->app->handle($request);
+        $this->assertSame(
+            ['Location' => [$this->routeparser->urlFor('vehiclesList')]],
+            $test_response->getHeaders()
+        );
+        $this->expectFlashData(['error_detected' => ['No vehicle was selected, please check at least one name.']]);
+
+        //unknown action
+        $request = $this->createRequest('batch-vehicleslist', [], 'POST')->withParsedBody(['entries_sel' => ['1']]);
+        $test_response = $this->app->handle($request);
+        $this->assertSame(
+            ['Location' => [$this->routeparser->urlFor('vehiclesList')]],
+            $test_response->getHeaders()
+        );
+        $this->expectLogEntry(Analog::WARNING, 'Unknown batch action on vehicles list: entries_sel');
+
+        //removal
+        $car_id = $this->createVehicle($this->getMemberOne()->id);
+        $request = $this->createRequest('batch-vehicleslist', [], 'POST')->withParsedBody([
+            'entries_sel' => [(string)$car_id],
+            'delete' => '1',
+        ]);
+        $test_response = $this->app->handle($request);
+        $this->assertSame(
+            ['Location' => [$this->routeparser->urlFor('removeVehicles')]],
+            $test_response->getHeaders()
+        );
+        $this->assertSame([$car_id], $this->session->filter_vehicles);
+
+        $request = $this->createRequest('doRemoveVehicle', [], 'POST')->withParsedBody([
+            'id' => [(string)$car_id],
+            'confirm' => '1',
+            'redirect_uri' => $this->routeparser->urlFor('vehiclesList'),
+        ]);
+        $this->app->handle($request);
+        $this->expectFlashData(['success_detected' => ['1 vehicles have been successfully deleted.']]);
+        $this->assertFalse(isset($this->session->filter_vehicles));
+    }
 }
