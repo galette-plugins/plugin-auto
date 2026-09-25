@@ -583,4 +583,23 @@ class Controller extends GaletteRoutingTestCase
             }
         }
     }
+
+    /**
+     * Owner and managers of its groups can show vehicle history
+     */
+    public function testShowHistory(): void
+    {
+        $member_one = $this->getMemberOne();
+        $this->makeMemberTwoManager([$member_one]);
+        $car_id = $this->createVehicle($member_one->id);
+
+        foreach ([$this->dataAdherentOne(), $this->dataAdherentTwo()] as $mdata) {
+            $this->logMember($mdata);
+            $request = $this->createRequest('vehicleHistory', ['id' => (string)$car_id]);
+            $test_response = $this->app->handle($request);
+            $this->expectOK($test_response);
+            $this->assertStringContainsString('History of car #' . $car_id, (string)$test_response->getBody());
+            $this->login->logout();
+        }
+    }
 }
