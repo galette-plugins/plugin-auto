@@ -36,7 +36,7 @@ use Psr\Http\Message\UploadedFileInterface;
  * @property int          $horsepower
  * @property int          $engine_size
  * @property string       $creation_date
- * @property int          $fuel
+ * @property ?int         $fuel
  * @property Color        $color
  * @property Body         $body
  * @property State        $state
@@ -107,7 +107,7 @@ class Auto
     private ?int $horsepower;
     private ?int $engine_size;
     private string $creation_date;
-    private int $fuel;
+    private ?int $fuel = null;
 
     //External objects
     private Picture $picture;

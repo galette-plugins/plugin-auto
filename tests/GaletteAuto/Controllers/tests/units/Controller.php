@@ -682,4 +682,20 @@ class Controller extends GaletteRoutingTestCase
         $this->expectFlashData(['success_detected' => ['1 vehicles have been successfully deleted.']]);
         $this->assertFalse(isset($this->session->filter_vehicles));
     }
+
+    /**
+     * A vehicle without fuel can be loaded (the column is nullable)
+     */
+    public function testShowVehicleWithoutFuel(): void
+    {
+        $car_id = $this->createVehicle($this->getMemberOne()->id);
+        $update = $this->zdb->update(AUTO_PREFIX . Auto::TABLE)
+            ->set(['car_fuel' => null])
+            ->where([Auto::PK => $car_id]);
+        $this->zdb->execute($update);
+
+        $this->logMember($this->dataAdherentOne());
+        $request = $this->createRequest('vehicleEdit', ['id' => (string)$car_id]);
+        $this->expectOK($this->app->handle($request));
+    }
 }
