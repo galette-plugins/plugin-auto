@@ -105,6 +105,22 @@ class Controller extends AbstractPluginController
     }
 
     /**
+     * Can current user see a vehicle?
+     *
+     * @param int $id Vehicle ID
+     */
+    protected function canViewVehicle(int $id): bool
+    {
+        $select = $this->zdb->select(AUTO_PREFIX . Auto::TABLE);
+        $select->columns([Adherent::PK])->where([Auto::PK => $id]);
+        $row = $this->zdb->execute($select)->current();
+        if ($row === null) {
+            return false;
+        }
+        return $this->getAccess()->canViewMember((int)$row[Adherent::PK]);
+    }
+
+    /**
      * Get the vehicles list to go back to after an action on a vehicle
      *
      * @param int $id_adh Vehicle owner ID
@@ -124,6 +140,10 @@ class Controller extends AbstractPluginController
      */
     public function vehiclePhoto(Request $request, Response $response, ?int $id = null): Response
     {
+        if ($id !== null && !$this->canViewVehicle($id)) {
+            //not allowed: serve default picture
+            $id = null;
+        }
         $picture = new Picture($this->plugins, $id);
 
         $response = $response->withHeader('Content-Type', $picture->getMime())

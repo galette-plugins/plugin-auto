@@ -496,4 +496,91 @@ class Controller extends GaletteRoutingTestCase
         $this->expectFlashData(['success_detected' => ['Vehicle has been saved!']]);
         $this->assertSame($member_two->id, $this->getVehicleOwner($car_id));
     }
+
+    /**
+     * Store a picture for a vehicle, bypassing controller
+     *
+     * @param int $car_id Vehicle ID
+     *
+     * @return string Picture checksum
+     */
+    private function storePicture(int $car_id): string
+    {
+        $content = file_get_contents(GALETTE_ROOT . '../tests/fixtures/galette_pro.png');
+        $insert = $this->zdb->insert(AUTO_PREFIX . \GaletteAuto\Picture::TABLE);
+        $insert->values([
+            Auto::PK => $car_id,
+            'picture' => $content,
+            'format' => 'png',
+        ]);
+        $this->zdb->execute($insert);
+        return md5($content);
+    }
+
+    /**
+     * Get vehicle photo checksum as current user
+     *
+     * @param int $car_id Vehicle ID
+     */
+    private function getPhoto(int $car_id): string
+    {
+        $request = $this->createRequest('vehiclePhoto', ['id' => (string)$car_id]);
+        $test_response = $this->app->handle($request);
+        $this->assertSame(200, $test_response->getStatusCode());
+        return md5((string)$test_response->getBody());
+    }
+
+    /**
+     * Vehicle photo is only served to users allowed to see the vehicle
+     */
+    public function testVehiclePhoto(): void
+    {
+        $default = md5_file(__DIR__ . '/../../../../../webroot/images/1f698.png');
+        $member_one = $this->getMemberOne();
+        $member_two = $this->getMemberTwo();
+        $car_id = $this->createVehicle($member_two->id);
+        $content = $this->storePicture($car_id);
+        $public_car_id = $this->createVehicle($member_one->id, 'Public');
+        $public_content = $this->storePicture($public_car_id);
+        $this->assertNotSame($default, $content);
+
+        try {
+            //public pages are disabled
+            $this->assertSame($default, $this->getPhoto($car_id));
+            $this->assertSame($default, $this->getPhoto($public_car_id));
+
+            //another member
+            $this->logMember($this->dataAdherentOne());
+            $this->assertSame($default, $this->getPhoto($car_id));
+            $this->login->logout();
+
+            //owner
+            $this->logMember($this->dataAdherentTwo());
+            $this->assertSame($content, $this->getPhoto($car_id));
+            $this->login->logout();
+
+            //public pages: member one appears in public list once up to date
+            $this->setRawPreference('pref_bool_publicpages', true);
+            $this->setRawPreference(
+                'pref_publicpages_visibility_generic',
+                \Galette\Enums\PublicPageVisibility::Everyone->value
+            );
+            $this->assertSame($default, $this->getPhoto($public_car_id));
+            $this->logSuperAdmin();
+            $this->getMemberOne();
+            $this->createContrib($this->getContribData());
+            $this->login->logout();
+            $this->assertSame($public_content, $this->getPhoto($public_car_id));
+            //member two does not appear in public list
+            $this->assertSame($default, $this->getPhoto($car_id));
+            $this->expectNoLogEntry();
+        } finally {
+            foreach ([$car_id, $public_car_id] as $id) {
+                $file = GALETTE_PHOTOS_PATH . '/auto_photos/' . $id . '.png';
+                if (file_exists($file)) {
+                    unlink($file);
+                }
+            }
+        }
+    }
 }
