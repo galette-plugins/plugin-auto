@@ -286,7 +286,8 @@ class Controller extends AbstractPluginController
             $get = $request->getQueryParams();
             if (
                 isset($get['id_adh'])
-                && ($this->login->isAdmin() || $this->login->isStaff())
+                && $this->getAccess()->isManager()
+                && $this->getAccess()->canManageMember((int)$get['id_adh'])
             ) {
                 $auto->owner_id = (int)$get['id_adh'];
             } else {
@@ -295,7 +296,7 @@ class Controller extends AbstractPluginController
         }
 
         if ($this->session->auto !== null) {
-            $auto->check($this->session->auto);
+            $auto->check($this->session->auto, $this->getAccess());
             $this->session->auto = null;
         }
 
@@ -402,7 +403,7 @@ class Controller extends AbstractPluginController
             }
         }
 
-        $res = $auto->check($post);
+        $res = $auto->check($post, $this->getAccess());
         if ($res !== true) {
             $error_detected = $auto->getErrors();
         }
@@ -424,7 +425,7 @@ class Controller extends AbstractPluginController
         if (count($error_detected) > 0) {
             //store entity in session
             $this->session->auto = $post;
-            if ($action === 'add') {
+            if ($is_new) {
                 $route = $this->routeparser->urlFor('vehicleAdd');
             } else {
                 $route = $this->routeparser->urlFor('vehicleEdit', ['id' => (string)$id]);

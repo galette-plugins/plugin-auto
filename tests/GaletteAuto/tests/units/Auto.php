@@ -74,10 +74,12 @@ class Auto extends GaletteTestCase
         $this->assertTrue($model->store(true));
         $model_id = $model->id;
 
+        $this->logSuperAdmin();
+        $access = new \GaletteAuto\VehicleAccess($this->zdb, $this->login, $this->preferences);
         $auto = new \GaletteAuto\Auto($this->plugins, $this->zdb);
 
         $data = [];
-        $this->assertFalse($auto->check($data));
+        $this->assertFalse($auto->check($data, $access));
         $this->assertSame(
             [
                 '- Mandatory field <a href="#registration">registration</a> empty.',
@@ -104,7 +106,7 @@ class Auto extends GaletteTestCase
             'state' => $state_id,
             'transmission' => $transmission_id,
         ];
-        $this->assertFalse($auto->check($data));
+        $this->assertFalse($auto->check($data, $access));
         $this->assertSame(
             [
                 '- Mandatory field <a href="#registration">registration</a> empty.',
@@ -134,7 +136,7 @@ class Auto extends GaletteTestCase
             'transmission' => $transmission_id,
             'owner_id' => $adh->id,
         ];
-        $check = $auto->check($data);
+        $check = $auto->check($data, $access);
         $this->assertSame([], $auto->getErrors());
         $this->assertTrue($check);
 
@@ -196,7 +198,7 @@ class Auto extends GaletteTestCase
             'owner_id' => $adh2->id,
             'change_owner' => true,
         ];
-        $check = $auto->check($data);
+        $check = $auto->check($data, $access);
         $this->assertSame([], $auto->getErrors());
         $this->assertTrue($check);
 
@@ -232,7 +234,7 @@ class Auto extends GaletteTestCase
             'transmission' => $transmission_id,
             'owner_id' => $adh->id,
         ];
-        $check = $auto->check($data);
+        $check = $auto->check($data, $access);
         $this->assertSame([], $auto->getErrors());
         $this->assertTrue($check);
 
@@ -244,7 +246,6 @@ class Auto extends GaletteTestCase
         $this->assertTrue($history->load($auto2_id));
         $this->assertCount(1, $history->getEntries());
 
-        $this->logSuperAdmin();
         $autos = new \GaletteAuto\Autos($this->plugins, $this->zdb);
         $this->assertCount(2, $autos->getList());
 

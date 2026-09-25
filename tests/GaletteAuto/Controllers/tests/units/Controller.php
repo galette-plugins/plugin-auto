@@ -385,4 +385,115 @@ class Controller extends GaletteRoutingTestCase
         $this->expectFlashData(['success_detected' => ['1 vehicles have been successfully deleted.']]);
         $this->assertSame(1, $this->countVehicles());
     }
+
+    /**
+     * Get vehicle owner from database
+     *
+     * @param ?int $car_id Vehicle ID, last one if null
+     */
+    private function getVehicleOwner(?int $car_id = null): int
+    {
+        $select = $this->zdb->select(AUTO_PREFIX . Auto::TABLE);
+        if ($car_id !== null) {
+            $select->where([Auto::PK => $car_id]);
+        } else {
+            $select->order(Auto::PK . ' DESC')->limit(1);
+        }
+        return (int)$this->zdb->execute($select)->current()[Adherent::PK];
+    }
+
+    /**
+     * A simple member always creates vehicles for itself
+     */
+    public function testMemberCreatesVehicleForItself(): void
+    {
+        $member_one = $this->getMemberOne();
+        $member_two = $this->getMemberTwo();
+
+        $this->logMember($this->dataAdherentOne());
+        $test_response = $this->app->handle(
+            $this->storeRequest(['owner_id' => (string)$member_two->id, 'change_owner' => '1'])
+        );
+        $this->assertSame(301, $test_response->getStatusCode());
+        $this->expectFlashData(['success_detected' => ['Vehicle has been saved!']]);
+        $this->assertSame(1, $this->countVehicles());
+        $this->assertSame($member_one->id, $this->getVehicleOwner());
+    }
+
+    /**
+     * A simple member cannot give its vehicle to another member
+     */
+    public function testMemberCannotChangeOwner(): void
+    {
+        $member_one = $this->getMemberOne();
+        $member_two = $this->getMemberTwo();
+        $car_id = $this->createVehicle($member_one->id);
+
+        $this->logMember($this->dataAdherentOne());
+        $test_response = $this->app->handle(
+            $this->storeRequest(['owner_id' => (string)$member_two->id, 'change_owner' => '1'], $car_id)
+        );
+        $this->assertSame(301, $test_response->getStatusCode());
+        $this->expectFlashData(['success_detected' => ['Vehicle has been saved!']]);
+        $this->assertSame($member_one->id, $this->getVehicleOwner($car_id));
+    }
+
+    /**
+     * A group manager cannot attach a vehicle to a member outside its groups
+     */
+    public function testManagerCannotAttachToOtherMember(): void
+    {
+        $member_one = $this->getMemberOne();
+        $member_two = $this->getMemberTwo();
+        $this->makeMemberTwoManager([$member_two]);
+
+        $this->logMember($this->dataAdherentTwo());
+        $test_response = $this->app->handle(
+            $this->storeRequest(['owner_id' => (string)$member_one->id, 'change_owner' => '1'])
+        );
+        $this->assertSame(
+            ['Location' => [$this->routeparser->urlFor('vehicleAdd')]],
+            $test_response->getHeaders()
+        );
+        $this->expectFlashData(['error_detected' => ['- you cannot attach this car to this member']]);
+        $this->expectLogEntry(
+            Analog::WARNING,
+            'Trying to attach vehicle to member #' . $member_one->id . ' (user #' . $member_two->id . ')'
+        );
+        $this->assertSame(0, $this->countVehicles());
+    }
+
+    /**
+     * A group manager can attach a vehicle to a member of its groups
+     */
+    public function testManagerAttachesToManagedMember(): void
+    {
+        $member_one = $this->getMemberOne();
+        $this->makeMemberTwoManager([$member_one]);
+
+        $this->logMember($this->dataAdherentTwo());
+        $test_response = $this->app->handle(
+            $this->storeRequest(['owner_id' => (string)$member_one->id, 'change_owner' => '1'])
+        );
+        $this->assertSame(301, $test_response->getStatusCode());
+        $this->expectFlashData(['success_detected' => ['Vehicle has been saved!']]);
+        $this->assertSame($member_one->id, $this->getVehicleOwner());
+    }
+
+    /**
+     * Staff can change owner of a vehicle
+     */
+    public function testAdminChangesOwner(): void
+    {
+        $member_two = $this->getMemberTwo();
+        $car_id = $this->createVehicle($this->getMemberOne()->id);
+
+        $this->logSuperAdmin();
+        $test_response = $this->app->handle(
+            $this->storeRequest(['owner_id' => (string)$member_two->id, 'change_owner' => '1'], $car_id)
+        );
+        $this->assertSame(301, $test_response->getStatusCode());
+        $this->expectFlashData(['success_detected' => ['Vehicle has been saved!']]);
+        $this->assertSame($member_two->id, $this->getVehicleOwner($car_id));
+    }
 }

@@ -635,10 +635,11 @@ class Auto
     /**
      * Check posted values validity
      *
-     * @param array<string,mixed> $post All values to check, basically the $_POST array
-     *                                  after sending the form
+     * @param array<string,mixed> $post   All values to check, basically the $_POST array
+     *                                    after sending the form
+     * @param VehicleAccess       $access Access rules for current user
      */
-    public function check(array $post): bool
+    public function check(array $post, VehicleAccess $access): bool
     {
         $this->errors = [];
 
@@ -753,11 +754,22 @@ class Auto
                 case 'owner_id':
                     if (isset($post['change_owner']) || !isset($this->id)) {
                         $value = (int)$value;
-                        if ($value > 0) {
+                        if (!$access->isManager()) {
+                            //simple members only own their vehicles
+                            $value = $access->getMemberId();
+                        }
+                        if ($value <= 0) {
+                            $this->errors[] = _T("- you must attach an owner to this car", "auto");
+                        } elseif (!$access->canManageMember($value)) {
+                            Analog::log(
+                                'Trying to attach vehicle to member #' . $value
+                                . ' (user #' . $access->getMemberId() . ')',
+                                Analog::WARNING
+                            );
+                            $this->errors[] = _T("- you cannot attach this car to this member", "auto");
+                        } else {
                             $this->owner_id = $value;
                             $this->owner->load($value);
-                        } else {
-                            $this->errors[] = _T("- you must attach an owner to this car", "auto");
                         }
                     }
                     break;

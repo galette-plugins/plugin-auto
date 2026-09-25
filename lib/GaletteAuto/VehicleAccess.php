@@ -37,6 +37,14 @@ class VehicleAccess
     }
 
     /**
+     * Get current user member ID
+     */
+    public function getMemberId(): int
+    {
+        return (int)$this->login->id;
+    }
+
+    /**
      * Can current user manage vehicles of other members?
      */
     public function isManager(): bool

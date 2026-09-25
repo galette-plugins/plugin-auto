@@ -120,7 +120,7 @@
                     <p>
                         <span>
                             {{ car.owner.sfullname }}
-                            {% if login.isAdmin() or login.isStaff() %}
+                            {% if login.isAdmin() or login.isStaff() or login.isGroupManager() %}
                                 {# Does car's history should be visible by the actual owner? #}
                                 <a href="{{ url_for("vehicleHistory", {"id": car.id}) }}" title="{{ _T("Show full car state history", "auto") }}" id="state_history">
                                     <i class="ui history icon"></i>
@@ -138,7 +138,7 @@
                     <input type="hidden" name="change_owner" id="change_owner" value="1"/>
                 {% endif %}
 
-                {% if login.isAdmin() or login.isStaff() %}
+                {% if login.isAdmin() or login.isStaff() or login.isGroupManager() %}
                     {% set cclass = 'field' %}
                     {% if car.id %}{% set cclass = cclass ~ ' displaynone' %}{% endif %}
                     {% include 'components/forms/member_dropdown.html.twig' with {
@@ -323,7 +323,7 @@
                         );
                     }
                 );
-    {% if login.isAdmin() or login.isStaff() %}
+    {% if login.isAdmin() or login.isStaff() or login.isGroupManager() %}
                 {# Popup for owner change #}
                 $('#change_owner-checkbox').checkbox({
                     onChecked: function() {
