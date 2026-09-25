@@ -607,4 +607,31 @@ class Controller extends GaletteRoutingTestCase
             $this->login->logout();
         }
     }
+
+    /**
+     * Vehicles list filters are kept in session
+     */
+    public function testFilter(): void
+    {
+        $this->getMemberOne();
+        $this->logMember($this->dataAdherentOne());
+        $request = $this->createRequest('vehiclesFilter', [], 'POST')->withParsedBody(['nbshow' => '10']);
+        $test_response = $this->app->handle($request);
+        //simple members cannot access the full list
+        $this->assertSame(
+            ['Location' => [$this->routeparser->urlFor('myVehiclesList')]],
+            $test_response->getHeaders()
+        );
+        $this->assertSame(10, $this->session->vehicles_filters->show);
+
+        $this->login->logout();
+        $this->logSuperAdmin();
+        $request = $this->createRequest('vehiclesFilter', [], 'POST')->withParsedBody(['clear_filter' => '1']);
+        $test_response = $this->app->handle($request);
+        $this->assertSame(
+            ['Location' => [$this->routeparser->urlFor('vehiclesList')]],
+            $test_response->getHeaders()
+        );
+        $this->assertSame((int)$this->preferences->pref_numrows, $this->session->vehicles_filters->show);
+    }
 }

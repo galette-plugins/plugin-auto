@@ -694,13 +694,15 @@ class Controller extends AbstractPluginController
             }
         }
 
-        $this->session->vehicles_filter = $filters;
+        $this->session->vehicles_filters = $filters;
 
         return $response
             ->withStatus(301)
             ->withHeader(
                 'Location',
-                $this->routeparser->urlFor('vehiclesList')
+                $this->routeparser->urlFor(
+                    $this->getAccess()->isManager() ? 'vehiclesList' : 'myVehiclesList'
+                )
             );
     }
 }
