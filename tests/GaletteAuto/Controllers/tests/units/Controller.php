@@ -112,8 +112,8 @@ class Controller extends GaletteRoutingTestCase
     /**
      * Build vehicle store request
      *
-     * @param array<string,mixed> $data     Posted data
-     * @param ?int                $car_id   Vehicle ID, null for a new one
+     * @param array<string,mixed> $data   Posted data
+     * @param ?int                $car_id Vehicle ID, null for a new one
      */
     private function storeRequest(array $data, ?int $car_id = null): \Slim\Psr7\Request
     {
@@ -342,5 +342,47 @@ class Controller extends GaletteRoutingTestCase
         $this->expectFlashData(['success_detected' => ['Vehicle has been saved!']]);
         $this->assertSame('Titine', $this->getVehicleName($other_id));
         $this->assertSame('Changed', $this->getVehicleName($own_id));
+    }
+
+    /**
+     * Count vehicles in database
+     */
+    private function countVehicles(): int
+    {
+        $select = $this->zdb->select(AUTO_PREFIX . Auto::TABLE);
+        return $this->zdb->execute($select)->count();
+    }
+
+    /**
+     * A member cannot remove the vehicle of another member
+     */
+    public function testMemberCannotRemoveOtherVehicle(): void
+    {
+        $member_two = $this->getMemberTwo();
+        $own_id = $this->createVehicle($member_two->id, 'Mine');
+        $other_id = $this->createVehicle($this->getMemberOne()->id);
+
+        $this->logMember($this->dataAdherentTwo());
+        $request = $this->createRequest('doRemoveVehicle', [], 'POST')->withParsedBody([
+            'id' => [(string)$own_id, (string)$other_id],
+            'confirm' => '1',
+            'redirect_uri' => $this->routeparser->urlFor('myVehiclesList'),
+        ]);
+        $this->expectAccessDenied(
+            $this->app->handle($request),
+            'Trying to remove vehicles #' . $own_id . ', #' . $other_id
+        );
+        $this->assertSame(2, $this->countVehicles());
+
+        //own vehicle can be removed
+        $request = $this->createRequest('doRemoveVehicle', ['id' => (string)$own_id], 'POST')->withParsedBody([
+            'id' => (string)$own_id,
+            'confirm' => '1',
+            'redirect_uri' => $this->routeparser->urlFor('myVehiclesList'),
+        ]);
+        $test_response = $this->app->handle($request);
+        $this->assertSame(301, $test_response->getStatusCode());
+        $this->expectFlashData(['success_detected' => ['1 vehicles have been successfully deleted.']]);
+        $this->assertSame(1, $this->countVehicles());
     }
 }

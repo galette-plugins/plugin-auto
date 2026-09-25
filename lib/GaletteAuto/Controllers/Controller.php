@@ -611,10 +611,9 @@ class Controller extends AbstractPluginController
                 _T("Removal has not been confirmed!")
             );
         } else {
-            if (!is_array($post['id'])) {
-                $ids = (array)$post['id'];
-            } else {
-                $ids = $post['id'];
+            $ids = array_map('intval', (array)($post['id'] ?? []));
+            if (!$this->canManageVehicles($ids)) {
+                return $this->accessDenied($response, 'Trying to remove vehicles #' . implode(', #', $ids));
             }
 
             $autos = new Autos($this->plugins, $this->zdb);
