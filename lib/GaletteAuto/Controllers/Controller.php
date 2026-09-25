@@ -10,12 +10,14 @@ declare(strict_types=1);
 
 namespace GaletteAuto\Controllers;
 
+use Analog\Analog;
 use Galette\Repository\Members;
 use GaletteAuto\Auto;
 use GaletteAuto\Autos;
 use GaletteAuto\History;
 use GaletteAuto\Model;
 use GaletteAuto\Picture;
+use GaletteAuto\VehicleAccess;
 use Laminas\Db\ResultSet\ResultSet;
 use Slim\Psr7\Request;
 use Slim\Psr7\Response;
@@ -45,43 +47,74 @@ class Controller extends AbstractPluginController
     private int $id_adh;
 
     /**
-     * Check ACLs for specific member
-     *
-     * @param string|false|null $redirect Path to redirect to (myVehiclesList per default)
+     * Get vehicles access rules
      */
-    protected function checkAclsFor(Response $response, int $id_adh, string|false|null $redirect = null): bool|Response
+    protected function getAccess(): VehicleAccess
     {
-        //maybe should this be a middleware... but I do not know how to pass redirect :/
-        if (
-            $this->login->id != $id_adh
-            && !$this->login->isAdmin()
-            && !$this->login->isStaff()
-        ) {
-            $deps = [
-                'picture'   => false,
-                'dues'      => false
-            ];
-            $member = new Adherent($this->zdb, $id_adh, $deps);
-            if (!$this->login->isGroupManager(array_keys($member->groups))) {
-                //no right to see requested member.
-                if ($redirect === false) {
-                    return false;
-                }
+        return new VehicleAccess($this->zdb, $this->login, $this->preferences);
+    }
 
-                $this->flash->addMessage(
-                    'error_detected',
-                    _T("You do not have enough privileges.", "auto")
-                );
+    /**
+     * Refuse access to a vehicle or to vehicles of a member
+     *
+     * @param string $log Log message
+     */
+    protected function accessDenied(Response $response, string $log): Response
+    {
+        Analog::log(
+            $log . ' (user #' . $this->login->id . ')',
+            Analog::WARNING
+        );
+        return $this->redirectWithErrors(
+            $response,
+            [_T("You do not have enough privileges.", "auto")],
+            $this->routeparser->urlFor('myVehiclesList')
+        );
+    }
 
-                if ($redirect === null) {
-                    $redirect = $this->routeparser->urlFor('myVehiclesList');
-                }
-                return $response
-                    ->withStatus(403)
-                    ->withHeader('Location', $redirect);
+    /**
+     * Can current user manage all the vehicles?
+     *
+     * @param array<int> $ids Vehicles IDs
+     */
+    protected function canManageVehicles(array $ids): bool
+    {
+        if (count($ids) === 0) {
+            return false;
+        }
+
+        $select = $this->zdb->select(AUTO_PREFIX . Auto::TABLE);
+        $select->columns([Auto::PK, Adherent::PK])->where->in(Auto::PK, $ids);
+        $owners = [];
+        foreach ($this->zdb->execute($select) as $row) {
+            $owners[(int)$row[Auto::PK]] = (int)$row[Adherent::PK];
+        }
+
+        if (count($owners) !== count(array_unique($ids))) {
+            //some vehicles do not exist
+            return false;
+        }
+
+        $access = $this->getAccess();
+        foreach (array_unique($owners) as $id_adh) {
+            if (!$access->canManageMember($id_adh)) {
+                return false;
             }
         }
         return true;
+    }
+
+    /**
+     * Get the vehicles list to go back to after an action on a vehicle
+     *
+     * @param int $id_adh Vehicle owner ID
+     */
+    protected function getListRoute(int $id_adh): string
+    {
+        if ($this->login->id == $id_adh || !$this->getAccess()->isManager()) {
+            return $this->routeparser->urlFor('myVehiclesList');
+        }
+        return $this->routeparser->urlFor('vehiclesList');
     }
 
     /**
@@ -156,7 +189,9 @@ class Controller extends AbstractPluginController
         $id_adh = null;
         if (!empty($this->id_adh)) {
             $id_adh = (int)$this->id_adh;
-            $this->checkAclsFor($response, $id_adh);
+            if (!$this->getAccess()->canManageMember($id_adh)) {
+                return $this->accessDenied($response, 'Trying to list vehicles of member #' . $id_adh);
+            }
         }
 
         $auto = new Autos($this->plugins, $this->zdb);
@@ -244,8 +279,9 @@ class Controller extends AbstractPluginController
 
         $auto = new Auto($this->plugins, $this->zdb);
         if (!$is_new) {
-            $auto->load($id);
-            $this->checkAclsFor($response, $auto->owner->id);
+            if (!$auto->load((int)$id) || !$this->getAccess()->canManageMember($auto->owner_id)) {
+                return $this->accessDenied($response, 'Trying to edit vehicle #' . $id);
+            }
         } else {
             $get = $request->getQueryParams();
             if (
@@ -359,10 +395,6 @@ class Controller extends AbstractPluginController
         $warning_detected = [];
         $success_detected = [];
 
-        if (isset($post['id_adh'])) {
-            $this->checkAclsFor($response, (int)$post['id_adh']);
-        }
-
         $auto = new Auto($this->plugins, $this->zdb);
         if (!$is_new) {
             $auto->load((int)$post[Auto::PK]);
@@ -380,10 +412,7 @@ class Controller extends AbstractPluginController
                 $error_detected[] = _T("- An error has occurred while saving vehicle in the database.", "auto");
             } else {
                 $success_detected[] = _T("Vehicle has been saved!", "auto");
-                $id_adh = $auto->owner->id;
-                if (!$this->checkAclsFor($response, $id_adh, false) || $this->login->id == $id_adh) {
-                    $route = $this->routeparser->urlFor('myVehiclesList');
-                }
+                $route = $this->getListRoute($auto->owner_id);
                 if (!$auto->handleFiles($request->getUploadedFiles())) {
                     $warning_detected = $auto->getErrors();
                 }
@@ -440,8 +469,9 @@ class Controller extends AbstractPluginController
         $apk = Auto::PK;
         $history = new History($this->zdb, $id);
         $auto = new Auto($this->plugins, $this->zdb);
-        $auto->load($history->$apk);
-        $this->checkAclsFor($response, $auto->owner->id);
+        if (!$auto->load($history->$apk) || !$this->getAccess()->canManageMember($auto->owner_id)) {
+            return $this->accessDenied($response, 'Trying to show history of vehicle #' . $id);
+        }
 
         $params = [
             'entries'       => $history->getEntries(),
@@ -489,14 +519,10 @@ class Controller extends AbstractPluginController
     public function removeVehicle(Request $request, Response $response, int $id): Response
     {
         $auto = new Auto($this->plugins, $this->zdb);
-        $auto->load($id);
-        $id_adh = $auto->owner->id;
-        $this->checkAclsFor($response, $id_adh);
-
-        $route = $this->routeparser->urlFor('vehiclesList');
-        if (!$this->checkAclsFor($response, $id_adh, false) || $this->login->id == $id_adh) {
-            $route = $this->routeparser->urlFor('myVehiclesList');
+        if (!$auto->load($id) || !$this->getAccess()->canManageMember($auto->owner_id)) {
+            return $this->accessDenied($response, 'Trying to remove vehicle #' . $id);
         }
+        $route = $this->getListRoute($auto->owner_id);
 
         $data = [
             'id'            => $id,
@@ -529,16 +555,13 @@ class Controller extends AbstractPluginController
     {
         $post = $request->getParsedBody();
         $route = $this->routeparser->urlFor('vehiclesList');
-        $ids = $this->session->filter_vehicles ?? $post['entries_sel'];
+        $ids = $this->session->filter_vehicles ?? $post['entries_sel'] ?? [];
+        $ids = array_map('intval', (array)$ids);
 
-        $auto = new Auto($this->plugins, $this->zdb);
-        $auto->load((int)$ids[0]);
-        $id_adh = $auto->owner->id;
-        $this->checkAclsFor($response, $id_adh);
-
-        $id_adh = $auto->owner->id;
-
-        if (!$this->checkAclsFor($response, $id_adh, false) || $this->login->id == $id_adh) {
+        if (!$this->canManageVehicles($ids)) {
+            return $this->accessDenied($response, 'Trying to remove vehicles #' . implode(', #', $ids));
+        }
+        if (!$this->getAccess()->isManager()) {
             $route = $this->routeparser->urlFor('myVehiclesList');
         }
 
