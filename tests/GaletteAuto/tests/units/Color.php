@@ -60,6 +60,8 @@ class Color extends GaletteTestCase
 
         $this->assertCount(2, $color->getList());
         $this->assertSame('2 colors', $color->displayCount());
+        //sorted by value
+        $this->assertSame(['Blu', 'Red'], array_map(fn($row) => $row->color, $color->getList()));
 
         $color = new \GaletteAuto\Color($this->zdb);
         $this->assertTrue($color->load($id));

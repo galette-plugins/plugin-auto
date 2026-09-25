@@ -248,6 +248,11 @@ class Auto extends GaletteTestCase
 
         $autos = new \GaletteAuto\Autos($this->plugins, $this->zdb);
         $this->assertCount(2, $autos->getList());
+        //sorted by name
+        $this->assertSame(
+            ['My car', 'Titine'],
+            array_map(fn($car) => $car->name, $autos->getList(true))
+        );
 
         $this->assertTrue($autos->removeVehicles([$auto_id]));
         $this->assertCount(1, $autos->getList());

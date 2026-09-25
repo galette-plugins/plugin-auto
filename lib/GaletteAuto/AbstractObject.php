@@ -326,6 +326,7 @@ abstract class AbstractObject
     {
         try {
             $select = $this->zdb->select($this->table);
+            $select->order([$this->field . ' ASC', $this->pk . ' ASC']);
             if (isset($this->filters)) {
                 $this->filters->setLimits($select);
             }

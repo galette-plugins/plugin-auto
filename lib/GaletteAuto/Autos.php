@@ -229,6 +229,7 @@ class Autos
             }
 
             $this->proceedCount($select, $filters);
+            $select->order(['a.car_name ASC', 'a.' . self::PK . ' ASC']);
 
             if ($filters !== null) {
                 $filters->setLimit($select);
