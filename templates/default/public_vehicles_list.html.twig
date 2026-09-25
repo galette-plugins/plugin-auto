@@ -25,6 +25,7 @@
 {% block header %}
     {% set no_action = true %}
     {% set columns = [
+        {'label': _T("Car's photo", "auto")},
         {'label': _T("Name", "auto")},
         {'label': _T("Owner", "auto")},
         {'label': _T("Brand", "auto")},
@@ -38,12 +39,16 @@
         {% set brand = auto.model.brand %}
 
         <tr>
+            <td data-col-label="{{ _T("Car's photo", "auto") }}">
+                <img src="{{ url_for("vehiclePhoto", {"id": auto.id}) }}" class="ui tiny image" loading="lazy" alt="{{ auto.name }}"/>
+            </td>
             <td data-col-label="{{ _T("Name", "auto") }}">{{ auto.name }}</td>
-            <td data-col-label="{{ _T("Owner", "auto") }}">{{ auto.owner.sfullname }}</td>
+            {# members kept out of the members list are not named #}
+            <td data-col-label="{{ _T("Owner", "auto") }}">{{ public_owners[auto.id] ? auto.owner.sfullname : '—' }}</td>
             <td data-col-label="{{ _T("Brand", "auto") }}">{{ brand.value }}</td>
             <td data-col-label="{{ _T("Model", "auto") }}">{{ auto.model.model }}</td>
         </tr>
     {% else %}
-        <tr><td colspan="6" class="emptylist">{{ _T("No car in the database", "auto") }}</td></tr>
+        <tr><td colspan="5" class="emptylist">{{ _T("No car in the database", "auto") }}</td></tr>
     {% endfor %}
 {% endblock %}

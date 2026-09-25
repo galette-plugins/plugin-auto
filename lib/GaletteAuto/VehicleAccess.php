@@ -85,34 +85,26 @@ class VehicleAccess
     }
 
     /**
-     * Can current user see vehicles of a member?
+     * Can current user see the vehicles of every member?
      *
-     * Vehicles of members appearing in the public members list are visible
-     * when public pages are.
-     *
-     * @param int $id_adh Member ID
+     * That is what the public vehicles page shows, photos included: whoever
+     * its visibility lets in sees them all.
      */
-    public function canViewMember(int $id_adh): bool
+    public function canViewVehicles(): bool
     {
-        if ($this->canManageMember($id_adh)) {
-            return true;
-        }
+        return $this->preferences->showPluginPublicPage($this->login, 'publicVehiclesList');
+    }
 
-        if (
-            $id_adh <= 0
-            || !$this->preferences->showPublicPage($this->login, 'pref_publicpages_visibility_generic')
-        ) {
-            return false;
-        }
-
-        $member = new Adherent($this->zdb);
-        $member->disableAllDeps();
-        if (!$member->load($id_adh)) {
-            return false;
-        }
-
-        return $member->isActive()
-            && $member->appearsInMembersList()
-            && ($member->isDueFree() || $member->isUp2Date());
+    /**
+     * Can the owner of a vehicle be named on the public vehicles page?
+     *
+     * Only members appearing in the members list are; the others' vehicles are
+     * listed without them.
+     *
+     * @param Adherent $owner Vehicle owner
+     */
+    public function isOwnerPublic(Adherent $owner): bool
+    {
+        return $owner->appearsInMembersList();
     }
 }

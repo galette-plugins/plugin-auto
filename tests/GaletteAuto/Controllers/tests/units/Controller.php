@@ -536,7 +536,23 @@ class Controller extends GaletteRoutingTestCase
     }
 
     /**
-     * Vehicle photo is only served to users allowed to see the vehicle
+     * Enable public pages, and set the visibility of the public vehicles page
+     *
+     * @param \Galette\Enums\PublicPageVisibility $page    Vehicles page visibility
+     * @param \Galette\Enums\PublicPageVisibility $generic Default visibility
+     */
+    private function setPublicVehicles(
+        \Galette\Enums\PublicPageVisibility $page,
+        \Galette\Enums\PublicPageVisibility $generic = \Galette\Enums\PublicPageVisibility::Everyone
+    ): void {
+        $this->setRawPreference('pref_bool_publicpages', true);
+        $this->setRawPreference('pref_publicpages_visibility_generic', $generic->value);
+        $this->setRawPreference('pref_auto_publicpages_visibility_vehicles', $page->value);
+    }
+
+    /**
+     * Vehicle photo is served to whoever may see the public vehicles page,
+     * whatever its owner, and always to the owner and managers
      */
     public function testVehiclePhoto(): void
     {
@@ -545,14 +561,14 @@ class Controller extends GaletteRoutingTestCase
         $member_two = $this->getMemberTwo();
         $car_id = $this->createVehicle($member_two->id);
         $content = $this->storePicture($car_id);
-        $public_car_id = $this->createVehicle($member_one->id, 'Public');
-        $public_content = $this->storePicture($public_car_id);
+        $other_car_id = $this->createVehicle($member_one->id, 'Other');
+        $other_content = $this->storePicture($other_car_id);
         $this->assertNotSame($default, $content);
 
         try {
             //public pages are disabled
             $this->assertSame($default, $this->getPhoto($car_id));
-            $this->assertSame($default, $this->getPhoto($public_car_id));
+            $this->assertSame($default, $this->getPhoto($other_car_id));
 
             //another member
             $this->logMember($this->dataAdherentOne());
@@ -564,23 +580,34 @@ class Controller extends GaletteRoutingTestCase
             $this->assertSame($content, $this->getPhoto($car_id));
             $this->login->logout();
 
-            //public pages: member one appears in public list once up to date
-            $this->setRawPreference('pref_bool_publicpages', true);
-            $this->setRawPreference(
-                'pref_publicpages_visibility_generic',
-                \Galette\Enums\PublicPageVisibility::Everyone->value
+            //the page inherits a default visible to everyone: every photo is,
+            //members kept out of the members list included
+            $this->setPublicVehicles(\Galette\Enums\PublicPageVisibility::Inherit);
+            $this->assertSame($content, $this->getPhoto($car_id));
+            $this->assertSame($other_content, $this->getPhoto($other_car_id));
+
+            //its own visibility wins over the default one
+            $this->setPublicVehicles(
+                \Galette\Enums\PublicPageVisibility::Everyone,
+                \Galette\Enums\PublicPageVisibility::Hidden
             );
-            $this->assertSame($default, $this->getPhoto($public_car_id));
-            $this->logSuperAdmin();
-            $this->getMemberOne();
-            $this->createContrib($this->getContribData());
-            $this->login->logout();
-            $this->assertSame($public_content, $this->getPhoto($public_car_id));
-            //member two does not appear in public list
+            $this->assertSame($content, $this->getPhoto($car_id));
+
+            $this->setPublicVehicles(\Galette\Enums\PublicPageVisibility::UpToDateMembers);
             $this->assertSame($default, $this->getPhoto($car_id));
+
+            $this->setPublicVehicles(\Galette\Enums\PublicPageVisibility::Hidden);
+            $this->assertSame($default, $this->getPhoto($car_id));
+
+            //owner and managers still get it
+            $this->logMember($this->dataAdherentTwo());
+            $this->assertSame($content, $this->getPhoto($car_id));
+            $this->login->logout();
+            $this->logSuperAdmin();
+            $this->assertSame($content, $this->getPhoto($car_id));
             $this->expectNoLogEntry();
         } finally {
-            foreach ([$car_id, $public_car_id] as $id) {
+            foreach ([$car_id, $other_car_id] as $id) {
                 $file = GALETTE_PHOTOS_PATH . '/auto_photos/' . $id . '.png';
                 if (file_exists($file)) {
                     unlink($file);
@@ -700,40 +727,70 @@ class Controller extends GaletteRoutingTestCase
     }
 
     /**
-     * Public list shows vehicles of every public member, and only them
+     * Public list shows every vehicle, naming only owners who appear in the
+     * members list
      */
     public function testPublicList(): void
     {
         $member_one = $this->getMemberOne();
         $member_two = $this->getMemberTwo();
         $this->createVehicle($member_one->id, 'First public');
-        $this->createVehicle($member_two->id, 'Second public');
+        $second_id = $this->createVehicle($member_two->id, 'Second public');
+        $this->assertTrue($member_one->appearsInMembersList());
+        $this->assertFalse($member_two->appearsInMembersList());
 
-        $this->setRawPreference('pref_bool_publicpages', true);
-        $this->setRawPreference(
-            'pref_publicpages_visibility_generic',
-            \Galette\Enums\PublicPageVisibility::Everyone->value
-        );
-
-        //no public member yet
         $request = $this->createRequest('publicVehiclesList');
+
+        //hidden, even though the default visibility is not
+        $this->setPublicVehicles(\Galette\Enums\PublicPageVisibility::Hidden);
         $test_response = $this->app->handle($request);
-        $this->expectOK($test_response);
-        $body = (string)$test_response->getBody();
-        $this->assertStringNotContainsString('First public', $body);
-        $this->assertStringNotContainsString('Second public', $body);
+        $this->assertSame(302, $test_response->getStatusCode());
+        $this->expectFlashData(['error_detected' => ['Unauthorized']]);
 
-        //both members public, more than one page of public members
-        $update = $this->zdb->update(Adherent::TABLE)
-            ->set(['bool_display_info' => true, 'bool_exempt_adh' => true]);
-        $update->where->in(Adherent::PK, [$member_one->id, $member_two->id]);
-        $this->zdb->execute($update);
-        $this->setRawPreference('pref_numrows', 1);
-
+        //inheriting: the default visibility applies
+        $this->setPublicVehicles(\Galette\Enums\PublicPageVisibility::Inherit);
         $test_response = $this->app->handle($request);
         $this->expectOK($test_response);
         $body = (string)$test_response->getBody();
         $this->assertStringContainsString('First public', $body);
         $this->assertStringContainsString('Second public', $body);
+        $this->assertStringContainsString($member_one->sfullname, $body);
+        $this->assertStringNotContainsString($member_two->sfullname, $body);
+        $this->assertStringContainsString(
+            $this->routeparser->urlFor('vehiclePhoto', ['id' => (string)$second_id]),
+            $body
+        );
+
+        $this->setPublicVehicles(
+            \Galette\Enums\PublicPageVisibility::Inherit,
+            \Galette\Enums\PublicPageVisibility::StaffOnly
+        );
+        $test_response = $this->app->handle($request);
+        $this->assertSame(302, $test_response->getStatusCode());
+        $this->expectFlashData(['error_detected' => ['Unauthorized']]);
+
+        //one vehicle per page
+        $this->setPublicVehicles(\Galette\Enums\PublicPageVisibility::Everyone);
+        $this->setRawPreference('pref_numrows', 1);
+        $this->session->public_vehicles_filters = null;
+        $test_response = $this->app->handle($request);
+        $this->expectOK($test_response);
+        $body = (string)$test_response->getBody();
+        $this->assertStringContainsString('First public', $body);
+        $this->assertStringNotContainsString('Second public', $body);
+        $this->assertStringContainsString(
+            $this->routeparser->urlFor('publicVehiclesList', ['option' => 'page', 'value' => '2']),
+            $body
+        );
+
+        $request = $this->createRequest('publicVehiclesList', ['option' => 'page', 'value' => '2']);
+        $test_response = $this->app->handle($request);
+        $this->expectOK($test_response);
+        $body = (string)$test_response->getBody();
+        $this->assertStringNotContainsString('First public', $body);
+        $this->assertStringContainsString('Second public', $body);
+
+        //the management list keeps its own pagination
+        $this->assertFalse(isset($this->session->vehicles_filters));
     }
 }

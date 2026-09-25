@@ -141,7 +141,7 @@ class Autos
      * @param int        $id_adh  Members id
      * @param ?AutosList $filters Filters
      *
-     * @return array<int, Autos> Vehicles list
+     * @return array<int, Auto> Vehicles list
      */
     public function getMemberList(int $id_adh, ?AutosList $filters): array
     {
@@ -157,7 +157,7 @@ class Autos
      * @param ?int       $id_adh   Member id
      * @param bool       $public   Get public list
      *
-     * @return array<int, Autos>|ResultSet
+     * @return array<int, Auto>|ResultSet
      */
     public function getList(
         bool $as_autos = false,
@@ -172,23 +172,12 @@ class Autos
             $select = $this->zdb->select(AUTO_PREFIX . self::TABLE, 'a');
 
             //restrict on user self vehicles when not admin, or if admin and requested 'my vehicles'
-            //restrict on public authorized users if public list
+            //the public list has every vehicle: who sees it is up to the
+            //visibility of the page, and owners are only named if they are public
             $on_logged = false;
             if ($mine) {
                 $on_logged = true;
-            } elseif ($public) {
-                //all public members, not only the first page of them
-                $mfilters = new \Galette\Filters\MembersList();
-                $mfilters->show = 0;
-                $members = new \Galette\Repository\Members($mfilters);
-                $allpublic = $members->getPublicList(false);
-                //no public member: no vehicle to show
-                $adhs = [0];
-                foreach (array_merge($allpublic['members'], $allpublic['staff']) as $p) {
-                    $adhs[] = $p->id;
-                }
-                $select->where->in(Adherent::PK, $adhs);
-            } elseif (!$login->isAdmin() && !$login->isStaff() && $login->isGroupManager()) {
+            } elseif (!$public && !$login->isAdmin() && !$login->isStaff() && $login->isGroupManager()) {
                 $groups = new \Galette\Repository\Groups($this->zdb, $login);
                 $managed_users = $groups->getManagerUsers();
                 if (count($managed_users)) {
@@ -197,7 +186,7 @@ class Autos
                 } else {
                     $on_logged = true;
                 }
-            } elseif (!$login->isAdmin() && !$login->isStaff()) {
+            } elseif (!$public && !$login->isAdmin() && !$login->isStaff()) {
                 $on_logged = true;
             }
 

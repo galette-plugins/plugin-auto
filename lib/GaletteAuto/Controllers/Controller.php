@@ -117,7 +117,8 @@ class Controller extends AbstractPluginController
         if ($row === null) {
             return false;
         }
-        return $this->getAccess()->canViewMember((int)$row[Adherent::PK]);
+        return $this->getAccess()->canViewVehicles()
+            || $this->getAccess()->canManageMember((int)$row[Adherent::PK]);
     }
 
     /**
@@ -215,7 +216,10 @@ class Controller extends AbstractPluginController
         }
 
         $auto = new Autos($this->plugins, $this->zdb);
-        $afilters = $this->session->vehicles_filters ?? new AutosList();
+        //the public page paginates on its own: a manager going there must not
+        //land on the page, or the number of rows, of the management list
+        $session_key = $this->public ? 'public_vehicles_filters' : 'vehicles_filters';
+        $afilters = $this->session->$session_key ?? new AutosList();
 
         // Simple filters
         if ($option !== null) {
@@ -255,7 +259,17 @@ class Controller extends AbstractPluginController
         }
         $params['count_vehicles'] = $auto->getCount();
 
-        $this->session->vehicles_filters = $afilters;
+        if ($this->public) {
+            $access = $this->getAccess();
+            $params['public_owners'] = [];
+            foreach ($params['autos'] as $vehicle) {
+                if ($vehicle instanceof Auto) {
+                    $params['public_owners'][$vehicle->id] = $access->isOwnerPublic($vehicle->owner);
+                }
+            }
+        }
+
+        $this->session->$session_key = $afilters;
 
         //assign pagination variables to the template and add pagination links
         $afilters->setViewPagination($this->routeparser, $this->view);
