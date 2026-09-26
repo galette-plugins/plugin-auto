@@ -103,7 +103,7 @@ class Auto
     private ?History $history = null;
     private State $state;
     private ?int $owner_id = null;
-    private Adherent $owner;
+    private ?Adherent $owner = null;
 
     /** @var array<string, string> */
     private array $propnames; //textual properties names
@@ -144,8 +144,6 @@ class Auto
         $this->model = new Model($this->zdb);
         $this->color = new Color($this->zdb);
         $this->state = new State($this->zdb);
-        $this->owner = new Adherent($this->zdb);
-        $this->owner->disableAllDeps()->enableDep('parent');
         $this->transmission = new Transmission($this->zdb);
         $this->finition = new Finition($this->zdb);
         $this->body = new Body($this->zdb);
@@ -206,13 +204,18 @@ class Auto
         $this->engine_size = $r['car_engine_size'] !== null ? (int)$r['car_engine_size'] : null;
         $this->creation_date = (string)$r['car_creation_date'];
         $this->fuel = $r['car_fuel'] !== null ? (int)$r['car_fuel'] : null;
-        //External objects
-        $this->finition->load((int)$r[Finition::PK]);
-        $this->color->load((int)$r[Color::PK]);
-        $this->model->load((int)$r[Model::PK]);
-        $this->transmission->load((int)$r[Transmission::PK]);
-        $this->body->load((int)$r[Body::PK]);
-        $this->state->load((int)$r[State::PK]);
+        //External objects, from the row when they have been joined
+        foreach (['finition', 'color', 'transmission', 'body', 'state'] as $property) {
+            $class = $this->$property::class;
+            if (isset($r[$class::FIELD])) {
+                $this->$property->loadFromRow($r);
+            } else {
+                $this->$property->load((int)$r[$class::PK]);
+            }
+        }
+        $this->model = isset($r[Model::FIELD])
+            ? new Model($this->zdb, $r)
+            : new Model($this->zdb, (int)$r[Model::PK]);
         $this->setOwner((int)$r[Adherent::PK]);
     }
 
@@ -232,97 +235,6 @@ class Auto
             self::FUEL_ELECTRICITY  => _T("Electricity", "auto"),
             self::FUEL_BIO          => _T("Bio", "auto")
         ];
-    }
-
-    /**
-     * Stores the vehicle in the database
-     *
-     * @param bool $new true if it's a new record, false to update on
-     *                  that already exists. Defaults to false
-     */
-    public function store(bool $new = false): bool
-    {
-        global $hist;
-
-        if ($new) {
-            $this->creation_date = date('Y-m-d');
-        }
-
-        try {
-            $values = $this->getStorableValues();
-
-            if ($new === true) {
-                $insert = $this->zdb->insert(AUTO_PREFIX . self::TABLE);
-                $insert->values($values);
-                $add = $this->zdb->execute($insert);
-
-                if ($add->count() > 0) {
-                    /** @phpstan-ignore-next-line */
-                    $this->id = (int)$this->zdb->driver->getLastGeneratedValue(
-                        $this->zdb->isPostgres()
-                            ? PREFIX_DB . AUTO_PREFIX . self::TABLE . '_id_seq'
-                            : null
-                    );
-
-                    // logging
-                    $hist->add(
-                        _T("New car added", "auto"),
-                        strtoupper((string)$this->name)
-                    );
-                } else {
-                    $hist->add(_T("Fail to add new car.", "auto"));
-                    throw new \Exception(
-                        'An error occurred inserting new car!'
-                    );
-                }
-            } else {
-                $update = $this->zdb->update(AUTO_PREFIX . self::TABLE);
-                $update->set($values)->where(
-                    [
-                        self::PK => $this->id
-                    ]
-                );
-                $edit = $this->zdb->execute($update);
-                //edit == 0 does not mean there were an error, but that there
-                //were nothing to change
-                if ($edit->count() > 0) {
-                    $hist->add(
-                        _T("Car updated", "auto"),
-                        strtoupper((string)$this->name)
-                    );
-                }
-            }
-
-            //if all goes well, we check to add an entry into car's history
-            $history = $this->getHistory();
-            $latest = $history->getLatest();
-            $current = $this->getHistoryValues();
-            $fire_history = $new;
-            if (!$new && $latest !== false) {
-                foreach ($current as $k => $v) {
-                    if ($k !== 'history_date' && (string)$latest[$k] !== (string)$v) {
-                        //if one has been modified, we add an entry
-                        $fire_history = true;
-                        break;
-                    }
-                }
-            }
-
-            if ($fire_history) {
-                $history->register($current);
-                $history->load((int)$this->id);
-            }
-
-            return true;
-        } catch (\Exception $e) {
-            Analog::log(
-                '[' . get_class($this) . '] An error has occurred '
-                . (($new) ? 'inserting' : 'updating') . ' car | '
-                . $e->getMessage(),
-                Analog::ERROR
-            );
-            return false;
-        }
     }
 
     /**
@@ -784,10 +696,17 @@ class Auto
     }
 
     /**
-     * Get owner
+     * Get owner, loaded on first call
      */
     public function getOwner(): Adherent
     {
+        if ($this->owner === null) {
+            $this->owner = new Adherent($this->zdb);
+            $this->owner->disableAllDeps();
+            if ($this->owner_id !== null && $this->owner_id > 0) {
+                $this->owner->load($this->owner_id);
+            }
+        }
         return $this->owner;
     }
 
@@ -799,7 +718,43 @@ class Auto
     public function setOwner(int $id_adh): self
     {
         $this->owner_id = $id_adh;
-        $this->owner->load($id_adh);
+        $this->owner = null;
+        return $this;
+    }
+
+    /**
+     * Set owner from an already loaded member
+     *
+     * @param Adherent $owner Owner
+     */
+    public function setOwnerMember(Adherent $owner): self
+    {
+        $this->owner_id = (int)$owner->id;
+        $this->owner = $owner;
+        return $this;
+    }
+
+    /**
+     * Set ID, once stored
+     *
+     * @param int $id Vehicle ID
+     */
+    public function setId(int $id): self
+    {
+        $this->id = $id;
+        $this->history = null;
+        $this->picture = null;
+        return $this;
+    }
+
+    /**
+     * Set creation date
+     *
+     * @param string $date Date, as Y-m-d
+     */
+    public function setCreationDate(string $date): self
+    {
+        $this->creation_date = $date;
         return $this;
     }
 

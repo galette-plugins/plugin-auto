@@ -78,6 +78,7 @@ class Auto extends GaletteTestCase
 
         $this->logSuperAdmin();
         $access = new \GaletteAuto\VehicleAccess($this->zdb, $this->login, $this->preferences);
+        $vehicles = new \GaletteAuto\Repository\Vehicles($this->plugins, $this->zdb, $this->login, $this->history);
         $auto = new \GaletteAuto\Auto($this->plugins, $this->zdb);
 
         $data = [];
@@ -142,9 +143,7 @@ class Auto extends GaletteTestCase
         $this->assertSame([], $auto->getErrors());
         $this->assertTrue($check);
 
-        $stored = $auto->store(true);
-        $this->assertEquals([], $auto->getErrors());
-        $this->assertTrue($stored);
+        $vehicles->store($auto);
         $auto_id = $auto->getId();
 
         //check history
@@ -204,9 +203,9 @@ class Auto extends GaletteTestCase
         $this->assertSame([], $auto->getErrors());
         $this->assertTrue($check);
 
-        $stored = $auto->store();
-        $this->assertEquals([], $auto->getErrors());
-        $this->assertTrue($stored);
+        //history is sorted on a date with seconds: entries of the same second have no order
+        sleep(1);
+        $vehicles->store($auto);
 
         //check history
         $history = new \GaletteAuto\History($this->zdb);
@@ -240,24 +239,21 @@ class Auto extends GaletteTestCase
         $this->assertSame([], $auto->getErrors());
         $this->assertTrue($check);
 
-        $stored = $auto->store(true);
-        $this->assertEquals([], $auto->getErrors());
-        $this->assertTrue($stored);
+        $vehicles->store($auto);
         $auto2_id = $auto->getId();
 
         $this->assertTrue($history->load($auto2_id));
         $this->assertCount(1, $history->getEntries());
 
-        $autos = new \GaletteAuto\Autos($this->plugins, $this->zdb);
-        $this->assertCount(2, $autos->getList());
         //sorted by name
         $this->assertSame(
             ['My car', 'Titine'],
-            array_map(fn($car) => $car->getName(), $autos->getList(true))
+            array_map(fn($car) => $car->getName(), $vehicles->getList())
         );
+        $this->assertSame(2, $vehicles->getCount());
 
-        $this->assertTrue($autos->removeVehicles([$auto_id]));
-        $this->assertCount(1, $autos->getList());
+        $vehicles->remove([$auto_id]);
+        $this->assertCount(1, $vehicles->getList());
         $this->expectNoLogEntry();
         $this->assertFalse($auto->load($auto_id));
         $this->expectLogEntry(

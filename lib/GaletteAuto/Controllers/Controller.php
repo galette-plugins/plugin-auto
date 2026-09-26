@@ -13,7 +13,6 @@ namespace GaletteAuto\Controllers;
 use Analog\Analog;
 use Galette\Repository\Members;
 use GaletteAuto\Auto;
-use GaletteAuto\Autos;
 use GaletteAuto\History;
 use GaletteAuto\Model;
 use GaletteAuto\Picture;
@@ -26,6 +25,7 @@ use Galette\Entity\Adherent;
 use GaletteAuto\Filters\ModelsList;
 use GaletteAuto\Filters\AutosList;
 use GaletteAuto\Repository\Models;
+use GaletteAuto\Repository\Vehicles;
 use DI\Attribute\Inject;
 
 /**
@@ -68,6 +68,14 @@ class Controller extends AbstractPluginController
     }
 
     /**
+     * Get vehicles repository
+     */
+    protected function getVehicles(): Vehicles
+    {
+        return new Vehicles($this->plugins, $this->zdb, $this->login, $this->history);
+    }
+
+    /**
      * Can current user manage all the vehicles?
      *
      * @param array<int> $ids Vehicles IDs
@@ -78,12 +86,7 @@ class Controller extends AbstractPluginController
             return false;
         }
 
-        $select = $this->zdb->select(AUTO_PREFIX . Auto::TABLE);
-        $select->columns([Auto::PK, Adherent::PK])->where->in(Auto::PK, $ids);
-        $owners = [];
-        foreach ($this->zdb->execute($select) as $row) {
-            $owners[(int)$row[Auto::PK]] = (int)$row[Adherent::PK];
-        }
+        $owners = $this->getVehicles()->getOwners($ids);
 
         if (count($owners) !== count(array_unique($ids))) {
             //some vehicles do not exist
@@ -228,7 +231,7 @@ class Controller extends AbstractPluginController
             }
         }
 
-        $auto = new Autos($this->plugins, $this->zdb);
+        $vehicles = $this->getVehicles();
         //the public page paginates on its own: a manager going there must not
         //land on the page, or the number of rows, of the management list
         $session_key = $public ? 'public_vehicles_filters' : 'vehicles_filters';
@@ -264,13 +267,11 @@ class Controller extends AbstractPluginController
             'require_dialog' => true
         ];
 
-        if ($id_adh === null) {
-            $params['autos'] = $auto->getList(true, $mine, $afilters, null, $public);
-        } else {
+        if ($id_adh !== null) {
             $params['id_adh'] = $id_adh;
-            $params['autos'] = $auto->getMemberList($id_adh, $afilters);
         }
-        $params['count_vehicles'] = $auto->getCount();
+        $params['autos'] = $vehicles->getList($afilters, $id_adh, $mine, $public);
+        $params['count_vehicles'] = $vehicles->getCount();
 
         if ($public) {
             $access = $this->getAccess();
@@ -278,11 +279,9 @@ class Controller extends AbstractPluginController
             //history is shown to whoever may see it from the vehicle form
             $params['history_allowed'] = [];
             foreach ($params['autos'] as $vehicle) {
-                if ($vehicle instanceof Auto) {
-                    $params['public_owners'][$vehicle->getId()] = $access->isOwnerPublic($vehicle->getOwner());
-                    $params['history_allowed'][$vehicle->getId()] = $this->login->isLogged()
-                        && $access->canManageMember($vehicle->getOwnerId());
-                }
+                $params['public_owners'][$vehicle->getId()] = $access->isOwnerPublic($vehicle->getOwner());
+                $params['history_allowed'][$vehicle->getId()] = $this->login->isLogged()
+                    && $access->canManageMember((int)$vehicle->getOwnerId());
             }
         }
 
@@ -462,7 +461,13 @@ class Controller extends AbstractPluginController
         $route = $this->routeparser->urlFor('vehiclesList');
         //if no errors were thrown, we can store the car
         if (count($error_detected) == 0) {
-            if (!$auto->store($is_new)) {
+            try {
+                $this->getVehicles()->store($auto);
+                $stored = true;
+            } catch (\Throwable $e) {
+                $stored = false;
+            }
+            if (!$stored) {
                 $error_detected[] = _T("- An error has occurred while saving vehicle in the database.", "auto");
             } else {
                 $success_detected[] = _T("Vehicle has been saved!", "auto");
@@ -701,8 +706,12 @@ class Controller extends AbstractPluginController
                 return $this->accessDenied($response, 'Trying to remove vehicles #' . implode(', #', $ids));
             }
 
-            $autos = new Autos($this->plugins, $this->zdb);
-            $del = $autos->removeVehicles($ids);
+            try {
+                $this->getVehicles()->remove($ids);
+                $del = true;
+            } catch (\Throwable $e) {
+                $del = false;
+            }
             unset($this->session->filter_vehicles);
 
             if ($del !== true) {
