@@ -25,10 +25,25 @@ use GaletteAuto\Filters\PropertiesList;
  */
 abstract class AbstractObject
 {
-    private string $table;
-    private string $pk;
-    private string $field;
-    private string $name;
+    public const string TABLE = '';
+    public const string PK = '';
+    public const string FIELD = '';
+    /** Name of the list route */
+    public const string LIST_ROUTE = '';
+
+    /**
+     * Properties classes, by route property name
+     *
+     * @var array<string, class-string<AbstractObject>>
+     */
+    private const array CLASSES = [
+        Body::FIELD => Body::class,
+        Brand::FIELD => Brand::class,
+        Color::FIELD => Color::class,
+        Finition::FIELD => Finition::class,
+        State::FIELD => State::class,
+        Transmission::FIELD => Transmission::class,
+    ];
 
     protected Db $zdb;
     protected ?int $id = null;
@@ -40,23 +55,27 @@ abstract class AbstractObject
     /**
      * Default constructor
      *
-     * @param Db     $zdb   Database instance
-     * @param string $table table name
-     * @param string $pk    primary key field
-     * @param string $field main field name
-     * @param string $name  name
-     * @param ?int   $id    id to load. Defaults to null
+     * @param Db   $zdb Database instance
+     * @param ?int $id  id to load. Defaults to null
      */
-    public function __construct(Db $zdb, string $table, string $pk, string $field, string $name, ?int $id = null)
+    final public function __construct(Db $zdb, ?int $id = null)
     {
         $this->zdb = $zdb;
-        $this->table = AUTO_PREFIX . $table;
-        $this->pk = $pk;
-        $this->field = $field;
-        $this->name = $name;
         if (is_int($id)) {
             $this->load($id);
         }
+    }
+
+    /**
+     * Get a property instance from its route name
+     *
+     * @param Db     $zdb      Database instance
+     * @param string $property Route property name
+     */
+    public static function fromPropertyName(Db $zdb, string $property): self
+    {
+        $class = self::getClassForPropName($property);
+        return new $class($zdb);
     }
 
     /**
@@ -76,7 +95,7 @@ abstract class AbstractObject
             return $list;
         } catch (\Exception $e) {
             Analog::log(
-                '[' . get_class($this) . '] Cannot load ' . $this->name
+                '[' . get_class($this) . '] Cannot load ' . static::TABLE
                 . ' list | ' . $e->getMessage(),
                 Analog::ERROR
             );
@@ -92,10 +111,10 @@ abstract class AbstractObject
     public function load(int $id): bool
     {
         try {
-            $select = $this->zdb->select($this->table);
+            $select = $this->zdb->select(AUTO_PREFIX . static::TABLE);
             $select->where(
                 [
-                    $this->pk => $id
+                    static::PK => $id
                 ]
             );
 
@@ -108,7 +127,7 @@ abstract class AbstractObject
             return true;
         } catch (\Exception $e) {
             Analog::log(
-                '[' . get_class($this) . '] Cannot load ' . $this->name
+                '[' . get_class($this) . '] Cannot load ' . static::TABLE
                 . ' from id `' . $id . '` | ' . $e->getMessage(),
                 Analog::ERROR
             );
@@ -123,8 +142,8 @@ abstract class AbstractObject
      */
     public function loadFromRow(ArrayObject $row): self
     {
-        $this->id = (int)$row[$this->pk];
-        $this->value = (string)$row[$this->field];
+        $this->id = (int)$row[static::PK];
+        $this->value = (string)$row[static::FIELD];
         return $this;
     }
 
@@ -137,23 +156,23 @@ abstract class AbstractObject
     {
         try {
             $values = [
-                $this->field => $this->value
+                static::FIELD => $this->value
             ];
             if ($new) {
-                $insert = $this->zdb->insert($this->table);
+                $insert = $this->zdb->insert(AUTO_PREFIX . static::TABLE);
                 $insert->values($values);
                 $this->zdb->execute($insert);
                 /** @phpstan-ignore-next-line */
                 $this->id = (int)$this->zdb->driver->getLastGeneratedValue(
                     $this->zdb->isPostgres()
-                        ? PREFIX_DB . $this->table . '_id_seq'
+                        ? PREFIX_DB . AUTO_PREFIX . static::TABLE . '_id_seq'
                         : null
                 );
             } else {
-                $update = $this->zdb->update($this->table);
+                $update = $this->zdb->update(AUTO_PREFIX . static::TABLE);
                 $update->set($values)->where(
                     [
-                        $this->pk => $this->id
+                        static::PK => $this->id
                     ]
                 );
                 $this->zdb->execute($update);
@@ -161,7 +180,7 @@ abstract class AbstractObject
             return true;
         } catch (\Exception $e) {
             Analog::log(
-                '[' . get_class($this) . '] Cannot store ' . $this->name
+                '[' . get_class($this) . '] Cannot store ' . static::TABLE
                 . ' values `' . ($this->id ?? '') . '`, `' . $this->value . '` | '
                 . $e->getMessage(),
                 Analog::WARNING
@@ -178,13 +197,13 @@ abstract class AbstractObject
     public function delete(array $ids): bool
     {
         try {
-            $delete = $this->zdb->delete($this->table);
-            $delete->where->in($this->pk, $ids);
+            $delete = $this->zdb->delete(AUTO_PREFIX . static::TABLE);
+            $delete->where->in(static::PK, $ids);
             $this->zdb->execute($delete);
             return true;
         } catch (\Exception $e) {
             Analog::log(
-                '[' . get_class($this) . '] Cannot delete ' . $this->name
+                '[' . get_class($this) . '] Cannot delete ' . static::TABLE
                 . ' from ids `' . implode(' - ', $ids) . '` | ' . $e->getMessage(),
                 Analog::WARNING
             );
@@ -209,9 +228,54 @@ abstract class AbstractObject
     abstract public function getFieldLabel(): string;
 
     /**
+     * Get list page title
+     */
+    abstract public function getListTitle(): string;
+
+    /**
+     * Get add button text
+     */
+    abstract public function getAddText(): string;
+
+    /**
+     * Get localized count
+     *
+     * @param int $count Count
+     */
+    abstract public function getCountLabel(int $count): string;
+
+    /**
+     * Get removal success message
+     *
+     * @param int $count Removed records count
+     */
+    abstract public function getRemovedMessage(int $count): string;
+
+    /**
+     * Get message when removal is refused because the record is in use
+     */
+    abstract public function getInUseMessage(): string;
+
+    /**
+     * Get removal error message
+     */
+    abstract public function getRemoveErrorMessage(): string;
+
+    /**
+     * Whether records have a details page
+     */
+    public function hasDetails(): bool
+    {
+        return false;
+    }
+
+    /**
      * Get property route name
      */
-    abstract public function getRouteName(): string;
+    public function getRouteName(): string
+    {
+        return static::FIELD;
+    }
 
     /**
      * Get record ID
@@ -245,7 +309,7 @@ abstract class AbstractObject
      */
     public function getPk(): string
     {
-        return $this->pk;
+        return static::PK;
     }
 
     /**
@@ -253,74 +317,32 @@ abstract class AbstractObject
      */
     public function getField(): string
     {
-        return $this->field;
+        return static::FIELD;
     }
 
     /**
      * Get list route
      *
      * @param RouteParser $routeparser Route parser instance
-     * @param string      $property    Property name
      */
-    public static function getListRoute(RouteParser $routeparser, string $property): string
+    public static function getListRoute(RouteParser $routeparser): string
     {
-        $route = null;
-        switch ($property) {
-            case 'color':
-                $route = $routeparser->urlFor('colorsList');
-                break;
-            case 'state':
-                $route = $routeparser->urlFor('statesList');
-                break;
-            case 'finition':
-                $route = $routeparser->urlFor('finitionsList');
-                break;
-            case 'body':
-                $route = $routeparser->urlFor('bodiesList');
-                break;
-            case 'transmission':
-                $route = $routeparser->urlFor('transmissionsList');
-                break;
-            case 'brand':
-                $route = $routeparser->urlFor('brandsList');
-                break;
-            default:
-                throw new \RuntimeException('Unknown property ' . $property);
-        }
-        return $route;
+        return $routeparser->urlFor(static::LIST_ROUTE);
     }
 
     /**
-     * Get object name from route property
+     * Get object class name from route property
      *
      * @param string $property Route property
+     *
+     * @return class-string<AbstractObject>
      */
     public static function getClassForPropName(string $property): string
     {
-        $classname = '\GaletteAuto\\';
-        switch ($property) {
-            case 'brand':
-                $classname .= 'Brand';
-                break;
-            case 'color':
-                $classname .= 'Color';
-                break;
-            case 'state':
-                $classname .= 'State';
-                break;
-            case 'finition':
-                $classname .= 'Finition';
-                break;
-            case 'body':
-                $classname .= 'Body';
-                break;
-            case 'transmission':
-                $classname .= 'Transmission';
-                break;
-            default:
-                throw new \RuntimeException('Unknown property ' . $property);
+        if (!isset(self::CLASSES[$property])) {
+            throw new \RuntimeException('Unknown property ' . $property);
         }
-        return $classname;
+        return self::CLASSES[$property];
     }
 
     /**
@@ -331,8 +353,8 @@ abstract class AbstractObject
     private function buildSelect(): Select
     {
         try {
-            $select = $this->zdb->select($this->table);
-            $select->order([$this->field . ' ASC', $this->pk . ' ASC']);
+            $select = $this->zdb->select(AUTO_PREFIX . static::TABLE);
+            $select->order([static::FIELD . ' ASC', static::PK . ' ASC']);
             if (isset($this->filters)) {
                 $this->filters->setLimits($select);
             }
@@ -364,7 +386,6 @@ abstract class AbstractObject
             $countSelect->reset($countSelect::OFFSET);
             $countSelect->columns(
                 [
-                    //@phpstan-ignore-next-line
                     static::PK => new Expression('COUNT(' . static::PK . ')')
                 ]
             );
@@ -372,7 +393,6 @@ abstract class AbstractObject
             $results = $this->zdb->execute($countSelect);
             $result = $results->current();
 
-            //@phpstan-ignore-next-line
             $k = static::PK;
             $this->count = (int)$result->$k;
 
@@ -401,15 +421,6 @@ abstract class AbstractObject
      */
     public function displayCount(): string
     {
-        return str_replace(
-            '%count',
-            (string)$this->getCount(),
-            $this->getLocalizedCount()
-        );
+        return $this->getCountLabel($this->getCount());
     }
-
-    /**
-     * Get localized count string for object list
-     */
-    abstract protected function getLocalizedCount(): string;
 }

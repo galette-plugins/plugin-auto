@@ -10,8 +10,6 @@ declare(strict_types=1);
 
 namespace GaletteAuto;
 
-use Galette\Core\Db;
-
 /**
  * Automobile States class for galette Auto plugin
  *
@@ -22,25 +20,7 @@ class State extends AbstractObject
     public const string TABLE = 'states';
     public const string PK = 'id_state';
     public const string FIELD = 'state';
-    public const string NAME = 'states';
-
-    /**
-     * Default constructor
-     *
-     * @param Db   $zdb Database instance
-     * @param ?int $id  state's id to load. Defaults to null
-     */
-    public function __construct(Db $zdb, ?int $id = null)
-    {
-        parent::__construct(
-            $zdb,
-            self::TABLE,
-            self::PK,
-            self::FIELD,
-            self::NAME,
-            $id
-        );
-    }
+    public const string LIST_ROUTE = 'statesList';
 
     /**
      * Get field label
@@ -51,24 +31,61 @@ class State extends AbstractObject
     }
 
     /**
-     * Get property route name
+     * Get list page title
      */
-    public function getRouteName(): string
+    public function getListTitle(): string
     {
-        return 'state';
+        return _T("States list", "auto");
     }
 
+    /**
+     * Get add button text
+     */
+    public function getAddText(): string
+    {
+        return _T("Add new state", "auto");
+    }
 
     /**
-     * Get localized count string for object list
+     * Get localized count
+     *
+     * @param int $count Count
      */
-    protected function getLocalizedCount(): string
+    public function getCountLabel(int $count): string
     {
-        return _Tn(
-            '%count state',
-            '%count states',
-            $this->getCount(),
-            'auto'
+        return str_replace(
+            '%count',
+            (string)$count,
+            _Tn('%count state', '%count states', $count, 'auto')
         );
+    }
+
+    /**
+     * Get removal success message
+     *
+     * @param int $count Removed records count
+     */
+    public function getRemovedMessage(int $count): string
+    {
+        return sprintf(
+            _Tn('%1$s state has been successfully deleted.', '%1$s states have been successfully deleted.', $count, 'auto'),
+            $count
+        );
+    }
+
+    /**
+     * Get message when removal is refused because the record is in use
+     */
+    public function getInUseMessage(): string
+    {
+        return _T('This state is used by one or more vehicles, it cannot be deleted.', 'auto');
+    }
+
+    /**
+     * Get removal error message
+     */
+    public function getRemoveErrorMessage(): string
+    {
+        return _T('An error occurred trying to remove state :/', 'auto');
     }
 }

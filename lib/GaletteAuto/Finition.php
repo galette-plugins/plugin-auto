@@ -10,8 +10,6 @@ declare(strict_types=1);
 
 namespace GaletteAuto;
 
-use Galette\Core\Db;
-
 /**
  * Automobile Finitions class for galette Auto plugin
  *
@@ -22,25 +20,7 @@ class Finition extends AbstractObject
     public const string TABLE = 'finitions';
     public const string PK = 'id_finition';
     public const string FIELD = 'finition';
-    public const string NAME = 'finitions';
-
-    /**
-     * Default constructor
-     *
-     * @param Db   $zdb Database instance
-     * @param ?int $id  finition's id to load. Defaults to null
-     */
-    public function __construct(Db $zdb, ?int $id = null)
-    {
-        parent::__construct(
-            $zdb,
-            self::TABLE,
-            self::PK,
-            self::FIELD,
-            self::NAME,
-            $id
-        );
-    }
+    public const string LIST_ROUTE = 'finitionsList';
 
     /**
      * Get field label
@@ -51,24 +31,61 @@ class Finition extends AbstractObject
     }
 
     /**
-     * Get property route name
+     * Get list page title
      */
-    public function getRouteName(): string
+    public function getListTitle(): string
     {
-        return 'finition';
+        return _T("Finitions list", "auto");
     }
 
+    /**
+     * Get add button text
+     */
+    public function getAddText(): string
+    {
+        return _T("Add new finition", "auto");
+    }
 
     /**
-     * Get localized count string for object list
+     * Get localized count
+     *
+     * @param int $count Count
      */
-    protected function getLocalizedCount(): string
+    public function getCountLabel(int $count): string
     {
-        return _Tn(
-            '%count finition',
-            '%count finitions',
-            $this->getCount(),
-            'auto'
+        return str_replace(
+            '%count',
+            (string)$count,
+            _Tn('%count finition', '%count finitions', $count, 'auto')
         );
+    }
+
+    /**
+     * Get removal success message
+     *
+     * @param int $count Removed records count
+     */
+    public function getRemovedMessage(int $count): string
+    {
+        return sprintf(
+            _Tn('%1$s finition has been successfully deleted.', '%1$s finitions have been successfully deleted.', $count, 'auto'),
+            $count
+        );
+    }
+
+    /**
+     * Get message when removal is refused because the record is in use
+     */
+    public function getInUseMessage(): string
+    {
+        return _T('This finition is used by one or more vehicles, it cannot be deleted.', 'auto');
+    }
+
+    /**
+     * Get removal error message
+     */
+    public function getRemoveErrorMessage(): string
+    {
+        return _T('An error occurred trying to remove finition :/', 'auto');
     }
 }

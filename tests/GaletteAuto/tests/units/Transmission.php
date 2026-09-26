@@ -98,6 +98,6 @@ class Transmission extends GaletteTestCase
      */
     public function testGetClassName(): void
     {
-        $this->assertSame('\\' . \GaletteAuto\Transmission::class, \GaletteAuto\Transmission::getClassForPropName('transmission'));
+        $this->assertSame(\GaletteAuto\Transmission::class, \GaletteAuto\AbstractObject::getClassForPropName('transmission'));
     }
 }

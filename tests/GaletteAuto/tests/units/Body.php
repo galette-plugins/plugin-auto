@@ -98,6 +98,6 @@ class Body extends GaletteTestCase
      */
     public function testGetClassName(): void
     {
-        $this->assertSame('\\' . \GaletteAuto\Body::class, \GaletteAuto\Body::getClassForPropName('body'));
+        $this->assertSame(\GaletteAuto\Body::class, \GaletteAuto\AbstractObject::getClassForPropName('body'));
     }
 }

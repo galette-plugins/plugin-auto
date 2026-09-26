@@ -50,7 +50,7 @@ class PropertiesController extends AbstractPluginController
         ?string $option = null,
         string|int|null $value = null
     ): Response {
-        return $this->propertiesList($request, $response, 'brands', $option, $value);
+        return $this->propertiesList($request, $response, new Brand($this->zdb), $option, $value);
     }
 
     /**
@@ -65,7 +65,7 @@ class PropertiesController extends AbstractPluginController
         ?string $option = null,
         int|string|null $value = null
     ): Response {
-        return $this->propertiesList($request, $response, 'colors', $option, $value);
+        return $this->propertiesList($request, $response, new Color($this->zdb), $option, $value);
     }
 
     /**
@@ -80,7 +80,7 @@ class PropertiesController extends AbstractPluginController
         ?string $option = null,
         string|int|null $value = null
     ): Response {
-        return $this->propertiesList($request, $response, 'states', $option, $value);
+        return $this->propertiesList($request, $response, new State($this->zdb), $option, $value);
     }
 
     /**
@@ -95,7 +95,7 @@ class PropertiesController extends AbstractPluginController
         ?string $option = null,
         string|int|null $value = null
     ): Response {
-        return $this->propertiesList($request, $response, 'finitions', $option, $value);
+        return $this->propertiesList($request, $response, new Finition($this->zdb), $option, $value);
     }
 
     /**
@@ -110,7 +110,7 @@ class PropertiesController extends AbstractPluginController
         ?string $option = null,
         string|int|null $value = null
     ): Response {
-        return $this->propertiesList($request, $response, 'bodies', $option, $value);
+        return $this->propertiesList($request, $response, new Body($this->zdb), $option, $value);
     }
 
     /**
@@ -125,60 +125,24 @@ class PropertiesController extends AbstractPluginController
         ?string $option = null,
         string|int|null $value = null
     ): Response {
-        return $this->propertiesList($request, $response, 'transmissions', $option, $value);
+        return $this->propertiesList($request, $response, new Transmission($this->zdb), $option, $value);
     }
 
     /**
      * List properties
      *
-     * @param string          $property Property name
-     * @param string|null     $option   One of 'page' or 'order'
-     * @param string|int|null $value    Value of the option
+     * @param AbstractObject  $obj    Property instance
+     * @param string|null     $option One of 'page' or 'order'
+     * @param string|int|null $value  Value of the option
      */
     protected function propertiesList(
         Request $request,
         Response $response,
-        string $property,
+        AbstractObject $obj,
         ?string $option = null,
         string|int|null $value = null
     ): Response {
         $get = $request->getQueryParams();
-
-        switch ($property) {
-            case 'colors':
-                $obj = new Color($this->zdb);
-                $title = _T("Colors list", "auto");
-                $add_text = _T("Add new color", "auto");
-                break;
-            case 'states':
-                $obj = new State($this->zdb);
-                $title = _T("States list", "auto");
-                $add_text = _T("Add new state", "auto");
-                break;
-            case 'finitions':
-                $obj = new Finition($this->zdb);
-                $title = _T("Finitions list", "auto");
-                $add_text = _T("Add new finition", "auto");
-                break;
-            case 'bodies':
-                $obj = new Body($this->zdb);
-                $title = _T("Bodies list", "auto");
-                $add_text = _T("Add new body", "auto");
-                break;
-            case 'transmissions':
-                $obj = new Transmission($this->zdb);
-                $title = _T("Transmissions list", "auto");
-                $add_text = _T("Add new transmission", "auto");
-                break;
-            case 'brands':
-                $obj = new Brand($this->zdb);
-                $title = _T("Brands list", "auto");
-                $add_text = _T("Add new brand", "auto");
-                $can_show = true;
-                break;
-            default:
-                throw new \RuntimeException('Unknown property ' . $property);
-        }
 
         $filters = $this->getFilters($obj);
         if (isset($get['nbshow']) && is_numeric($get['nbshow'])) {
@@ -198,21 +162,16 @@ class PropertiesController extends AbstractPluginController
         $this->saveFilters($obj, $filters);
 
         $params = [
-            'page_title'    => $title,
+            'page_title'    => $obj->getListTitle(),
             'list'          => $obj->getList(),
-            'set'           => $property,
             'field_name'    => $obj->getFieldLabel(),
-            'add_text'      => $add_text,
+            'add_text'      => $obj->getAddText(),
             'obj'           => $obj,
             'require_dialog' => true
         ];
 
         //assign pagination variables to the template and add pagination links
         $filters->setViewPagination($this->routeparser, $this->view, false);
-
-        if (isset($can_show)) {
-            $params['show'] = $can_show;
-        }
 
         // display page
         $this->view->render(
@@ -231,7 +190,7 @@ class PropertiesController extends AbstractPluginController
     public function filter(Request $request, Response $response, string $property): Response
     {
         $post = $request->getParsedBody();
-        $class = '\GaletteAuto\\' . ucwords($property);
+        $class = AbstractObject::getClassForPropName($property);
         $filters = $this->getFilters($class);
 
         if (isset($post['clear_filter'])) {
@@ -248,7 +207,7 @@ class PropertiesController extends AbstractPluginController
             ->withStatus(301)
             ->withHeader(
                 'Location',
-                $class::getListRoute($this->routeparser, $property)
+                $class::getListRoute($this->routeparser)
             );
     }
 
@@ -273,8 +232,7 @@ class PropertiesController extends AbstractPluginController
     {
         $is_new = ($action === 'add');
 
-        $classname = AbstractObject::getClassForPropName($property);
-        $object = new $classname($this->zdb);
+        $object = AbstractObject::fromPropertyName($this->zdb, $property);
         if ($is_new) {
             $title = _T("New", "auto");
         } else {
@@ -336,8 +294,7 @@ class PropertiesController extends AbstractPluginController
         ?int $id = null,
         string $action = 'edit',
     ): Response {
-        $classname = AbstractObject::getClassForPropName($property);
-        $object = new $classname($this->zdb);
+        $object = AbstractObject::fromPropertyName($this->zdb, $property);
 
         $post = $request->getParsedBody();
         $is_new = ($action === 'add');
@@ -375,7 +332,7 @@ class PropertiesController extends AbstractPluginController
             }
         }
 
-        $route = AbstractObject::getListRoute($this->routeparser, $property);
+        $route = $object::getListRoute($this->routeparser);
 
         if (count($error_detected) > 0) {
             //store entity in session
@@ -414,8 +371,7 @@ class PropertiesController extends AbstractPluginController
      */
     public function propertyShow(Response $response, string $property, int $id): Response
     {
-        $classname = AbstractObject::getClassForPropName($property);
-        $object = new $classname($this->zdb);
+        $object = AbstractObject::fromPropertyName($this->zdb, $property);
         $object->load($id);
         $title = str_replace(
             '%s',
@@ -455,11 +411,10 @@ class PropertiesController extends AbstractPluginController
      */
     public function removeProperty(Request $request, Response $response, string $property, int $id): Response
     {
-        $classname = AbstractObject::getClassForPropName($property);
-        $object = new $classname($this->zdb);
+        $object = AbstractObject::fromPropertyName($this->zdb, $property);
         $object->load($id);
 
-        $route = AbstractObject::getListRoute($this->routeparser, $property);
+        $route = $object::getListRoute($this->routeparser);
 
         $data = [
             'id'            => $id,
@@ -481,7 +436,7 @@ class PropertiesController extends AbstractPluginController
                 ),
                 'form_url'      => $this->routeparser->urlFor(
                     'doRemoveProperty',
-                    ['property' => $property, 'id' => $object->getId()]
+                    ['property' => $property, 'id' => (string)$id]
                 ),
                 'cancel_uri'    => $route,
                 'data'          => $data
@@ -517,117 +472,22 @@ class PropertiesController extends AbstractPluginController
                 $ids = $post['id'];
             }
 
-            $classname = AbstractObject::getClassForPropName($property);
-            $object = new $classname($this->zdb);
+            $object = AbstractObject::fromPropertyName($this->zdb, $property);
 
             try {
                 $object->delete($ids);
-
-                switch ($property) {
-                    case 'colors':
-                    case 'color':
-                        $message = _Tn('%1$s color has been successfully deleted.', '%1$s colors have been successfully deleted.', count($ids), 'auto');
-                        break;
-                    case 'states':
-                    case 'state':
-                        $message = _Tn('%1$s state has been successfully deleted.', '%1$s states have been successfully deleted.', count($ids), 'auto');
-                        break;
-                    case 'finitions':
-                    case 'finition':
-                        $message = _Tn('%1$s finition has been successfully deleted.', '%1$s finitions have been successfully deleted.', count($ids), 'auto');
-                        break;
-                    case 'bodies':
-                    case 'body':
-                        $message = _Tn('%1$s body has been successfully deleted.', '%1$s bodies have been successfully deleted.', count($ids), 'auto');
-                        break;
-                    case 'transmissions':
-                    case 'transmission':
-                        $message = _Tn('%1$s transmission has been successfully deleted.', '%1$s transmissions have been successfully deleted.', count($ids), 'auto');
-                        break;
-                    case 'brands':
-                    case 'brand':
-                        $message = _Tn('%1$s brand has been successfully deleted.', '%1$s brands have been successfully deleted.', count($ids), 'auto');
-                        break;
-                    default:
-                        throw new \RuntimeException('Unknown property ' . $property);
-                }
-
                 $this->flash->addMessage(
                     'success_detected',
-                    sprintf($message, count($ids))
+                    $object->getRemovedMessage(count($ids))
                 );
-
                 $success = true;
             } catch (\Throwable $e) {
-                if ($this->zdb->isForeignKeyException($e)) {
-                    switch ($property) {
-                        case 'colors':
-                        case 'color':
-                            $message = _T('This color is used by one or more vehicles, it cannot be deleted.', 'auto');
-                            break;
-                        case 'states':
-                        case 'state':
-                            $message = _T('This state is used by one or more vehicles, it cannot be deleted.', 'auto');
-                            break;
-                        case 'finitions':
-                        case 'finition':
-                            $message = _T('This finition is used by one or more vehicles, it cannot be deleted.', 'auto');
-                            break;
-                        case 'bodies':
-                        case 'body':
-                            $message = _T('This body is used by one or more vehicles, it cannot be deleted.', 'auto');
-                            break;
-                        case 'transmissions':
-                        case 'transmission':
-                            $message = _T('This transmission is used by one or more vehicles, it cannot be deleted.', 'auto');
-                            break;
-                        case 'brands':
-                        case 'brand':
-                            $message = _T('This brand is used by one or more vehicles, it cannot be deleted.', 'auto');
-                            break;
-                        default:
-                            throw new \RuntimeException('Unknown property ' . $property);
-                    }
-
-                    $this->flash->addMessage(
-                        'error_detected',
-                        $message
-                    );
-                } else {
-                    switch ($property) {
-                        case 'colors':
-                        case 'color':
-                            $message = _T('An error occurred trying to remove color :/', 'auto');
-                            break;
-                        case 'states':
-                        case 'state':
-                            $message = _T('An error occurred trying to remove state :/', 'auto');
-                            break;
-                        case 'finitions':
-                        case 'finition':
-                            $message = _T('An error occurred trying to remove finition :/', 'auto');
-                            break;
-                        case 'bodies':
-                        case 'body':
-                            $message = _T('An error occurred trying to remove body :/', 'auto');
-                            break;
-                        case 'transmissions':
-                        case 'transmission':
-                            $message = _T('An error occurred trying to remove transmission :/', 'auto');
-                            break;
-                        case 'brands':
-                        case 'brand':
-                            $message = _T('An error occurred trying to remove brand :/', 'auto');
-                            break;
-                        default:
-                            throw new \RuntimeException('Unknown property ' . $property);
-                    }
-
-                    $this->flash->addMessage(
-                        'error_detected',
-                        $message
-                    );
-                }
+                $this->flash->addMessage(
+                    'error_detected',
+                    $this->zdb->isForeignKeyException($e)
+                        ? $object->getInUseMessage()
+                        : $object->getRemoveErrorMessage()
+                );
             }
         }
 
@@ -648,11 +508,10 @@ class PropertiesController extends AbstractPluginController
     /**
      * Get filters
      *
-     * @param AbstractObject|string $class Class name or instance
+     * @param AbstractObject|class-string<AbstractObject> $class Class name or instance
      */
     protected function getFilters(AbstractObject|string $class): PropertiesList
     {
-        /** @phpstan-ignore-next-line */
         $filter_name = 'filter_auto' . $class::FIELD;
         return $this->session->$filter_name ?? new PropertiesList();
     }
@@ -660,12 +519,11 @@ class PropertiesController extends AbstractPluginController
     /**
      * Save filters
      *
-     * @param AbstractObject|string $class   Class name or instance
-     * @param PropertiesList        $filters Filters instance
+     * @param AbstractObject|class-string<AbstractObject> $class   Class name or instance
+     * @param PropertiesList                              $filters Filters instance
      */
     protected function saveFilters(AbstractObject|string $class, PropertiesList $filters): void
     {
-        /** @phpstan-ignore-next-line */
         $filter_name = 'filter_auto' . $class::FIELD;
         $this->session->$filter_name = $filters;
     }

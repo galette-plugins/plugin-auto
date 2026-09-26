@@ -98,6 +98,6 @@ class Finition extends GaletteTestCase
      */
     public function testGetClassName(): void
     {
-        $this->assertSame('\\' . \GaletteAuto\Finition::class, \GaletteAuto\Finition::getClassForPropName('finition'));
+        $this->assertSame(\GaletteAuto\Finition::class, \GaletteAuto\AbstractObject::getClassForPropName('finition'));
     }
 }

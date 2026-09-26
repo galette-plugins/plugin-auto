@@ -98,6 +98,6 @@ class State extends GaletteTestCase
      */
     public function testGetClassName(): void
     {
-        $this->assertSame('\\' . \GaletteAuto\State::class, \GaletteAuto\State::getClassForPropName('state'));
+        $this->assertSame(\GaletteAuto\State::class, \GaletteAuto\AbstractObject::getClassForPropName('state'));
     }
 }

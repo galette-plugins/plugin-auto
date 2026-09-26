@@ -100,6 +100,6 @@ class Color extends GaletteTestCase
      */
     public function testGetClassName(): void
     {
-        $this->assertSame('\\' . \GaletteAuto\Color::class, \GaletteAuto\Color::getClassForPropName('color'));
+        $this->assertSame(\GaletteAuto\Color::class, \GaletteAuto\AbstractObject::getClassForPropName('color'));
     }
 }

@@ -45,7 +45,7 @@
     <tr>
         <td data-col-label="{{ field_name }}">
             <a
-                href="{% if show is defined and show == true %}{{ url_for("propertyShow", {"property": obj.getRouteName(), "id": o[pk]}) }}{% else %}{{ edit_link }}{% endif %}"
+                href="{% if obj.hasDetails() %}{{ url_for("propertyShow", {"property": obj.getRouteName(), "id": o[pk]}) }}{% else %}{{ edit_link }}{% endif %}"
             >
                 {{ o[field] }}
             </a>

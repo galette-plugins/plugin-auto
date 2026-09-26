@@ -98,6 +98,6 @@ class Brand extends GaletteTestCase
      */
     public function testGetClassName(): void
     {
-        $this->assertSame('\\' . \GaletteAuto\Brand::class, \GaletteAuto\Brand::getClassForPropName('brand'));
+        $this->assertSame(\GaletteAuto\Brand::class, \GaletteAuto\AbstractObject::getClassForPropName('brand'));
     }
 }

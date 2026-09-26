@@ -10,43 +10,17 @@ declare(strict_types=1);
 
 namespace GaletteAuto;
 
-use Galette\Core\Db;
-
 /**
  * Automobile Brands class for galette Auto plugin
  *
- * @category  Plugins
- * @name      AutoBrands
  * @author Johan Cwiklinski <johan@x-tnd.be>
- * @copyright 2009-2014 The Galette Team
- * @license   http://www.gnu.org/licenses/gpl-3.0.html GPL License 3.0 or (at your option) any later version
- * @link      https://galette.eu
- * @since     Available since 0.7dev - 2009-03-16
  */
 class Brand extends AbstractObject
 {
     public const string TABLE = 'brands';
     public const string PK = 'id_brand';
     public const string FIELD = 'brand';
-    public const string NAME = 'brands';
-
-    /**
-     * Default constructor
-     *
-     * @param Db   $zdb Database instance
-     * @param ?int $id  brand's id to load. Defaults to null
-     */
-    public function __construct(Db $zdb, ?int $id = null)
-    {
-        parent::__construct(
-            $zdb,
-            self::TABLE,
-            self::PK,
-            self::FIELD,
-            self::NAME,
-            $id
-        );
-    }
+    public const string LIST_ROUTE = 'brandsList';
 
     /**
      * Get field label
@@ -57,24 +31,69 @@ class Brand extends AbstractObject
     }
 
     /**
-     * Get property route name
+     * Get list page title
      */
-    public function getRouteName(): string
+    public function getListTitle(): string
     {
-        return 'brand';
+        return _T("Brands list", "auto");
     }
 
+    /**
+     * Get add button text
+     */
+    public function getAddText(): string
+    {
+        return _T("Add new brand", "auto");
+    }
 
     /**
-     * Get localized count string for object list
+     * Get localized count
+     *
+     * @param int $count Count
      */
-    protected function getLocalizedCount(): string
+    public function getCountLabel(int $count): string
     {
-        return _Tn(
-            '%count brand',
-            '%count brands',
-            $this->getCount(),
-            'auto'
+        return str_replace(
+            '%count',
+            (string)$count,
+            _Tn('%count brand', '%count brands', $count, 'auto')
         );
+    }
+
+    /**
+     * Get removal success message
+     *
+     * @param int $count Removed records count
+     */
+    public function getRemovedMessage(int $count): string
+    {
+        return sprintf(
+            _Tn('%1$s brand has been successfully deleted.', '%1$s brands have been successfully deleted.', $count, 'auto'),
+            $count
+        );
+    }
+
+    /**
+     * Get message when removal is refused because the record is in use
+     */
+    public function getInUseMessage(): string
+    {
+        return _T('This brand is used by one or more vehicles, it cannot be deleted.', 'auto');
+    }
+
+    /**
+     * Get removal error message
+     */
+    public function getRemoveErrorMessage(): string
+    {
+        return _T('An error occurred trying to remove brand :/', 'auto');
+    }
+
+    /**
+     * Brands have a page listing their models
+     */
+    public function hasDetails(): bool
+    {
+        return true;
     }
 }
