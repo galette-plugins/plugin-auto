@@ -279,9 +279,9 @@ class Controller extends AbstractPluginController
             $params['history_allowed'] = [];
             foreach ($params['autos'] as $vehicle) {
                 if ($vehicle instanceof Auto) {
-                    $params['public_owners'][$vehicle->id] = $access->isOwnerPublic($vehicle->owner);
-                    $params['history_allowed'][$vehicle->id] = $this->login->isLogged()
-                        && $access->canManageMember($vehicle->owner_id);
+                    $params['public_owners'][$vehicle->getId()] = $access->isOwnerPublic($vehicle->getOwner());
+                    $params['history_allowed'][$vehicle->getId()] = $this->login->isLogged()
+                        && $access->canManageMember($vehicle->getOwnerId());
                 }
             }
         }
@@ -330,7 +330,7 @@ class Controller extends AbstractPluginController
 
         $auto = new Auto($this->plugins, $this->zdb);
         if (!$is_new) {
-            if (!$auto->load((int)$id) || !$this->getAccess()->canManageMember($auto->owner_id)) {
+            if (!$auto->load((int)$id) || !$this->getAccess()->canManageMember($auto->getOwnerId())) {
                 return $this->accessDenied($response, 'Trying to edit vehicle #' . $id);
             }
         } else {
@@ -340,7 +340,7 @@ class Controller extends AbstractPluginController
                 && $this->getAccess()->isManager()
                 && $this->getAccess()->canManageMember((int)$get['id_adh'])
             ) {
-                $auto->owner_id = (int)$get['id_adh'];
+                $auto->setOwner((int)$get['id_adh']);
             } else {
                 $auto->appropriateCar($this->login);
             }
@@ -353,7 +353,7 @@ class Controller extends AbstractPluginController
 
         $title = ($is_new)
             ? _T("New vehicle", "auto")
-            : str_replace('%s', $auto->name, _T("Change vehicle '%s'", "auto"));
+            : str_replace('%s', $auto->getName(), _T("Change vehicle '%s'", "auto"));
 
         $mfilters = new ModelsList();
         $models = new Models(
@@ -369,13 +369,13 @@ class Controller extends AbstractPluginController
             'require_calendar'  => true,
             'require_dialog'    => true,
             'car'               => $auto,
-            'models'            => $models->getList($auto->model->getBrand()->getId()),
-            'brands'            => $auto->model->getBrand()->getList(),
-            'colors'            => $auto->color->getList(),
-            'bodies'            => $auto->body->getList(),
-            'transmissions'     => $auto->transmission->getList(),
-            'finitions'         => $auto->finition->getList(),
-            'states'            => $auto->state->getList(),
+            'models'            => $models->getList($auto->getModel()->getBrand()->getId()),
+            'brands'            => $auto->getModel()->getBrand()->getList(),
+            'colors'            => $auto->getColor()->getList(),
+            'bodies'            => $auto->getBody()->getList(),
+            'transmissions'     => $auto->getTransmission()->getList(),
+            'finitions'         => $auto->getFinition()->getList(),
+            'states'            => $auto->getState()->getList(),
             'fuels'             => $auto->listFuels(),
             'time'              => time(),
             'required'          => $auto->getRequired()
@@ -384,8 +384,8 @@ class Controller extends AbstractPluginController
         // members
         $m = new Members();
         $oid = null;
-        if ($auto->owner->id > 0) {
-            $oid = $auto->owner->id;
+        if ($auto->getOwnerId() > 0) {
+            $oid = $auto->getOwnerId();
         }
         $members = $m->getDropdownMembers(
             $this->zdb,
@@ -449,7 +449,7 @@ class Controller extends AbstractPluginController
 
         $auto = new Auto($this->plugins, $this->zdb);
         if (!$is_new) {
-            if (!$auto->load((int)$id) || !$this->getAccess()->canManageMember($auto->owner_id)) {
+            if (!$auto->load((int)$id) || !$this->getAccess()->canManageMember($auto->getOwnerId())) {
                 return $this->accessDenied($response, 'Trying to store vehicle #' . $id);
             }
         }
@@ -466,7 +466,7 @@ class Controller extends AbstractPluginController
                 $error_detected[] = _T("- An error has occurred while saving vehicle in the database.", "auto");
             } else {
                 $success_detected[] = _T("Vehicle has been saved!", "auto");
-                $route = $this->getListRoute($auto->owner_id);
+                $route = $this->getListRoute($auto->getOwnerId());
                 if (!$auto->handleFiles($request->getUploadedFiles())) {
                     $warning_detected = $auto->getErrors();
                 }
@@ -522,7 +522,7 @@ class Controller extends AbstractPluginController
     {
         $history = new History($this->zdb, $id);
         $auto = new Auto($this->plugins, $this->zdb);
-        if (!$auto->load((int)$history->getCarId()) || !$this->getAccess()->canManageMember($auto->owner_id)) {
+        if (!$auto->load((int)$history->getCarId()) || !$this->getAccess()->canManageMember($auto->getOwnerId())) {
             return $this->accessDenied($response, 'Trying to show history of vehicle #' . $id);
         }
 
@@ -572,10 +572,10 @@ class Controller extends AbstractPluginController
     public function removeVehicle(Request $request, Response $response, int $id): Response
     {
         $auto = new Auto($this->plugins, $this->zdb);
-        if (!$auto->load($id) || !$this->getAccess()->canManageMember($auto->owner_id)) {
+        if (!$auto->load($id) || !$this->getAccess()->canManageMember($auto->getOwnerId())) {
             return $this->accessDenied($response, 'Trying to remove vehicle #' . $id);
         }
-        $route = $this->getListRoute($auto->owner_id);
+        $route = $this->getListRoute($auto->getOwnerId());
 
         $data = [
             'id'            => $id,
@@ -591,9 +591,9 @@ class Controller extends AbstractPluginController
                 'mode'          => $this->isAjax($request) ? 'ajax' : '',
                 'page_title'    => sprintf(
                     _T('Remove vehicle %1$s', 'auto'),
-                    $auto->name
+                    $auto->getName()
                 ),
-                'form_url'      => $this->routeparser->urlFor('doRemoveVehicle', ['id' => (string)$auto->id]),
+                'form_url'      => $this->routeparser->urlFor('doRemoveVehicle', ['id' => (string)$auto->getId()]),
                 'cancel_uri'    => $route,
                 'data'          => $data
             ]

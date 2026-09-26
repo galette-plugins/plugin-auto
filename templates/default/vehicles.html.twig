@@ -10,7 +10,7 @@
     {% if mode == 'new' %}
         {% set action = url_for("doVehicleAdd") %}
     {% else %}
-        {% set action = url_for("doVehicleEdit", {"id": car.id}) %}
+        {% set action = url_for("doVehicleEdit", {"id": car.getId()}) %}
     {% endif %}
     <form class="ui form" action="{{ action }}" method="post" id="modifform" enctype="multipart/form-data">
         <div class="ui styled fluid accordion field">
@@ -21,7 +21,7 @@
             <div class="active content">
                 {% include "components/forms/text.html.twig" with {
                     id: 'name',
-                    value: car.name,
+                    value: car.getName(),
                     label: _T("Name", "auto"),
                     required: required.name is defined
                 } %}
@@ -33,7 +33,7 @@
 
                 {% include "components/forms/select.html.twig" with {
                     id: 'brand',
-                    value: car.model.brand.getId(),
+                    value: car.getModel().brand.getId(),
                     values: brand_list_values,
                     label: _T("Brand", "auto"),
                     required: required.brand is defined
@@ -46,7 +46,7 @@
 
                 {% include "components/forms/select.html.twig" with {
                     id: 'model',
-                    value: car.model.id,
+                    value: car.getModel().getId(),
                     values: model_list_values,
                     label: _T("Model", "auto"),
                     required: required.model is defined
@@ -54,28 +54,28 @@
 
                 {% include "components/forms/date.html.twig" with {
                     id: 'first_registration_date',
-                    value: car.first_registration_date,
+                    value: car.getFirstRegistrationDate() ? car.getFirstRegistrationDate()|date(_T("Y-m-d")) : '',
                     label: _T("First registration date", "auto"),
                     title: _T("First registration date", "auto")
                 } %}
 
                 {% include "components/forms/date.html.twig" with {
                     id: 'first_circulation_date',
-                    value: car.first_circulation_date,
+                    value: car.getFirstCirculationDate() ? car.getFirstCirculationDate()|date(_T("Y-m-d")) : '',
                     label: _T("First circulation date", "auto"),
                     title: _T("First circulation date", "auto")
                 } %}
 
                 {% include "components/forms/number.html.twig" with {
                     id: 'mileage',
-                    value: car.mileage,
+                    value: car.getMileage(),
                     label: _T("Mileage", "auto"),
                     required: required.mileage is defined
                 } %}
 
                 {% include "components/forms/number.html.twig" with {
                     id: 'seats',
-                    value: car.seats,
+                    value: car.getSeats(),
                     label: _T("Seats", "auto"),
                     required: required.seats is defined
                 } %}
@@ -89,7 +89,7 @@
                 {{ _T("Car's photo", "auto") }}
             </div>
             <div class="active content">
-                <img src="{% if car.id %}{{ url_for("vehiclePhoto", {"id": car.id}) }}{% else %}{{ url_for("vehiclePhoto") }}{% endif %}" class="picture" width="{{ car.picture.getOptimalWidth() }}" height="{{ car.picture.getOptimalHeight() }}" alt="{{ _T("Car's photo", "auto") }}"/><br/>
+                <img src="{% if car.getId() %}{{ url_for("vehiclePhoto", {"id": car.getId()}) }}{% else %}{{ url_for("vehiclePhoto") }}{% endif %}" class="picture" width="{{ car.picture.getOptimalWidth() }}" height="{{ car.picture.getOptimalHeight() }}" alt="{{ _T("Car's photo", "auto") }}"/><br/>
                 {% if car.hasPicture() %}
                     {% include "components/forms/checkbox.html.twig" with {
                         id: 'del_photo',
@@ -115,14 +115,14 @@
             </div>
             <div class="active content">
                 <div class="field required">
-                {% if car.id %}
+                {% if car.getId() %}
                     <label>{{ _T("Current owner", "auto") }}</label>
                     <p>
                         <span>
-                            {{ car.owner.sfullname }}
+                            {{ car.getOwner().sfullname }}
                             {% if login.isAdmin() or login.isStaff() or login.isGroupManager() %}
                                 {# Does car's history should be visible by the actual owner? #}
-                                <button type="button" class="ui mini basic icon button" data-url="{{ url_for("vehicleHistory", {"id": car.id}) }}" title="{{ _T("Show full car state history", "auto") }}" id="state_history">
+                                <button type="button" class="ui mini basic icon button" data-url="{{ url_for("vehicleHistory", {"id": car.getId()}) }}" title="{{ _T("Show full car state history", "auto") }}" id="state_history">
                                     <i class="ui history icon" aria-hidden="true"></i>
                                     <span class="visually-hidden">{{ _T("Car state history", "auto") }}</span>
                                 </button>
@@ -140,19 +140,19 @@
 
                 {% if login.isAdmin() or login.isStaff() or login.isGroupManager() %}
                     {% set cclass = 'field' %}
-                    {% if car.id %}{% set cclass = cclass ~ ' displaynone' %}{% endif %}
+                    {% if car.getId() %}{% set cclass = cclass ~ ' displaynone' %}{% endif %}
                     {% include 'components/forms/member_dropdown.html.twig' with {
                         'required': true,
                         'component_id': 'owner_id_elt',
                         'id': 'owner_id',
                         'label': _T("Owner", "auto"),
-                        'value': car.owner.id,
+                        'value': car.getOwnerId(),
                         'component_class': cclass
                     } %}
                 </div>
                 {% else %}
-                    <input type="hidden" name="owner" value="{{ car.owner.id }}"/>
-                    {{ members.list[car.owner.id] }}
+                    <input type="hidden" name="owner" value="{{ car.getOwnerId() }}"/>
+                    {{ members.list[car.getOwnerId()] }}
                 {% endif %}
 
                 {% set color_list_values = {(-1): _T("Choose a color", "auto")} %}
@@ -162,7 +162,7 @@
 
                 {% include "components/forms/select.html.twig" with {
                     id: 'color',
-                    value: car.color.getId(),
+                    value: car.getColor().getId(),
                     values: color_list_values,
                     label: _T("Color", "auto"),
                     required: required.color is defined
@@ -175,7 +175,7 @@
 
                 {% include "components/forms/select.html.twig" with {
                     id: 'state',
-                    value: car.state.getId(),
+                    value: car.getState().getId(),
                     values: state_list_values,
                     label: _T("State", "auto"),
                     required: required.state is defined
@@ -183,7 +183,7 @@
 
                 {% include "components/forms/text.html.twig" with {
                     id: 'registration',
-                    value: car.registration,
+                    value: car.getRegistration(),
                     label: _T("Registration", "auto"),
                     required: required.registration is defined
                 } %}
@@ -204,7 +204,7 @@
 
                 {% include "components/forms/select.html.twig" with {
                     id: 'body',
-                    value: car.body.getId(),
+                    value: car.getBody().getId(),
                     values: body_list_values,
                     label: _T("Body", "auto"),
                     required: required.body is defined
@@ -217,7 +217,7 @@
 
                 {% include "components/forms/select.html.twig" with {
                     id: 'transmission',
-                    value: car.transmission.getId(),
+                    value: car.getTransmission().getId(),
                     values: transmission_list_values,
                     label: _T("Transmission", "auto"),
                     required: required.transmission is defined
@@ -230,7 +230,7 @@
 
                 {% include "components/forms/select.html.twig" with {
                     id: 'finition',
-                    value: car.finition.getId(),
+                    value: car.getFinition().getId(),
                     values: finition_list_values,
                     label: _T("Finition", "auto"),
                     required: required.finition is defined
@@ -238,21 +238,21 @@
 
                 {% include "components/forms/text.html.twig" with {
                     id: 'chassis_number',
-                    value: car.chassis_number,
+                    value: car.getChassisNumber(),
                     label: _T("Chassis number", "auto"),
                     required: required.chassis_number is defined
                 } %}
 
                 {% include "components/forms/number.html.twig" with {
                     id: 'horsepower',
-                    value: car.horsepower,
+                    value: car.getHorsepower(),
                     label: _T("Horsepower", "auto"),
                     required: required.horsepower is defined
                 } %}
 
                 {% include "components/forms/number.html.twig" with {
                     id: 'engine_size',
-                    value: car.engine_size,
+                    value: car.getEngineSize(),
                     label: _T("Engine size", "auto"),
                     required: required.engine_size is defined
                 } %}
@@ -264,7 +264,7 @@
 
                 {% include "components/forms/select.html.twig" with {
                     id: 'fuel',
-                    value: car.fuel,
+                    value: car.getFuel(),
                     values: fuel_list_values,
                     label: _T("Fuel", "auto"),
                     required: required.fuel is defined
@@ -280,7 +280,7 @@
             <div class="active content">
                 {% include "components/forms/textarea.html.twig" with {
                     id: 'comment',
-                    value: car.comment,
+                    value: car.getComment(),
                     label: _T("Comment", "auto"),
                     required: required.comment is defined
                 } %}
@@ -292,7 +292,7 @@
                 <i class="save icon"></i> {{ _T("Save") }}
             </button>
             <input type="hidden" name="{{ mode }}" value="1"/>
-            <input type="hidden" name="id_car" value="{{ car.id }}"/>
+            <input type="hidden" name="id_car" value="{{ car.getId() }}"/>
         </div>
     </form>
 {% endblock %}

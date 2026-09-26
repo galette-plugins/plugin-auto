@@ -145,11 +145,11 @@ class Auto extends GaletteTestCase
         $stored = $auto->store(true);
         $this->assertEquals([], $auto->getErrors());
         $this->assertTrue($stored);
-        $auto_id = $auto->id;
+        $auto_id = $auto->getId();
 
         //check history
         $history = new \GaletteAuto\History($this->zdb);
-        $this->assertTrue($history->load($auto->id));
+        $this->assertTrue($history->load($auto->getId()));
         $this->assertCount(1, $history->getEntries());
 
         $entry = $history->getEntries()[0];
@@ -169,7 +169,7 @@ class Auto extends GaletteTestCase
             array_keys($entry)
         );
 
-        $this->assertSame($auto->id, (int)$entry['id_car']);
+        $this->assertSame($auto->getId(), (int)$entry['id_car']);
         $this->assertSame($adh->id, (int)$entry['id_adh']);
         $this->assertSame('GA-123-TE', $entry['car_registration']);
         $this->assertSame('Grey', $entry['color']);
@@ -210,11 +210,11 @@ class Auto extends GaletteTestCase
 
         //check history
         $history = new \GaletteAuto\History($this->zdb);
-        $this->assertTrue($history->load($auto->id));
+        $this->assertTrue($history->load($auto->getId()));
         $this->assertCount(2, $history->getEntries());
 
         $entry = $history->getEntries()[1];
-        $this->assertSame($auto->id, (int)$entry['id_car']);
+        $this->assertSame($auto->getId(), (int)$entry['id_car']);
         $this->assertSame($adh2->id, (int)$entry['id_adh']);
         $this->assertSame('GA-123-TE', $entry['car_registration']);
         $this->assertSame('Yellow', $entry['color']);
@@ -243,7 +243,7 @@ class Auto extends GaletteTestCase
         $stored = $auto->store(true);
         $this->assertEquals([], $auto->getErrors());
         $this->assertTrue($stored);
-        $auto2_id = $auto->id;
+        $auto2_id = $auto->getId();
 
         $this->assertTrue($history->load($auto2_id));
         $this->assertCount(1, $history->getEntries());
@@ -253,7 +253,7 @@ class Auto extends GaletteTestCase
         //sorted by name
         $this->assertSame(
             ['My car', 'Titine'],
-            array_map(fn($car) => $car->name, $autos->getList(true))
+            array_map(fn($car) => $car->getName(), $autos->getList(true))
         );
 
         $this->assertTrue($autos->removeVehicles([$auto_id]));

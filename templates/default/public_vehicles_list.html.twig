@@ -37,7 +37,7 @@
 
 {% block body %}
     {% for auto in autos %}
-        {% set brand = auto.model.brand %}
+        {% set brand = auto.getModel().getBrand() %}
 
         <tr>
             <td class="collapsing" data-col-label="{{ _T("Picture") }}">
@@ -45,38 +45,38 @@
                 {% set photo_width = auto.picture.getOptimalWidth() %}
                 {% set thumb_width = min(photo_width, 80) %}
                 <img
-                    src="{{ url_for("vehiclePhoto", {"id": auto.id}) }}"
+                    src="{{ url_for("vehiclePhoto", {"id": auto.getId()}) }}"
                     class="ui image"
                     width="{{ thumb_width }}"
                     height="{{ photo_width > 0 ? (auto.picture.getOptimalHeight() * thumb_width / photo_width)|round : thumb_width }}"
                     loading="lazy"
-                    alt="{{ auto.name }}"
+                    alt="{{ auto.getName() }}"
                 />
             </td>
             <td data-col-label="{{ _T("Name", "auto") }}">
-                {{ auto.name }}
-                {% if history_allowed[auto.id] %}
-                    <button type="button" class="ui mini basic icon button vehicle-history" data-url="{{ url_for("vehicleHistory", {"id": auto.id}) }}" title="{{ _T("Show full car state history", "auto") }}">
+                {{ auto.getName() }}
+                {% if history_allowed[auto.getId()] %}
+                    <button type="button" class="ui mini basic icon button vehicle-history" data-url="{{ url_for("vehicleHistory", {"id": auto.getId()}) }}" title="{{ _T("Show full car state history", "auto") }}">
                         <i class="ui history icon" aria-hidden="true"></i>
                         <span class="visually-hidden">{{ _T("Car state history", "auto") }}</span>
                     </button>
                 {% endif %}
             </td>
             {# members kept out of the members list are not named #}
-            <td data-col-label="{{ _T("Owner", "auto") }}">{{ public_owners[auto.id] ? auto.owner.sfullname : '—' }}</td>
+            <td data-col-label="{{ _T("Owner", "auto") }}">{{ public_owners[auto.getId()] ? auto.getOwner().sfullname : '—' }}</td>
             <td data-col-label="{{ _T("Brand", "auto") }}">{{ brand.getValue() }}</td>
-            <td data-col-label="{{ _T("Model", "auto") }}">{{ auto.model.model }}</td>
+            <td data-col-label="{{ _T("Model", "auto") }}">{{ auto.getModel().getModel() }}</td>
             <td data-col-label="{{ _T("Description", "auto") }}">
                 {# what the car is, then how it is built #}
-                {% set identity = [auto.getFirstCirculationYear(), auto.body.getValue(), auto.finition.getValue()]|filter(v => v) %}
+                {% set identity = [auto.getFirstCirculationYear(), auto.getBody().getValue(), auto.getFinition().getValue()]|filter(v => v) %}
                 {% set specs = [] %}
-                {% if auto.engine_size %}
-                    {% set specs = specs|merge([_T("%1$s cc", "auto")|replace({'%1$s': auto.engine_size|format_number({}, 'decimal', 'default', i18n.getWebID())})]) %}
+                {% if auto.getEngineSize() %}
+                    {% set specs = specs|merge([_T("%1$s cc", "auto")|replace({'%1$s': auto.getEngineSize()|format_number({}, 'decimal', 'default', i18n.getWebID())})]) %}
                 {% endif %}
-                {% if auto.horsepower %}
-                    {% set specs = specs|merge([_T("%1$s hp", "auto")|replace({'%1$s': auto.horsepower|format_number({}, 'decimal', 'default', i18n.getWebID())})]) %}
+                {% if auto.getHorsepower() %}
+                    {% set specs = specs|merge([_T("%1$s hp", "auto")|replace({'%1$s': auto.getHorsepower()|format_number({}, 'decimal', 'default', i18n.getWebID())})]) %}
                 {% endif %}
-                {% set specs = specs|merge([auto.getFuelLabel(), auto.transmission.getValue(), auto.color.getValue()]|filter(v => v)) %}
+                {% set specs = specs|merge([auto.getFuelLabel(), auto.getTransmission().getValue(), auto.getColor().getValue()]|filter(v => v)) %}
                 {% if identity|length > 0 %}
                     <strong>{{ identity|join(' · ') }}</strong>
                 {% endif %}
