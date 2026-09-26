@@ -21,6 +21,8 @@ use Galette\Core\Plugins\PreferencesProviderInterface;
 use Galette\Core\Plugins\PublicPagesProviderInterface;
 use Galette\Entity\Adherent;
 use Galette\Core\GalettePlugin;
+use Laminas\Db\Metadata\Object\ConstraintObject;
+use Laminas\Db\Metadata\Source\Factory;
 
 /**
  * Galette Auto plugin main class
@@ -269,5 +271,22 @@ class PluginGaletteAuto extends GalettePlugin implements MenuProviderInterface, 
             && $this->zdb->tableExists(AUTO_PREFIX . State::TABLE)
             && $this->zdb->tableExists(AUTO_PREFIX . Transmission::TABLE)
         ;
+    }
+
+    /**
+     * Version of tables installed before plugins versions were recorded
+     *
+     * Vehicles of a removed member are removed along since 1.1.
+     */
+    public function getLegacyDbVersion(): ?float
+    {
+        $metadata = Factory::createSourceFromAdapter($this->zdb->db);
+        /** @var ConstraintObject $constraint */
+        foreach ($metadata->getConstraints(PREFIX_DB . AUTO_PREFIX . Auto::TABLE) as $constraint) {
+            if ($constraint->isForeignKey() && $constraint->getColumns() === [Adherent::PK]) {
+                return $constraint->getDeleteRule() === 'CASCADE' ? null : 1.0;
+            }
+        }
+        return null;
     }
 }
