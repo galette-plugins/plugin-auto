@@ -823,4 +823,34 @@ class Controller extends GaletteRoutingTestCase
         //missing specifications are left out
         $this->assertStringContainsString('<div class="ui small grey text">Manual · Grey</div>', $body);
     }
+
+    /**
+     * Public page links vehicles history for whoever may see it
+     */
+    public function testPublicListHistory(): void
+    {
+        $own_id = $this->createVehicle($this->getMemberOne()->id, 'Mine');
+        $other_id = $this->createVehicle($this->getMemberTwo()->id, 'Other');
+        $this->setPublicVehicles(\Galette\Enums\PublicPageVisibility::Everyone);
+        $links = function (): array {
+            $test_response = $this->app->handle($this->createRequest('publicVehiclesList'));
+            $this->assertSame(200, $test_response->getStatusCode());
+            preg_match_all(
+                '#/vehicle/history/(\d+)" class="vehicle-history"#',
+                (string)$test_response->getBody(),
+                $matches
+            );
+            return array_map('intval', $matches[1]);
+        };
+
+        $this->assertSame([], $links());
+
+        $this->logMember($this->dataAdherentOne());
+        $this->assertSame([$own_id], $links());
+        $this->login->logout();
+
+        $this->logSuperAdmin();
+        $this->assertSame([$own_id, $other_id], $links());
+        $this->expectNoLogEntry();
+    }
 }

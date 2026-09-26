@@ -262,9 +262,13 @@ class Controller extends AbstractPluginController
         if ($this->public) {
             $access = $this->getAccess();
             $params['public_owners'] = [];
+            //history is shown to whoever may see it from the vehicle form
+            $params['history_allowed'] = [];
             foreach ($params['autos'] as $vehicle) {
                 if ($vehicle instanceof Auto) {
                     $params['public_owners'][$vehicle->id] = $access->isOwnerPublic($vehicle->owner);
+                    $params['history_allowed'][$vehicle->id] = $this->login->isLogged()
+                        && $access->canManageMember($vehicle->owner_id);
                 }
             }
         }
