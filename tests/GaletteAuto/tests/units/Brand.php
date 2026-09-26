@@ -43,9 +43,9 @@ class Brand extends GaletteTestCase
         $this->assertCount(0, $brand->getList());
 
         //Add new brand
-        $brand->value = 'Audi';
+        $brand->setValue('Audi');
         $this->assertTrue($brand->store(true));
-        $first_id = $brand->id;
+        $first_id = $brand->getId();
 
         $this->assertCount(1, $brand->getList());
         $listed_brand = $brand->getList()[0];
@@ -56,16 +56,16 @@ class Brand extends GaletteTestCase
 
         //add another one
         $brand = new \GaletteAuto\Brand($this->zdb);
-        $brand->value = 'Mercede';
+        $brand->setValue('Mercede');
         $this->assertTrue($brand->store(true));
-        $id = $brand->id;
+        $id = $brand->getId();
 
         $this->assertCount(2, $brand->getList());
         $this->assertSame('2 brands', $brand->displayCount());
 
         $brand = new \GaletteAuto\Brand($this->zdb);
         $this->assertTrue($brand->load($id));
-        $brand->value = 'Mercedes';
+        $brand->setValue('Mercedes');
         $this->assertTrue($brand->store());
 
         $this->assertCount(2, $brand->getList());

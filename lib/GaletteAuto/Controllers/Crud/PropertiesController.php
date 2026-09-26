@@ -281,7 +281,7 @@ class PropertiesController extends AbstractPluginController
             $object->load($id);
             $title = str_replace(
                 '%s',
-                $object->{$object::FIELD},
+                $object->getValue(),
                 _T("Change '%s'", "auto")
             );
         }
@@ -348,11 +348,11 @@ class PropertiesController extends AbstractPluginController
                 = _T("- An error occurred while saving record. Please try again.", "auto");
         }
 
-        $value = $post[$object->field] ?? null;
+        $value = $post[$object->getField()] ?? null;
         if ($value == null) {
             $error_detected[] = _T("- You must provide a value!", "auto");
         } else {
-            $object->value = $value;
+            $object->setValue($value);
         }
 
         if (count($error_detected) == 0) {
@@ -418,7 +418,7 @@ class PropertiesController extends AbstractPluginController
         $object->load($id);
         $title = str_replace(
             '%s',
-            $object->{$object::FIELD},
+            $object->getValue(),
             _T("Show '%s' brand", "auto")
         );
 
@@ -434,7 +434,7 @@ class PropertiesController extends AbstractPluginController
                 $this->login,
                 new ModelsList()
             );
-            $params['models'] = $models->getList($object->id);
+            $params['models'] = $models->getList($object->getId());
         }
 
         // display page
@@ -476,11 +476,11 @@ class PropertiesController extends AbstractPluginController
                 'page_title'    => sprintf(
                     _T('Remove %1$s %2$s', 'auto'),
                     $object->getFieldLabel(),
-                    $object->value
+                    $object->getValue()
                 ),
                 'form_url'      => $this->routeparser->urlFor(
                     'doRemoveProperty',
-                    ['property' => $property, 'id' => $object->id]
+                    ['property' => $property, 'id' => $object->getId()]
                 ),
                 'cancel_uri'    => $route,
                 'data'          => $data

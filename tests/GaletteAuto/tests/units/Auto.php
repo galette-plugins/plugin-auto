@@ -38,34 +38,34 @@ class Auto extends GaletteTestCase
     public function testCrud(): void
     {
         $body = new \GaletteAuto\Body($this->zdb);
-        $body->value = 'Berline';
+        $body->setValue('Berline');
         $this->assertTrue($body->store(true));
-        $body_id = $body->id;
+        $body_id = $body->getId();
 
         $color = new \GaletteAuto\Color($this->zdb);
-        $color->value = 'Grey';
+        $color->setValue('Grey');
         $this->assertTrue($color->store(true));
-        $color_id = $color->id;
+        $color_id = $color->getId();
 
         $finition = new \GaletteAuto\Finition($this->zdb);
-        $finition->value = 'Standard';
+        $finition->setValue('Standard');
         $this->assertTrue($finition->store(true));
-        $finition_id = $finition->id;
+        $finition_id = $finition->getId();
 
         $state = new \GaletteAuto\State($this->zdb);
-        $state->value = 'Correct';
+        $state->setValue('Correct');
         $this->assertTrue($state->store(true));
-        $state_id = $state->id;
+        $state_id = $state->getId();
 
         $transmission = new \GaletteAuto\Transmission($this->zdb);
-        $transmission->value = 'Manual';
+        $transmission->setValue('Manual');
         $this->assertTrue($transmission->store(true));
-        $transmission_id = $transmission->id;
+        $transmission_id = $transmission->getId();
 
         $brand = new \GaletteAuto\Brand($this->zdb);
-        $brand->value = 'Peugeot';
+        $brand->setValue('Peugeot');
         $this->assertTrue($brand->store(true));
-        $brand_id = $brand->id;
+        $brand_id = $brand->getId();
 
         $model = new \GaletteAuto\Model($this->zdb);
         $data = [
@@ -181,9 +181,9 @@ class Auto extends GaletteTestCase
 
         $adh2 = $this->getMemberTwo();
         $color2 = new \GaletteAuto\Color($this->zdb);
-        $color2->value = 'Yellow';
+        $color2->setValue('Yellow');
         $this->assertTrue($color2->store(true));
-        $color2_id = $color2->id;
+        $color2_id = $color2->getId();
 
         $data = [
             'registration' => 'GA-123-TE',

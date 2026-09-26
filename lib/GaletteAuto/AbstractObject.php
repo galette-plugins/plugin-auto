@@ -10,6 +10,7 @@ declare(strict_types=1);
 
 namespace GaletteAuto;
 
+use ArrayObject;
 use Analog\Analog;
 use Laminas\Db\Sql\Expression;
 use Laminas\Db\Sql\Select;
@@ -21,9 +22,6 @@ use GaletteAuto\Filters\PropertiesList;
  * Automobile Object abstract class for galette Auto plugin
  *
  * @author Johan Cwiklinski <johan@x-tnd.be>
- *
- * @property int    $id
- * @property string $value
  */
 abstract class AbstractObject
 {
@@ -33,8 +31,8 @@ abstract class AbstractObject
     private string $name;
 
     protected Db $zdb;
-    protected ?int $id;
-    protected ?string $value;
+    protected ?int $id = null;
+    protected ?string $value = null;
     protected ?PropertiesList $filters = null;
 
     private int $count;
@@ -64,7 +62,7 @@ abstract class AbstractObject
     /**
      * Get the list
      *
-     * @return array<int, \ArrayObject<string, mixed>>
+     * @return array<int, ArrayObject<string, mixed>>
      */
     public function getList(): array
     {
@@ -101,12 +99,11 @@ abstract class AbstractObject
                 ]
             );
 
-            $results = $this->zdb->execute($select);
-            $result = $results->current();
-            $pk = $this->pk;
-            $this->id = (int)$result->$pk;
-            $field = $this->field;
-            $this->value = $result->$field;
+            $result = $this->zdb->execute($select)->current();
+            if (!$result instanceof ArrayObject) {
+                throw new \RuntimeException('Record not found');
+            }
+            $this->loadFromRow($result);
 
             return true;
         } catch (\Exception $e) {
@@ -117,6 +114,18 @@ abstract class AbstractObject
             );
             return false;
         }
+    }
+
+    /**
+     * Populate from a resultset row, which may come from a join
+     *
+     * @param ArrayObject<string, mixed> $row Resultset row
+     */
+    public function loadFromRow(ArrayObject $row): self
+    {
+        $this->id = (int)$row[$this->pk];
+        $this->value = (string)$row[$this->field];
+        return $this;
     }
 
     /**
@@ -205,49 +214,46 @@ abstract class AbstractObject
     abstract public function getRouteName(): string;
 
     /**
-     * Global getter method
-     *
-     * @param string $name name of the property we want to retrieve
-     *
-     * @return mixed the called property
+     * Get record ID
      */
-    public function __get(string $name): mixed
+    public function getId(): ?int
     {
-        if (property_exists($this, $name)) {
-            return $this->$name ?? null;
-        } else {
-            Analog::log(
-                '[' . get_class($this) . '] Unable to retrieve `' . $name . '`',
-                Analog::INFO
-            );
-            throw new \RuntimeException('Unable to retrieve `' . $name . '`');
-        }
+        return $this->id;
     }
 
     /**
-     * Global isset method
-     * Required for twig to access properties via __get
-     *
-     * @param string $name name of the property we want to retrieve
+     * Get record value
      */
-    public function __isset(string $name): bool
+    public function getValue(): ?string
     {
-        return property_exists($this, $name);
+        return $this->value;
     }
 
     /**
-     * Global setter method
+     * Set record value
      *
-     * @param string $name  name of the property we want to assign a value to
-     * @param mixed  $value a relevant value for the property
+     * @param string $value Value
      */
-    public function __set(string $name, mixed $value): void
+    public function setValue(string $value): self
     {
-        switch ($name) {
-            case 'value':
-                $this->value = $value;
-                break;
-        }
+        $this->value = $value;
+        return $this;
+    }
+
+    /**
+     * Get primary key field name
+     */
+    public function getPk(): string
+    {
+        return $this->pk;
+    }
+
+    /**
+     * Get value field name
+     */
+    public function getField(): string
+    {
+        return $this->field;
     }
 
     /**

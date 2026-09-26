@@ -43,9 +43,9 @@ class Color extends GaletteTestCase
         $this->assertCount(0, $color->getList());
 
         //Add new color
-        $color->value = 'Red';
+        $color->setValue('Red');
         $this->assertTrue($color->store(true));
-        $first_id = $color->id;
+        $first_id = $color->getId();
 
         $this->assertCount(1, $color->getList());
         $listed_color = $color->getList()[0];
@@ -56,9 +56,9 @@ class Color extends GaletteTestCase
 
         //add another one
         $color = new \GaletteAuto\Color($this->zdb);
-        $color->value = 'Blu';
+        $color->setValue('Blu');
         $this->assertTrue($color->store(true));
-        $id = $color->id;
+        $id = $color->getId();
 
         $this->assertCount(2, $color->getList());
         $this->assertSame('2 colors', $color->displayCount());
@@ -67,7 +67,7 @@ class Color extends GaletteTestCase
 
         $color = new \GaletteAuto\Color($this->zdb);
         $this->assertTrue($color->load($id));
-        $color->value = 'Blue';
+        $color->setValue('Blue');
         $this->assertTrue($color->store());
 
         $this->assertCount(2, $color->getList());

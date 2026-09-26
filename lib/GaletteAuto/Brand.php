@@ -22,8 +22,6 @@ use Galette\Core\Db;
  * @license   http://www.gnu.org/licenses/gpl-3.0.html GPL License 3.0 or (at your option) any later version
  * @link      https://galette.eu
  * @since     Available since 0.7dev - 2009-03-16
- *
- * @property int $id
  */
 class Brand extends AbstractObject
 {
@@ -66,24 +64,6 @@ class Brand extends AbstractObject
         return 'brand';
     }
 
-    /**
-     * Global getter method
-     *
-     * @param string $name name of the property we want to retrieve
-     *
-     * @return mixed the called property
-     */
-    public function __get(string $name): mixed
-    {
-        if ($name == self::FIELD) {
-            return parent::__get('value');
-        }
-        if ($name == self::PK) {
-            return parent::__get('id');
-        } else {
-            return parent::__get($name);
-        }
-    }
 
     /**
      * Get localized count string for object list

@@ -43,9 +43,9 @@ class Finition extends GaletteTestCase
         $this->assertCount(0, $finition->getList());
 
         //Add new finition
-        $finition->value = 'Feline';
+        $finition->setValue('Feline');
         $this->assertTrue($finition->store(true));
-        $first_id = $finition->id;
+        $first_id = $finition->getId();
 
         $this->assertCount(1, $finition->getList());
         $listed_finition = $finition->getList()[0];
@@ -56,16 +56,16 @@ class Finition extends GaletteTestCase
 
         //add another one
         $finition = new \GaletteAuto\Finition($this->zdb);
-        $finition->value = 'R';
+        $finition->setValue('R');
         $this->assertTrue($finition->store(true));
-        $id = $finition->id;
+        $id = $finition->getId();
 
         $this->assertCount(2, $finition->getList());
         $this->assertSame('2 finitions', $finition->displayCount());
 
         $finition = new \GaletteAuto\Finition($this->zdb);
         $this->assertTrue($finition->load($id));
-        $finition->value = 'RS';
+        $finition->setValue('RS');
         $this->assertTrue($finition->store());
 
         $this->assertCount(2, $finition->getList());

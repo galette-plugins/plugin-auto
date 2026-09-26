@@ -58,21 +58,6 @@ class Transmission extends AbstractObject
         return 'transmission';
     }
 
-    /**
-     * Global getter method
-     *
-     * @param string $name name of the property we want to retrieve
-     *
-     * @return mixed the called property
-     */
-    public function __get(string $name): mixed
-    {
-        if ($name == self::FIELD) {
-            return parent::__get('value');
-        } else {
-            return parent::__get($name);
-        }
-    }
 
     /**
      * Get localized count string for object list

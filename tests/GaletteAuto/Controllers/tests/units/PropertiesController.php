@@ -40,9 +40,9 @@ class PropertiesController extends GaletteRoutingTestCase
     private function createColor(string $value): int
     {
         $color = new Color($this->zdb);
-        $color->value = $value;
+        $color->setValue($value);
         $this->assertTrue($color->store(true));
-        return $color->id;
+        return $color->getId();
     }
 
     /**
@@ -54,7 +54,7 @@ class PropertiesController extends GaletteRoutingTestCase
     {
         $color = new Color($this->zdb);
         $this->assertTrue($color->load($id));
-        return $color->value;
+        return $color->getValue();
     }
 
     /**
@@ -125,7 +125,7 @@ class PropertiesController extends GaletteRoutingTestCase
             $class = \GaletteAuto\AbstractObject::getClassForPropName($property);
             foreach (['Zeta ' . $property, 'Alpha ' . $property] as $value) {
                 $object = new $class($this->zdb);
-                $object->value = $value;
+                $object->setValue($value);
                 $this->assertTrue($object->store(true));
             }
 
@@ -160,10 +160,10 @@ class PropertiesController extends GaletteRoutingTestCase
     {
         $id = $this->createColor('Red');
         $brand = new \GaletteAuto\Brand($this->zdb);
-        $brand->value = 'Peugeot';
+        $brand->setValue('Peugeot');
         $this->assertTrue($brand->store(true));
         $model = new \GaletteAuto\Model($this->zdb);
-        $this->assertTrue($model->check(['model' => '307', 'brand' => $brand->id]));
+        $this->assertTrue($model->check(['model' => '307', 'brand' => $brand->getId()]));
         $this->assertTrue($model->store(true));
 
         $this->logSuperAdmin();
@@ -174,7 +174,7 @@ class PropertiesController extends GaletteRoutingTestCase
         $this->assertStringContainsString('value="Red"', (string)$test_response->getBody());
 
         $test_response = $this->app->handle(
-            $this->createRequest('propertyShow', ['property' => 'brand', 'id' => (string)$brand->id])
+            $this->createRequest('propertyShow', ['property' => 'brand', 'id' => (string)$brand->getId()])
         );
         $this->expectOK($test_response);
         $body = (string)$test_response->getBody();
@@ -214,15 +214,15 @@ class PropertiesController extends GaletteRoutingTestCase
         foreach (['Body', 'Finition', 'State', 'Transmission'] as $property) {
             $class = '\\GaletteAuto\\' . $property;
             $object = new $class($this->zdb);
-            $object->value = 'Test ' . $property;
+            $object->setValue('Test ' . $property);
             $this->assertTrue($object->store(true));
-            $values[$class::PK] = $object->id;
+            $values[$class::PK] = $object->getId();
         }
         $brand = new \GaletteAuto\Brand($this->zdb);
-        $brand->value = 'Peugeot';
+        $brand->setValue('Peugeot');
         $this->assertTrue($brand->store(true));
         $model = new \GaletteAuto\Model($this->zdb);
-        $this->assertTrue($model->check(['model' => '307', 'brand' => $brand->id]));
+        $this->assertTrue($model->check(['model' => '307', 'brand' => $brand->getId()]));
         $this->assertTrue($model->store(true));
         $insert = $this->zdb->insert(AUTO_PREFIX . \GaletteAuto\Auto::TABLE);
         $insert->values($values + [

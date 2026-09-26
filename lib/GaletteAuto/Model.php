@@ -110,7 +110,7 @@ class Model
         try {
             $values = [
                 'model'     => $this->model,
-                Brand::PK   => $this->brand->id
+                Brand::PK   => $this->brand->getId()
             ];
             if ($new) {
                 $insert = $this->zdb->insert(AUTO_PREFIX . self::TABLE);

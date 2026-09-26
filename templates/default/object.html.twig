@@ -7,11 +7,10 @@
 {% extends 'page.html.twig' %}
 
 {% block content %}
-    {% set name = obj.name %}
-    {% set pk = obj.pk %}
-    {% set field = obj.field %}
+    {% set pk = obj.getPk() %}
+    {% set field = obj.getField() %}
 
-    <form class="ui form" action="{% if mode == "new" %}{{ url_for("doPropertyAdd", {"property": set}) }}{% else %}{{ url_for("doPropertyEdit", {"property": set, "id": obj.id}) }}{% endif %}" method="post" id="modifform">
+    <form class="ui form" action="{% if mode == "new" %}{{ url_for("doPropertyAdd", {"property": set}) }}{% else %}{{ url_for("doPropertyEdit", {"property": set, "id": obj.getId()}) }}{% endif %}" method="post" id="modifform">
         <div class="ui styled fluid accordion field">
             <div class="active title">
                 <i class="icon dropdown"></i>
@@ -21,7 +20,7 @@
                 {% include "components/forms/text.html.twig" with {
                     id: field,
                     name: field,
-                    value: obj.value,
+                    value: obj.getValue(),
                     label: obj.getFieldLabel(),
                     required: true,
                     autofocus: true
@@ -35,7 +34,7 @@
             </button>
             <input type="hidden" name="set" value="{{ set }}"/>
             <input type="hidden" name="{{ mode }}" value="1"/>
-            <input type="hidden" name="{{ pk }}" value="{{ obj.id }}"/>
+            <input type="hidden" name="{{ pk }}" value="{{ obj.getId() }}"/>
         </div>
     </form>
 {% endblock %}

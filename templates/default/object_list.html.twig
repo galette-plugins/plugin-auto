@@ -6,9 +6,8 @@
 
 {% extends 'elements/list.html.twig' %}
 
-{% set name = obj.name %}
-{% set pk = obj.pk %}
-{% set field = obj.field %}
+{% set pk = obj.getPk() %}
+{% set field = obj.getField() %}
 
 {% set nb = list|length %}
 

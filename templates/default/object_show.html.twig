@@ -7,9 +7,8 @@
 {% extends 'page.html.twig' %}
 
 {% block content %}
-    {% set name = obj.name %}
-    {% set pk = obj.pk %}
-    {% set field = obj.field %}
+    {% set pk = obj.getPk() %}
+    {% set field = obj.getField() %}
 
     <div class="ui basic fitted segment">
         <a class="ui tiny labeled icon button" href="{{ url_for("propertyAdd", {"property": 'brand'}) }}">
@@ -22,7 +21,7 @@
     {% if models|length > 0 %}
         <h2 class="ui header">
             <div class="content">
-                {{ _T("Registered models for the brand '%s'", "auto")|replace({'%s': obj.value}) }}
+                {{ _T("Registered models for the brand '%s'", "auto")|replace({'%s': obj.getValue()}) }}
             </div>
         </h2>
         <div class="ui relaxed divided list">
@@ -39,7 +38,7 @@
         </div>
     {% else %}
         <div class="ui info message">
-            <p>{{ _T("The brand '%s' does not have any registered model at this time.", "auto")|replace({'%s': obj.value}) }}</p>
+            <p>{{ _T("The brand '%s' does not have any registered model at this time.", "auto")|replace({'%s': obj.getValue()}) }}</p>
         </div>
     {% endif %}
     </div>

@@ -46,9 +46,9 @@ class Controller extends GaletteRoutingTestCase
         foreach ($values as $property => $value) {
             $class = '\GaletteAuto\\' . ucfirst($property);
             $object = new $class($this->zdb);
-            $object->value = $value;
+            $object->setValue($value);
             $this->assertTrue($object->store(true));
-            $this->props[$property] = $object->id;
+            $this->props[$property] = $object->getId();
         }
 
         $model = new \GaletteAuto\Model($this->zdb);
@@ -993,14 +993,14 @@ class Controller extends GaletteRoutingTestCase
     {
         $model = new \GaletteAuto\Model($this->zdb);
         $brand = new \GaletteAuto\Brand($this->zdb);
-        $brand->value = 'Renault';
+        $brand->setValue('Renault');
         $this->assertTrue($brand->store(true));
-        $this->assertTrue($model->check(['model' => 'Clio', 'brand' => $brand->id]));
+        $this->assertTrue($model->check(['model' => 'Clio', 'brand' => $brand->getId()]));
         $this->assertTrue($model->store(true));
 
         $this->getMemberOne();
         $this->logMember($this->dataAdherentOne());
-        $request = $this->createRequest('ajaxModels', [], 'POST')->withParsedBody(['brand' => (string)$brand->id]);
+        $request = $this->createRequest('ajaxModels', [], 'POST')->withParsedBody(['brand' => (string)$brand->getId()]);
         $test_response = $this->app->handle($request);
         $this->assertSame(200, $test_response->getStatusCode());
         $models = json_decode((string)$test_response->getBody(), true);

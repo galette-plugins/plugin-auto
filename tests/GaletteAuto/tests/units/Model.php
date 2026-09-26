@@ -28,15 +28,15 @@ class Model extends GaletteTestCase
     {
         $brand = new \GaletteAuto\Brand($this->zdb);
         //Add new brand
-        $brand->value = 'Audi';
+        $brand->setValue('Audi');
         $this->assertTrue($brand->store(true));
-        $first_brand_id = $brand->id;
+        $first_brand_id = $brand->getId();
 
         //add another brand
         $brand = new \GaletteAuto\Brand($this->zdb);
-        $brand->value = 'Mercedes';
+        $brand->setValue('Mercedes');
         $this->assertTrue($brand->store(true));
-        $second_brand_id = $brand->id;
+        $second_brand_id = $brand->getId();
 
         $this->assertCount(2, $brand->getList());
 

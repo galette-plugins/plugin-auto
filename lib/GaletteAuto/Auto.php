@@ -304,19 +304,19 @@ class Auto
                     case self::PK:
                         break;
                     case Color::PK:
-                        $values[$k] = $this->color->id;
+                        $values[$k] = $this->color->getId();
                         break;
                     case Body::PK:
-                        $values[$k] = $this->body->id;
+                        $values[$k] = $this->body->getId();
                         break;
                     case State::PK:
-                        $values[$k] = $this->state->id;
+                        $values[$k] = $this->state->getId();
                         break;
                     case Transmission::PK:
-                        $values[$k] = $this->transmission->id;
+                        $values[$k] = $this->transmission->getId();
                         break;
                     case Finition::PK:
-                        $values[$k] = $this->finition->id;
+                        $values[$k] = $this->finition->getId();
                         break;
                     case Model::PK:
                         $values[$k] = $this->model->id;
@@ -541,9 +541,9 @@ class Auto
                 case Adherent::PK:
                     return $this->owner->id;
                 case Color::PK:
-                    return $this->color->id;
+                    return $this->color->getId();
                 case State::PK:
-                    return $this->state->id;
+                    return $this->state->getId();
                 case 'car_registration':
                     return $this->registration;
                 case 'first_registration_date':

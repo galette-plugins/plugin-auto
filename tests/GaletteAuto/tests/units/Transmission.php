@@ -43,9 +43,9 @@ class Transmission extends GaletteTestCase
         $this->assertCount(0, $transmission->getList());
 
         //Add new transmission
-        $transmission->value = 'Manual';
+        $transmission->setValue('Manual');
         $this->assertTrue($transmission->store(true));
-        $first_id = $transmission->id;
+        $first_id = $transmission->getId();
 
         $this->assertCount(1, $transmission->getList());
         $listed_transmission = $transmission->getList()[0];
@@ -56,16 +56,16 @@ class Transmission extends GaletteTestCase
 
         //add another one
         $transmission = new \GaletteAuto\Transmission($this->zdb);
-        $transmission->value = 'Auto';
+        $transmission->setValue('Auto');
         $this->assertTrue($transmission->store(true));
-        $id = $transmission->id;
+        $id = $transmission->getId();
 
         $this->assertCount(2, $transmission->getList());
         $this->assertSame('2 transmissions', $transmission->displayCount());
 
         $transmission = new \GaletteAuto\Transmission($this->zdb);
         $this->assertTrue($transmission->load($id));
-        $transmission->value = 'Automatic';
+        $transmission->setValue('Automatic');
         $this->assertTrue($transmission->store());
 
         $this->assertCount(2, $transmission->getList());

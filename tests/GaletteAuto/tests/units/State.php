@@ -43,9 +43,9 @@ class State extends GaletteTestCase
         $this->assertCount(0, $state->getList());
 
         //Add new state
-        $state->value = 'Good';
+        $state->setValue('Good');
         $this->assertTrue($state->store(true));
-        $first_id = $state->id;
+        $first_id = $state->getId();
 
         $this->assertCount(1, $state->getList());
         $listed_state = $state->getList()[0];
@@ -56,16 +56,16 @@ class State extends GaletteTestCase
 
         //add another one
         $state = new \GaletteAuto\State($this->zdb);
-        $state->value = 'Wrec';
+        $state->setValue('Wrec');
         $this->assertTrue($state->store(true));
-        $id = $state->id;
+        $id = $state->getId();
 
         $this->assertCount(2, $state->getList());
         $this->assertSame('2 states', $state->displayCount());
 
         $state = new \GaletteAuto\State($this->zdb);
         $this->assertTrue($state->load($id));
-        $state->value = 'Wreck';
+        $state->setValue('Wreck');
         $this->assertTrue($state->store());
 
         $this->assertCount(2, $state->getList());

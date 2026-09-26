@@ -33,7 +33,7 @@
 
                 {% include "components/forms/select.html.twig" with {
                     id: 'brand',
-                    value: car.model.brand.id,
+                    value: car.model.brand.getId(),
                     values: brand_list_values,
                     label: _T("Brand", "auto"),
                     required: required.brand is defined
@@ -162,7 +162,7 @@
 
                 {% include "components/forms/select.html.twig" with {
                     id: 'color',
-                    value: car.color.id,
+                    value: car.color.getId(),
                     values: color_list_values,
                     label: _T("Color", "auto"),
                     required: required.color is defined
@@ -175,7 +175,7 @@
 
                 {% include "components/forms/select.html.twig" with {
                     id: 'state',
-                    value: car.state.id,
+                    value: car.state.getId(),
                     values: state_list_values,
                     label: _T("State", "auto"),
                     required: required.state is defined
@@ -204,7 +204,7 @@
 
                 {% include "components/forms/select.html.twig" with {
                     id: 'body',
-                    value: car.body.id,
+                    value: car.body.getId(),
                     values: body_list_values,
                     label: _T("Body", "auto"),
                     required: required.body is defined
@@ -217,7 +217,7 @@
 
                 {% include "components/forms/select.html.twig" with {
                     id: 'transmission',
-                    value: car.transmission.id,
+                    value: car.transmission.getId(),
                     values: transmission_list_values,
                     label: _T("Transmission", "auto"),
                     required: required.transmission is defined
@@ -230,7 +230,7 @@
 
                 {% include "components/forms/select.html.twig" with {
                     id: 'finition',
-                    value: car.finition.id,
+                    value: car.finition.getId(),
                     values: finition_list_values,
                     label: _T("Finition", "auto"),
                     required: required.finition is defined

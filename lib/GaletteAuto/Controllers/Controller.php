@@ -369,7 +369,7 @@ class Controller extends AbstractPluginController
             'require_calendar'  => true,
             'require_dialog'    => true,
             'car'               => $auto,
-            'models'            => $models->getList($auto->model->brand->id),
+            'models'            => $models->getList($auto->model->brand->getId()),
             'brands'            => $auto->model->brand->getList(),
             'colors'            => $auto->color->getList(),
             'bodies'            => $auto->body->getList(),

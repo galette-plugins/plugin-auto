@@ -33,9 +33,9 @@ class ModelsController extends GaletteRoutingTestCase
     {
         parent::setUp();
         $brand = new Brand($this->zdb);
-        $brand->value = 'Peugeot';
+        $brand->setValue('Peugeot');
         $this->assertTrue($brand->store(true));
-        $this->brand_id = $brand->id;
+        $this->brand_id = $brand->getId();
     }
 
     /**
@@ -128,9 +128,9 @@ class ModelsController extends GaletteRoutingTestCase
         foreach (['Body', 'Color', 'Finition', 'State', 'Transmission'] as $property) {
             $class = '\\GaletteAuto\\' . $property;
             $object = new $class($this->zdb);
-            $object->value = 'Test ' . $property;
+            $object->setValue('Test ' . $property);
             $this->assertTrue($object->store(true));
-            $values[$class::PK] = $object->id;
+            $values[$class::PK] = $object->getId();
         }
         $insert = $this->zdb->insert(AUTO_PREFIX . \GaletteAuto\Auto::TABLE);
         $insert->values($values + [

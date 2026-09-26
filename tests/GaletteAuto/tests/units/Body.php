@@ -43,9 +43,9 @@ class Body extends GaletteTestCase
         $this->assertCount(0, $body->getList());
 
         //Add new body
-        $body->value = 'Coupe';
+        $body->setValue('Coupe');
         $this->assertTrue($body->store(true));
-        $first_id = $body->id;
+        $first_id = $body->getId();
 
         $this->assertCount(1, $body->getList());
         $listed_body = $body->getList()[0];
@@ -56,16 +56,16 @@ class Body extends GaletteTestCase
 
         //add another one
         $body = new \GaletteAuto\Body($this->zdb);
-        $body->value = 'Brea';
+        $body->setValue('Brea');
         $this->assertTrue($body->store(true));
-        $id = $body->id;
+        $id = $body->getId();
 
         $this->assertCount(2, $body->getList());
         $this->assertSame('2 bodies', $body->displayCount());
 
         $body = new \GaletteAuto\Body($this->zdb);
         $this->assertTrue($body->load($id));
-        $body->value = 'Break';
+        $body->setValue('Break');
         $this->assertTrue($body->store());
 
         $this->assertCount(2, $body->getList());

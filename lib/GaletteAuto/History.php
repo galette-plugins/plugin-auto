@@ -144,11 +144,11 @@ class History
 
             //associate color
             $color = new Color($this->zdb, (int)$entry['id_color']);
-            $entry['color'] = $color->value;
+            $entry['color'] = $color->getValue();
 
             //associate state
             $state = new State($this->zdb, (int)$entry['id_state']);
-            $entry['state'] = $state->value;
+            $entry['state'] = $state->getValue();
 
             $this->entries[] = $entry;
         }
