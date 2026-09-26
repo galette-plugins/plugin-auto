@@ -17,6 +17,7 @@ use GaletteAuto\Filters\ModelsList;
 use GaletteAuto\Model;
 use GaletteAuto\Repository\Models;
 use GaletteAuto\Repository\Properties;
+use Slim\Exception\HttpNotFoundException;
 use Slim\Psr7\Request;
 use Slim\Psr7\Response;
 
@@ -168,8 +169,7 @@ class ModelsController extends AbstractPluginController
         if ($action === 'edit') {
             // initialize model structure with database values
             if (!$model->load((int)$id)) {
-                //not possible to load, exit
-                throw new \RuntimeException('Model does not exists!');
+                throw new HttpNotFoundException($request);
             }
         }
 
@@ -227,7 +227,7 @@ class ModelsController extends AbstractPluginController
         $error_detected = [];
 
         if (!$is_new && !$model->load((int)$id)) {
-            throw new \RuntimeException('Model does not exists!');
+            throw new HttpNotFoundException($request);
         }
 
         if (!$model->check($post)) {
@@ -235,17 +235,17 @@ class ModelsController extends AbstractPluginController
         }
 
         if (count($error_detected) === 0) {
-            $res = $model->store($is_new);
-            if (!$res) {
-                $error_detected[]
-                    = _T("- An error occurred while saving record. Please try again.", "auto");
-            } else {
+            try {
+                $model->store($is_new);
                 $msg = $is_new ? _T("New model has been added!", "auto")
                     : _T("Model has been saved!", "auto");
                 $this->flash->addMessage(
                     'success_detected',
                     $msg
                 );
+            } catch (\Throwable $e) {
+                $error_detected[]
+                    = _T("- An error occurred while saving record. Please try again.", "auto");
             }
         }
 
@@ -301,6 +301,22 @@ class ModelsController extends AbstractPluginController
             'doRemoveModel',
             $args
         );
+    }
+
+    /**
+     * Removal confirmation parameters, for existing models only
+     *
+     * @return array<string,mixed>
+     *
+     * @throws HttpNotFoundException
+     */
+    protected function getconfirmDeleteParams(Request $request): array
+    {
+        $args = $this->getArgs($request);
+        if (!isset($args['ids']) && !(new Model($this->zdb))->load((int)$args['id'])) {
+            throw new HttpNotFoundException($request);
+        }
+        return parent::getconfirmDeleteParams($request);
     }
 
     /**

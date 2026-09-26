@@ -56,7 +56,7 @@ class Transmission extends GaletteTestCase
 
         //Add new transmission
         $transmission->setValue('Manual');
-        $this->assertTrue($transmission->store(true));
+        $transmission->store(true);
         $first_id = $transmission->getId();
 
         $this->assertCount(1, $transmissions->getList());
@@ -69,7 +69,7 @@ class Transmission extends GaletteTestCase
         //add another one
         $transmission = new \GaletteAuto\Transmission($this->zdb);
         $transmission->setValue('Auto');
-        $this->assertTrue($transmission->store(true));
+        $transmission->store(true);
         $id = $transmission->getId();
 
         $this->assertCount(2, $transmissions->getList());
@@ -78,7 +78,7 @@ class Transmission extends GaletteTestCase
         $transmission = new \GaletteAuto\Transmission($this->zdb);
         $this->assertTrue($transmission->load($id));
         $transmission->setValue('Automatic');
-        $this->assertTrue($transmission->store());
+        $transmission->store();
 
         $this->assertCount(2, $transmissions->getList());
         $this->assertSame('2 transmissions', $transmission->getCountLabel($transmissions->getCount()));
@@ -100,7 +100,7 @@ class Transmission extends GaletteTestCase
         $this->assertFalse($transmission->load(999));
         $this->expectLogEntry(
             \Analog\Analog::ERROR,
-            '[GaletteAuto\Transmission] Cannot load transmissions from id `999`'
+            '[GaletteAuto\Transmission] Cannot load transmission #999 | Record not found'
         );
     }
 

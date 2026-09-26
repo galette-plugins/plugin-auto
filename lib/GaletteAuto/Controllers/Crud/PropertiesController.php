@@ -19,6 +19,7 @@ use GaletteAuto\Color;
 use GaletteAuto\Finition;
 use GaletteAuto\State;
 use GaletteAuto\Transmission;
+use Slim\Exception\HttpNotFoundException;
 use Slim\Psr7\Request;
 use Slim\Psr7\Response;
 use GaletteAuto\Filters\ModelsList;
@@ -220,7 +221,7 @@ class PropertiesController extends AbstractPluginController
      */
     public function propertyAdd(Request $request, Response $response, string $property): Response
     {
-        return $this->propertyEdit($response, $property, null, 'add');
+        return $this->propertyEdit($request, $response, $property, null, 'add');
     }
 
     /**
@@ -230,15 +231,20 @@ class PropertiesController extends AbstractPluginController
      * @param ?int   $id       Property ID, if any
      * @param string $action   'add' or 'edit'
      */
-    public function propertyEdit(Response $response, string $property, ?int $id = null, string $action = 'edit'): Response
-    {
+    public function propertyEdit(
+        Request $request,
+        Response $response,
+        string $property,
+        ?int $id = null,
+        string $action = 'edit'
+    ): Response {
         $is_new = ($action === 'add');
 
         $object = AbstractObject::fromPropertyName($this->zdb, $property);
         if ($is_new) {
             $title = _T("New", "auto");
         } else {
-            $object->load($id);
+            $this->loadOrNotFound($request, $object, (int)$id);
             $title = str_replace(
                 '%s',
                 $object->getValue(),
@@ -303,9 +309,8 @@ class PropertiesController extends AbstractPluginController
 
         $error_detected = [];
 
-        if (!$is_new && !$object->load((int)$id)) {
-            $error_detected[]
-                = _T("- An error occurred while saving record. Please try again.", "auto");
+        if (!$is_new) {
+            $this->loadOrNotFound($request, $object, (int)$id);
         }
 
         $value = $post[$object->getField()] ?? null;
@@ -316,11 +321,8 @@ class PropertiesController extends AbstractPluginController
         }
 
         if (count($error_detected) == 0) {
-            $res = $object->store($is_new);
-            if (!$res) {
-                $error_detected[]
-                    = _T("- An error occurred while saving record. Please try again.", "auto");
-            } else {
+            try {
+                $object->store($is_new);
                 $msg = str_replace(
                     '%property',
                     $object->getFieldLabel(),
@@ -331,6 +333,9 @@ class PropertiesController extends AbstractPluginController
                     'success_detected',
                     $msg
                 );
+            } catch (\Throwable $e) {
+                $error_detected[]
+                    = _T("- An error occurred while saving record. Please try again.", "auto");
             }
         }
 
@@ -371,10 +376,10 @@ class PropertiesController extends AbstractPluginController
      * @param string $property Property name
      * @param int    $id       Property ID, if any
      */
-    public function propertyShow(Response $response, string $property, int $id): Response
+    public function propertyShow(Request $request, Response $response, string $property, int $id): Response
     {
         $object = AbstractObject::fromPropertyName($this->zdb, $property);
-        $object->load($id);
+        $this->loadOrNotFound($request, $object, $id);
         $title = str_replace(
             '%s',
             $object->getValue(),
@@ -414,7 +419,7 @@ class PropertiesController extends AbstractPluginController
     public function removeProperty(Request $request, Response $response, string $property, int $id): Response
     {
         $object = AbstractObject::fromPropertyName($this->zdb, $property);
-        $object->load($id);
+        $this->loadOrNotFound($request, $object, $id);
 
         $route = $object::getListRoute($this->routeparser);
 
@@ -499,6 +504,21 @@ class PropertiesController extends AbstractPluginController
                     'success'   => $success
                 ]
             );
+        }
+    }
+
+    /**
+     * Load a property, or answer with a not found error
+     *
+     * @param AbstractObject $object Property instance
+     * @param int            $id     Property ID
+     *
+     * @throws HttpNotFoundException
+     */
+    protected function loadOrNotFound(Request $request, AbstractObject $object, int $id): void
+    {
+        if (!$object->load($id)) {
+            throw new HttpNotFoundException($request);
         }
     }
 

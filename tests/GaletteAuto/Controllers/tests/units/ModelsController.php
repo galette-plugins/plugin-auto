@@ -34,7 +34,7 @@ class ModelsController extends GaletteRoutingTestCase
         parent::setUp();
         $brand = new Brand($this->zdb);
         $brand->setValue('Peugeot');
-        $this->assertTrue($brand->store(true));
+        $brand->store(true);
         $this->brand_id = $brand->getId();
     }
 
@@ -56,7 +56,7 @@ class ModelsController extends GaletteRoutingTestCase
     {
         $model = new Model($this->zdb);
         $this->assertTrue($model->check(['model' => $name, 'brand' => $this->brand_id]));
-        $this->assertTrue($model->store(true));
+        $model->store(true);
         return $model->getId();
     }
 
@@ -129,7 +129,7 @@ class ModelsController extends GaletteRoutingTestCase
             $class = '\\GaletteAuto\\' . $property;
             $object = new $class($this->zdb);
             $object->setValue('Test ' . $property);
-            $this->assertTrue($object->store(true));
+            $object->store(true);
             $values[$class::PK] = $object->getId();
         }
         $insert = $this->zdb->insert(AUTO_PREFIX . \GaletteAuto\Auto::TABLE);
@@ -204,6 +204,26 @@ class ModelsController extends GaletteRoutingTestCase
     }
 
     /**
+     * A model that does not exist is not found
+     */
+    public function testMissingModel(): void
+    {
+        $this->logSuperAdmin();
+        $requests = [
+            $this->createRequest('modelEdit', ['id' => '999999']),
+            $this->createRequest('removeModel', ['id' => '999999']),
+            $this->createRequest('doModelEdit', ['id' => '999999'], 'POST')
+                ->withParsedBody(['model' => '307']),
+        ];
+        foreach ($requests as $request) {
+            $test_response = $this->app->handle($request);
+            $this->assertSame(404, $test_response->getStatusCode());
+        }
+        $this->expectLogEntry(\Analog\Analog::ERROR, 'Cannot load model #999999 | Model not found');
+        $this->expectNoLogEntry();
+    }
+
+    /**
      * Remove models
      */
     public function testRemove(): void
@@ -226,7 +246,7 @@ class ModelsController extends GaletteRoutingTestCase
         );
         $this->expectFlashData(['success_detected' => ['Successfully deleted!']]);
         $this->assertFalse((new Model($this->zdb))->load($unused));
-        $this->expectLogEntry(\Analog\Analog::ERROR, 'Cannot load model from id `' . $unused . '`');
+        $this->expectLogEntry(\Analog\Analog::ERROR, 'Cannot load model #' . $unused . ' | Model not found');
 
         //used model cannot be removed; last check, pgsql aborts the transaction
         $request = $this->createRequest('doRemoveModel', ['id' => (string)$used], 'POST')

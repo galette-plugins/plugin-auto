@@ -56,7 +56,7 @@ class Brand extends GaletteTestCase
 
         //Add new brand
         $brand->setValue('Audi');
-        $this->assertTrue($brand->store(true));
+        $brand->store(true);
         $first_id = $brand->getId();
 
         $this->assertCount(1, $brands->getList());
@@ -69,7 +69,7 @@ class Brand extends GaletteTestCase
         //add another one
         $brand = new \GaletteAuto\Brand($this->zdb);
         $brand->setValue('Mercede');
-        $this->assertTrue($brand->store(true));
+        $brand->store(true);
         $id = $brand->getId();
 
         $this->assertCount(2, $brands->getList());
@@ -78,7 +78,7 @@ class Brand extends GaletteTestCase
         $brand = new \GaletteAuto\Brand($this->zdb);
         $this->assertTrue($brand->load($id));
         $brand->setValue('Mercedes');
-        $this->assertTrue($brand->store());
+        $brand->store();
 
         $this->assertCount(2, $brands->getList());
         $this->assertSame('2 brands', $brand->getCountLabel($brands->getCount()));
@@ -100,7 +100,7 @@ class Brand extends GaletteTestCase
         $this->assertFalse($brand->load(999));
         $this->expectLogEntry(
             \Analog\Analog::ERROR,
-            '[GaletteAuto\Brand] Cannot load brands from id `999`'
+            '[GaletteAuto\Brand] Cannot load brand #999 | Record not found'
         );
     }
 

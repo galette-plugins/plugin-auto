@@ -211,7 +211,7 @@ class Vehicles
                 $this->zdb->rollback();
             }
             Analog::log(
-                'Unable to ' . ($new ? 'add' : 'update') . ' vehicle #' . ($vehicle->getId() ?? '')
+                '[' . static::class . '] Cannot ' . ($new ? 'add' : 'update') . ' vehicle #' . ($vehicle->getId() ?? '')
                 . ' | ' . $e->getMessage(),
                 Analog::ERROR
             );
@@ -287,7 +287,7 @@ class Vehicles
                 $this->zdb->rollback();
             }
             Analog::log(
-                'Unable to remove vehicles #' . implode(', #', $ids) . ' | ' . $e->getMessage(),
+                '[' . static::class . '] Cannot remove vehicles #' . implode(', #', $ids) . ' | ' . $e->getMessage(),
                 Analog::ERROR
             );
             throw $e;

@@ -41,7 +41,7 @@ class PropertiesController extends GaletteRoutingTestCase
     {
         $color = new Color($this->zdb);
         $color->setValue($value);
-        $this->assertTrue($color->store(true));
+        $color->store(true);
         return $color->getId();
     }
 
@@ -79,6 +79,28 @@ class PropertiesController extends GaletteRoutingTestCase
         $this->expectFlashData(['success_detected' => ['Color has been saved!']]);
         $this->assertSame('Dark red', $this->getColor($red));
         $this->assertSame('Blue', $this->getColor($blue));
+    }
+
+    /**
+     * A property that does not exist is not found
+     */
+    public function testMissingProperty(): void
+    {
+        $this->logSuperAdmin();
+        $requests = [
+            $this->createRequest('propertyEdit', ['property' => 'color', 'id' => '999999']),
+            $this->createRequest('propertyShow', ['property' => 'brand', 'id' => '999999']),
+            $this->createRequest('removeProperty', ['property' => 'color', 'id' => '999999']),
+            $this->createRequest('doPropertyEdit', ['property' => 'color', 'id' => '999999'], 'POST')
+                ->withParsedBody(['color' => 'Red']),
+        ];
+        foreach ($requests as $request) {
+            $test_response = $this->app->handle($request);
+            $this->assertSame(404, $test_response->getStatusCode());
+        }
+        $this->expectLogEntry(\Analog\Analog::ERROR, 'Cannot load color #999999 | Record not found');
+        $this->expectLogEntry(\Analog\Analog::ERROR, 'Cannot load brand #999999 | Record not found');
+        $this->expectNoLogEntry();
     }
 
     /**
@@ -132,7 +154,7 @@ class PropertiesController extends GaletteRoutingTestCase
             foreach (['Zeta ' . $property, 'Alpha ' . $property] as $value) {
                 $object = new $class($this->zdb);
                 $object->setValue($value);
-                $this->assertTrue($object->store(true));
+                $object->store(true);
             }
 
             $test_response = $this->app->handle($this->createRequest($route));
@@ -167,10 +189,10 @@ class PropertiesController extends GaletteRoutingTestCase
         $id = $this->createColor('Red');
         $brand = new \GaletteAuto\Brand($this->zdb);
         $brand->setValue('Peugeot');
-        $this->assertTrue($brand->store(true));
+        $brand->store(true);
         $model = new \GaletteAuto\Model($this->zdb);
         $this->assertTrue($model->check(['model' => '307', 'brand' => $brand->getId()]));
-        $this->assertTrue($model->store(true));
+        $model->store(true);
 
         $this->logSuperAdmin();
         $test_response = $this->app->handle(
@@ -221,15 +243,15 @@ class PropertiesController extends GaletteRoutingTestCase
             $class = '\\GaletteAuto\\' . $property;
             $object = new $class($this->zdb);
             $object->setValue('Test ' . $property);
-            $this->assertTrue($object->store(true));
+            $object->store(true);
             $values[$class::PK] = $object->getId();
         }
         $brand = new \GaletteAuto\Brand($this->zdb);
         $brand->setValue('Peugeot');
-        $this->assertTrue($brand->store(true));
+        $brand->store(true);
         $model = new \GaletteAuto\Model($this->zdb);
         $this->assertTrue($model->check(['model' => '307', 'brand' => $brand->getId()]));
-        $this->assertTrue($model->store(true));
+        $model->store(true);
         $insert = $this->zdb->insert(AUTO_PREFIX . \GaletteAuto\Auto::TABLE);
         $insert->values($values + [
             'car_name' => 'Titine',

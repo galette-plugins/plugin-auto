@@ -94,10 +94,9 @@ abstract class AbstractObject
             $this->loadFromRow($result);
 
             return true;
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             Analog::log(
-                '[' . get_class($this) . '] Cannot load ' . static::TABLE
-                . ' from id `' . $id . '` | ' . $e->getMessage(),
+                '[' . static::class . '] Cannot load ' . static::FIELD . ' #' . $id . ' | ' . $e->getMessage(),
                 Analog::ERROR
             );
             return false;
@@ -120,8 +119,10 @@ abstract class AbstractObject
      * Store current record
      *
      * @param bool $new New record or existing one
+     *
+     * @throws \Throwable
      */
-    public function store(bool $new = false): bool
+    public function store(bool $new = false): void
     {
         try {
             $values = [
@@ -146,15 +147,13 @@ abstract class AbstractObject
                 );
                 $this->zdb->execute($update);
             }
-            return true;
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             Analog::log(
-                '[' . get_class($this) . '] Cannot store ' . static::TABLE
-                . ' values `' . ($this->id ?? '') . '`, `' . $this->value . '` | '
-                . $e->getMessage(),
-                Analog::WARNING
+                '[' . static::class . '] Cannot ' . ($new ? 'add ' : 'update ') . static::FIELD
+                . ' #' . ($this->id ?? '') . ' | ' . $e->getMessage(),
+                Analog::ERROR
             );
-            return false;
+            throw $e;
         }
     }
 

@@ -56,7 +56,7 @@ class Color extends GaletteTestCase
 
         //Add new color
         $color->setValue('Red');
-        $this->assertTrue($color->store(true));
+        $color->store(true);
         $first_id = $color->getId();
 
         $this->assertCount(1, $colors->getList());
@@ -69,7 +69,7 @@ class Color extends GaletteTestCase
         //add another one
         $color = new \GaletteAuto\Color($this->zdb);
         $color->setValue('Blu');
-        $this->assertTrue($color->store(true));
+        $color->store(true);
         $id = $color->getId();
 
         $this->assertCount(2, $colors->getList());
@@ -80,7 +80,7 @@ class Color extends GaletteTestCase
         $color = new \GaletteAuto\Color($this->zdb);
         $this->assertTrue($color->load($id));
         $color->setValue('Blue');
-        $this->assertTrue($color->store());
+        $color->store();
 
         $this->assertCount(2, $colors->getList());
         $this->assertSame('2 colors', $color->getCountLabel($colors->getCount()));
@@ -102,7 +102,7 @@ class Color extends GaletteTestCase
         $this->assertFalse($color->load(999));
         $this->expectLogEntry(
             \Analog\Analog::ERROR,
-            '[GaletteAuto\Color] Cannot load colors from id `999`'
+            '[GaletteAuto\Color] Cannot load color #999 | Record not found'
         );
     }
 

@@ -176,8 +176,7 @@ class Auto
             return true;
         } catch (\Exception $e) {
             Analog::log(
-                '[' . get_class($this) . '] Cannot load car from id `' . $id
-                . '` | ' . $e->getMessage(),
+                '[' . static::class . '] Cannot load vehicle #' . $id . ' | ' . $e->getMessage(),
                 Analog::ERROR
             );
             return false;

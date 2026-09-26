@@ -39,32 +39,32 @@ class Auto extends GaletteTestCase
     {
         $body = new \GaletteAuto\Body($this->zdb);
         $body->setValue('Berline');
-        $this->assertTrue($body->store(true));
+        $body->store(true);
         $body_id = $body->getId();
 
         $color = new \GaletteAuto\Color($this->zdb);
         $color->setValue('Grey');
-        $this->assertTrue($color->store(true));
+        $color->store(true);
         $color_id = $color->getId();
 
         $finition = new \GaletteAuto\Finition($this->zdb);
         $finition->setValue('Standard');
-        $this->assertTrue($finition->store(true));
+        $finition->store(true);
         $finition_id = $finition->getId();
 
         $state = new \GaletteAuto\State($this->zdb);
         $state->setValue('Correct');
-        $this->assertTrue($state->store(true));
+        $state->store(true);
         $state_id = $state->getId();
 
         $transmission = new \GaletteAuto\Transmission($this->zdb);
         $transmission->setValue('Manual');
-        $this->assertTrue($transmission->store(true));
+        $transmission->store(true);
         $transmission_id = $transmission->getId();
 
         $brand = new \GaletteAuto\Brand($this->zdb);
         $brand->setValue('Peugeot');
-        $this->assertTrue($brand->store(true));
+        $brand->store(true);
         $brand_id = $brand->getId();
 
         $model = new \GaletteAuto\Model($this->zdb);
@@ -73,7 +73,7 @@ class Auto extends GaletteTestCase
             'brand' => $brand_id,
         ];
         $this->assertTrue($model->check($data));
-        $this->assertTrue($model->store(true));
+        $model->store(true);
         $model_id = $model->getId();
 
         $this->logSuperAdmin();
@@ -181,7 +181,7 @@ class Auto extends GaletteTestCase
         $adh2 = $this->getMemberTwo();
         $color2 = new \GaletteAuto\Color($this->zdb);
         $color2->setValue('Yellow');
-        $this->assertTrue($color2->store(true));
+        $color2->store(true);
         $color2_id = $color2->getId();
 
         $data = [
@@ -258,7 +258,7 @@ class Auto extends GaletteTestCase
         $this->assertFalse($auto->load($auto_id));
         $this->expectLogEntry(
             \Analog\Analog::ERROR,
-            '[GaletteAuto\Auto] Cannot load car from id `' . $auto_id . '` | Vehicle not found'
+            '[GaletteAuto\Auto] Cannot load vehicle #' . $auto_id . ' | Vehicle not found'
         );
     }
 
@@ -281,7 +281,7 @@ class Auto extends GaletteTestCase
         $this->assertFalse($auto->load(999));
         $this->expectLogEntry(
             \Analog\Analog::ERROR,
-            '[GaletteAuto\Auto] Cannot load car from id `999` | Vehicle not found'
+            '[GaletteAuto\Auto] Cannot load vehicle #999 | Vehicle not found'
         );
     }
 }

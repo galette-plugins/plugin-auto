@@ -56,7 +56,7 @@ class Body extends GaletteTestCase
 
         //Add new body
         $body->setValue('Coupe');
-        $this->assertTrue($body->store(true));
+        $body->store(true);
         $first_id = $body->getId();
 
         $this->assertCount(1, $bodies->getList());
@@ -69,7 +69,7 @@ class Body extends GaletteTestCase
         //add another one
         $body = new \GaletteAuto\Body($this->zdb);
         $body->setValue('Brea');
-        $this->assertTrue($body->store(true));
+        $body->store(true);
         $id = $body->getId();
 
         $this->assertCount(2, $bodies->getList());
@@ -78,7 +78,7 @@ class Body extends GaletteTestCase
         $body = new \GaletteAuto\Body($this->zdb);
         $this->assertTrue($body->load($id));
         $body->setValue('Break');
-        $this->assertTrue($body->store());
+        $body->store();
 
         $this->assertCount(2, $bodies->getList());
         $this->assertSame('2 bodies', $body->getCountLabel($bodies->getCount()));
@@ -100,7 +100,7 @@ class Body extends GaletteTestCase
         $this->assertFalse($body->load(999));
         $this->expectLogEntry(
             \Analog\Analog::ERROR,
-            '[GaletteAuto\Body] Cannot load bodies from id `999`',
+            '[GaletteAuto\Body] Cannot load body #999 | Record not found',
         );
     }
 

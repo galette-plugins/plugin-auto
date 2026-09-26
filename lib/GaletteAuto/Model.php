@@ -74,10 +74,9 @@ class Model
             }
             $this->loadFromRS($result);
             return true;
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             Analog::log(
-                '[' . get_class($this) . '] Cannot load model from id `' . $id
-                . '` | ' . $e->getMessage(),
+                '[' . static::class . '] Cannot load model #' . $id . ' | ' . $e->getMessage(),
                 Analog::ERROR
             );
             return false;
@@ -105,8 +104,10 @@ class Model
      * Store current model
      *
      * @param bool $new New record or existing one
+     *
+     * @throws \Throwable
      */
-    public function store(bool $new = false): bool
+    public function store(bool $new = false): void
     {
         try {
             $values = [
@@ -132,15 +133,13 @@ class Model
                 );
                 $this->zdb->execute($update);
             }
-            return true;
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             Analog::log(
-                '[' . get_class($this) . '] Cannot store model'
-                . ' values `' . $this->id . '`, `' . implode('`, `', $values) . '` | '
-                . $e->getMessage(),
-                Analog::WARNING
+                '[' . static::class . '] Cannot ' . ($new ? 'add' : 'update') . ' model #' . ($this->id ?? '')
+                . ' | ' . $e->getMessage(),
+                Analog::ERROR
             );
-            return false;
+            throw $e;
         }
     }
 

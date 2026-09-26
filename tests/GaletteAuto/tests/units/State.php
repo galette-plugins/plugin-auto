@@ -56,7 +56,7 @@ class State extends GaletteTestCase
 
         //Add new state
         $state->setValue('Good');
-        $this->assertTrue($state->store(true));
+        $state->store(true);
         $first_id = $state->getId();
 
         $this->assertCount(1, $states->getList());
@@ -69,7 +69,7 @@ class State extends GaletteTestCase
         //add another one
         $state = new \GaletteAuto\State($this->zdb);
         $state->setValue('Wrec');
-        $this->assertTrue($state->store(true));
+        $state->store(true);
         $id = $state->getId();
 
         $this->assertCount(2, $states->getList());
@@ -78,7 +78,7 @@ class State extends GaletteTestCase
         $state = new \GaletteAuto\State($this->zdb);
         $this->assertTrue($state->load($id));
         $state->setValue('Wreck');
-        $this->assertTrue($state->store());
+        $state->store();
 
         $this->assertCount(2, $states->getList());
         $this->assertSame('2 states', $state->getCountLabel($states->getCount()));
@@ -100,7 +100,7 @@ class State extends GaletteTestCase
         $this->assertFalse($state->load(999));
         $this->expectLogEntry(
             \Analog\Analog::ERROR,
-            '[GaletteAuto\State] Cannot load states from id `999`'
+            '[GaletteAuto\State] Cannot load state #999 | Record not found'
         );
     }
 

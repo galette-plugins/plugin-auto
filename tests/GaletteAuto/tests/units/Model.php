@@ -29,13 +29,13 @@ class Model extends GaletteTestCase
         $brand = new \GaletteAuto\Brand($this->zdb);
         //Add new brand
         $brand->setValue('Audi');
-        $this->assertTrue($brand->store(true));
+        $brand->store(true);
         $first_brand_id = $brand->getId();
 
         //add another brand
         $brand = new \GaletteAuto\Brand($this->zdb);
         $brand->setValue('Mercedes');
-        $this->assertTrue($brand->store(true));
+        $brand->store(true);
         $second_brand_id = $brand->getId();
 
         $brands = new \GaletteAuto\Repository\Properties(
@@ -92,7 +92,7 @@ class Model extends GaletteTestCase
             'brand' => $first_brand_id,
         ];
         $this->assertTrue($model->check($data));
-        $this->assertTrue($model->store(true));
+        $model->store(true);
 
         $this->assertCount(1, $models->getList());
         $this->assertCount(1, $models->getList($first_brand_id));
@@ -104,7 +104,7 @@ class Model extends GaletteTestCase
             'brand' => $first_brand_id,
         ];
         $this->assertTrue($model->check($data));
-        $this->assertTrue($model->store(true));
+        $model->store(true);
         $id_model = $model->getId();
 
         $this->assertCount(2, $models->getList());
@@ -114,7 +114,7 @@ class Model extends GaletteTestCase
             'brand' => $first_brand_id
         ];
         $this->assertTrue($model->check($data));
-        $this->assertTrue($model->store());
+        $model->store();
 
         $this->assertCount(2, $models->getList());
         $this->assertCount(2, $models->getList($first_brand_id));
@@ -126,7 +126,7 @@ class Model extends GaletteTestCase
             'brand' => $second_brand_id,
         ];
         $this->assertTrue($model->check($data));
-        $this->assertTrue($model->store(true));
+        $model->store(true);
 
         $this->assertCount(3, $models->getList());
         $this->assertSame(3, $models->getCount());
@@ -153,7 +153,7 @@ class Model extends GaletteTestCase
         $this->assertFalse($brand->load(999));
         $this->expectLogEntry(
             \Analog\Analog::ERROR,
-            '[GaletteAuto\Model] Cannot load model from id `999`'
+            '[GaletteAuto\Model] Cannot load model #999 | Model not found'
         );
     }
 }

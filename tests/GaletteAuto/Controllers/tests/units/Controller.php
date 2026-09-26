@@ -47,13 +47,13 @@ class Controller extends GaletteRoutingTestCase
             $class = '\GaletteAuto\\' . ucfirst($property);
             $object = new $class($this->zdb);
             $object->setValue($value);
-            $this->assertTrue($object->store(true));
+            $object->store(true);
             $this->props[$property] = $object->getId();
         }
 
         $model = new \GaletteAuto\Model($this->zdb);
         $this->assertTrue($model->check(['model' => '307', 'brand' => $this->props['brand']]));
-        $this->assertTrue($model->store(true));
+        $model->store(true);
         $this->props['model'] = $model->getId();
     }
 
@@ -250,7 +250,7 @@ class Controller extends GaletteRoutingTestCase
         $this->logSuperAdmin();
         $request = $this->createRequest('vehicleEdit', ['id' => '999999']);
         $test_response = $this->app->handle($request);
-        $this->expectLogEntry(Analog::ERROR, 'Cannot load car from id `999999`');
+        $this->expectLogEntry(Analog::ERROR, 'Cannot load vehicle #999999 |');
         $this->expectAccessDenied($test_response, 'Trying to edit vehicle #999999');
     }
 
@@ -994,9 +994,9 @@ class Controller extends GaletteRoutingTestCase
         $model = new \GaletteAuto\Model($this->zdb);
         $brand = new \GaletteAuto\Brand($this->zdb);
         $brand->setValue('Renault');
-        $this->assertTrue($brand->store(true));
+        $brand->store(true);
         $this->assertTrue($model->check(['model' => 'Clio', 'brand' => $brand->getId()]));
-        $this->assertTrue($model->store(true));
+        $model->store(true);
 
         $this->getMemberOne();
         $this->logMember($this->dataAdherentOne());

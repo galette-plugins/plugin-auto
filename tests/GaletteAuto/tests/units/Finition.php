@@ -56,7 +56,7 @@ class Finition extends GaletteTestCase
 
         //Add new finition
         $finition->setValue('Feline');
-        $this->assertTrue($finition->store(true));
+        $finition->store(true);
         $first_id = $finition->getId();
 
         $this->assertCount(1, $finitions->getList());
@@ -69,7 +69,7 @@ class Finition extends GaletteTestCase
         //add another one
         $finition = new \GaletteAuto\Finition($this->zdb);
         $finition->setValue('R');
-        $this->assertTrue($finition->store(true));
+        $finition->store(true);
         $id = $finition->getId();
 
         $this->assertCount(2, $finitions->getList());
@@ -78,7 +78,7 @@ class Finition extends GaletteTestCase
         $finition = new \GaletteAuto\Finition($this->zdb);
         $this->assertTrue($finition->load($id));
         $finition->setValue('RS');
-        $this->assertTrue($finition->store());
+        $finition->store();
 
         $this->assertCount(2, $finitions->getList());
         $this->assertSame('2 finitions', $finition->getCountLabel($finitions->getCount()));
@@ -100,7 +100,7 @@ class Finition extends GaletteTestCase
         $this->assertFalse($finition->load(999));
         $this->expectLogEntry(
             \Analog\Analog::ERROR,
-            '[GaletteAuto\Finition] Cannot load finitions from id `999`'
+            '[GaletteAuto\Finition] Cannot load finition #999 | Record not found'
         );
     }
 

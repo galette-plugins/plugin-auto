@@ -90,10 +90,9 @@ class History
             $results = $this->zdb->execute($select);
             $this->formatEntries($results->toArray());
             return true;
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             Analog::log(
-                '[' . get_class($this) . '] Cannot get car\'s history (id was '
-                . $this->id_car . ') | ' . $e->getMessage(),
+                '[' . static::class . '] Cannot load history of vehicle #' . $this->id_car . ' | ' . $e->getMessage(),
                 Analog::ERROR
             );
             return false;
@@ -121,11 +120,10 @@ class History
             } else {
                 return false;
             }
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             Analog::log(
-                '[' . get_class($this)
-                . '] Cannot get car\'s latest history entry | '
-                . $e->getMessage(),
+                '[' . static::class . '] Cannot load latest history entry of vehicle #' . $this->id_car
+                . ' | ' . $e->getMessage(),
                 Analog::ERROR
             );
             return false;
@@ -176,10 +174,10 @@ class History
                     'An error occurred registering car new history entry :('
                 );
             }
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             Analog::log(
-                '[' . get_class($this) . '] Cannot register new history entry | '
-                . $e->getMessage(),
+                '[' . static::class . '] Cannot add history entry of vehicle #' . ($props[Auto::PK] ?? '')
+                . ' | ' . $e->getMessage(),
                 Analog::ERROR
             );
             throw $e;
