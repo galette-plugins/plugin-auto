@@ -41,11 +41,6 @@ class Controller extends AbstractPluginController
     #[Inject("Plugin Galette Auto")]
     protected array $module_info;
 
-    private bool $mine = false;
-    private bool $public = false;
-
-    private int $id_adh;
-
     /**
      * Get vehicles access rules
      */
@@ -168,8 +163,7 @@ class Controller extends AbstractPluginController
      */
     public function publicVehiclesList(Request $request, Response $response, ?string $option = null, ?int $value = null): Response
     {
-        $this->public = true;
-        return $this->vehiclesList($request, $response, $option, $value);
+        return $this->listVehicles($request, $response, $option, $value, public: true);
     }
 
     /**
@@ -180,9 +174,7 @@ class Controller extends AbstractPluginController
      */
     public function myVehiclesList(Request $request, Response $response, ?string $option = null, ?int $value = null): Response
     {
-        $this->id_adh = $this->login->id;
-        $this->mine = true;
-        return $this->vehiclesList($request, $response, $option, $value);
+        return $this->listVehicles($request, $response, $option, $value, (int)$this->login->id, mine: true);
     }
 
     /**
@@ -194,8 +186,7 @@ class Controller extends AbstractPluginController
      */
     public function memberVehiclesList(Request $request, Response $response, int $id, ?string $option = null, ?int $value = null): Response
     {
-        $this->id_adh = $id;
-        return $this->vehiclesList($request, $response, $option, $value);
+        return $this->listVehicles($request, $response, $option, $value, $id);
     }
 
     /**
@@ -206,10 +197,32 @@ class Controller extends AbstractPluginController
      */
     public function vehiclesList(Request $request, Response $response, ?string $option = null, ?int $value = null): Response
     {
+        return $this->listVehicles($request, $response, $option, $value);
+    }
+
+    /**
+     * List vehicles, of every visible member or of one of them
+     *
+     * @param string|null $option Either 'page' or 'order'
+     * @param int|null    $value  Option value
+     * @param int|null    $id_adh Member ID, null for all visible members
+     * @param bool        $mine   Current user's vehicles
+     * @param bool        $public Public list
+     */
+    protected function listVehicles(
+        Request $request,
+        Response $response,
+        ?string $option = null,
+        ?int $value = null,
+        ?int $id_adh = null,
+        bool $mine = false,
+        bool $public = false
+    ): Response {
         $get = $request->getQueryParams();
-        $id_adh = null;
-        if (!empty($this->id_adh)) {
-            $id_adh = (int)$this->id_adh;
+        if (empty($id_adh)) {
+            //superadmin has no vehicles of its own
+            $id_adh = null;
+        } else {
             if (!$this->getAccess()->canManageMember($id_adh)) {
                 return $this->accessDenied($response, 'Trying to list vehicles of member #' . $id_adh);
             }
@@ -218,7 +231,7 @@ class Controller extends AbstractPluginController
         $auto = new Autos($this->plugins, $this->zdb);
         //the public page paginates on its own: a manager going there must not
         //land on the page, or the number of rows, of the management list
-        $session_key = $this->public ? 'public_vehicles_filters' : 'vehicles_filters';
+        $session_key = $public ? 'public_vehicles_filters' : 'vehicles_filters';
         $afilters = $this->session->$session_key ?? new AutosList();
 
         // Simple filters
@@ -238,7 +251,7 @@ class Controller extends AbstractPluginController
         }
 
         $title = _T("Cars list", "auto");
-        if ($this->mine === true) {
+        if ($mine === true) {
             $title = _T("My cars", "auto");
         } elseif ($id_adh !== null) {
             $title = _T("Member's cars", "auto");
@@ -247,19 +260,19 @@ class Controller extends AbstractPluginController
         $params = [
             'page_title'    => $title,
             'title'         => _T("Vehicles list", "auto"),
-            'show_mine'     => $this->mine,
+            'show_mine'     => $mine,
             'require_dialog' => true
         ];
 
         if ($id_adh === null) {
-            $params['autos'] = $auto->getList(true, $this->mine, $afilters, null, $this->public);
+            $params['autos'] = $auto->getList(true, $mine, $afilters, null, $public);
         } else {
             $params['id_adh'] = $id_adh;
             $params['autos'] = $auto->getMemberList($id_adh, $afilters);
         }
         $params['count_vehicles'] = $auto->getCount();
 
-        if ($this->public) {
+        if ($public) {
             $access = $this->getAccess();
             $params['public_owners'] = [];
             //history is shown to whoever may see it from the vehicle form
@@ -281,7 +294,7 @@ class Controller extends AbstractPluginController
         // display page
         $this->view->render(
             $response,
-            $this->getTemplate($this->public ? 'public_vehicles_list' : 'vehicles_list'),
+            $this->getTemplate($public ? 'public_vehicles_list' : 'vehicles_list'),
             $params
         );
         return $response;
