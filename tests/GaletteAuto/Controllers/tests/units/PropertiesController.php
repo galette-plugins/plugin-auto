@@ -95,6 +95,12 @@ class PropertiesController extends GaletteRoutingTestCase
             $test_response->getHeaders()
         );
         $this->expectFlashData(['error_detected' => ['- You must provide a value!']]);
+        //posted value is kept in session, not the entity
+        $this->assertSame('', $this->session->auto_color_data);
+
+        $test_response = $this->app->handle($this->createRequest('propertyAdd', ['property' => 'color']));
+        $this->expectOK($test_response);
+        $this->assertFalse(isset($this->session->auto_color_data));
     }
 
     /**

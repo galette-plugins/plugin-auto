@@ -31,6 +31,8 @@ class PluginGaletteAuto extends GalettePlugin implements MenuProviderInterface, 
 {
     #[Inject]
     private readonly Db $zdb; //@phpstan-ignore property.uninitializedReadonly,property.onlyRead (injected from DI)
+    #[Inject]
+    private readonly Login $login; //@phpstan-ignore property.uninitializedReadonly,property.onlyRead (injected from DI)
 
     /**
      * Get plugins menus
@@ -39,8 +41,7 @@ class PluginGaletteAuto extends GalettePlugin implements MenuProviderInterface, 
      */
     public function getMenus(): array
     {
-        /** @var Login $login */
-        global $login;
+        $login = $this->login;
         $menus = [];
 
         if ($login->isLogged()) {
@@ -165,8 +166,7 @@ class PluginGaletteAuto extends GalettePlugin implements MenuProviderInterface, 
      */
     public function getMyDashboards(): array
     {
-        /** @var Login $login */
-        global $login;
+        $login = $this->login;
 
         if ($login->isSuperAdmin()) {
             return [];

@@ -286,10 +286,11 @@ class PropertiesController extends AbstractPluginController
             );
         }
 
-        $session_oname = 'auto_' . $property;
-        if ($this->session->$session_oname !== null) {
-            $object = $this->session->$session_oname;
-            $this->session->$session_oname = null;
+        //value from a failed submission
+        $session_oname = 'auto_' . $property . '_data';
+        if (isset($this->session->$session_oname)) {
+            $object->setValue((string)$this->session->$session_oname);
+            unset($this->session->$session_oname);
         }
 
         $params = [
@@ -378,8 +379,8 @@ class PropertiesController extends AbstractPluginController
 
         if (count($error_detected) > 0) {
             //store entity in session
-            $session_oname = 'auto_' . $property;
-            $this->session->$session_oname = $object;
+            $session_oname = 'auto_' . $property . '_data';
+            $this->session->$session_oname = (string)($value ?? '');
             if ($is_new) {
                 $route = $this->routeparser->urlFor('propertyAdd', ['property' => $property]);
             } else {
