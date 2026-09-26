@@ -25,11 +25,9 @@ class ModelsList extends Pagination
 
     /**
      * Returns the field we want to default set order to
-     *
-     * @return string field name
      */
-    protected function getDefaultOrder(): string
+    protected function getDefaultOrder(): int
     {
-        return 'model';
+        return self::ORDERBY_MODEL;
     }
 }

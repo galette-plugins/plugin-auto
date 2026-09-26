@@ -9,6 +9,14 @@
 
 {% set nb = autos|length %}
 
+{% set columns = [
+    {'label': _T("ID"), 'collapse': true},
+    {'label': _T("Name", "auto")},
+    {'label': _T("Owner", "auto")},
+    {'label': _T("Brand", "auto")},
+    {'label': _T("Model", "auto")},
+] %}
+
 {% set form = {
     'route': {
         'name': 'vehiclesList'
@@ -36,20 +44,6 @@
     </a>
 {% endblock %}
 
-{% block header %}
-    {% set columns = [
-        {
-            'label': '',
-            'collapse': true
-        },
-        {'label': _T("Name", "auto")},
-        {'label': _T("Owner", "auto")},
-        {'label': _T("Brand", "auto")},
-        {'label': _T("Model", "auto")},
-    ] %}
-    {{ parent() }}
-{% endblock %}
-
 {% block body %}
     {% for auto in autos %}
         {% set brand = auto.getModel().getBrand() %}
@@ -58,7 +52,8 @@
         <tr>
             <td class="collapsing" data-scope="row">
                 <span class="ui checkbox">
-                    <input type="checkbox" name="entries_sel[]" value="{{ auto.getId() }}"/>
+                    <input type="checkbox" name="entries_sel[]" id="entry_sel_{{ auto.getId() }}" value="{{ auto.getId() }}"/>
+                    <label for="entry_sel_{{ auto.getId() }}">{{ auto.getId() }}</label>
                 </span>
             </td>
             <td data-col-label="{{ _T("Name", "auto") }}"><a href="{{ edit_link }}">{{ auto.getName() }}</a></td>
@@ -94,7 +89,7 @@
             </td>
         </tr>
     {% else %}
-        <tr><td colspan="6" class="emptylist">{% if show_mine == 1 %}{{ _T("No car has been registered yet for your account.", "auto") }}{% else %}{{ _T("No car in the database", "auto") }}{% endif %}</td></tr>
+        <tr><td colspan="{{ columns_count }}" class="emptylist">{% if show_mine == 1 %}{{ _T("No car has been registered yet for your account.", "auto") }}{% else %}{{ _T("No car in the database", "auto") }}{% endif %}</td></tr>
     {% endfor %}
 {% endblock %}
 

@@ -5,8 +5,23 @@
  #}
 
 {% extends 'elements/list.html.twig' %}
+{% import "macros.twig" as macros %}
 
 {% set nb = count_models %}
+
+{% set form = {
+    'route': {
+        'name': 'modelsFilter'
+    },
+    'order': {
+        'name': 'modelsList'
+    }
+} %}
+
+{% set columns = [
+    {'label': _T("Model", "auto"), 'order': constant('GaletteAuto\\Filters\\ModelsList::ORDERBY_MODEL')},
+    {'label': _T("Brand", "auto"), 'order': constant('GaletteAuto\\Filters\\ModelsList::ORDERBY_BRAND')}
+] %}
 
 {% block infoline %}
     {% set infoline = {
@@ -28,14 +43,6 @@
     </a>
 {% endblock %}
 
-{% block header %}
-    {% set columns = [
-        {'label': _T("Model", "auto")},
-        {'label': _T("Brand", "auto")}
-    ] %}
-    {{ parent() }}
-{% endblock %}
-
 {% block body %}
     {% for m in models %}
         {% set edit_link = url_for("modelEdit", {"id": m.id}) %}
@@ -43,20 +50,12 @@
         <td data-col-label="{{ _T("Model", "auto") }}"><a href="{{ edit_link }}">{{ m.model }}</a></td>
         <td data-col-label="{{ _T("Brand", "auto") }}"><a href="{{ edit_link }}">{{ m.brand.getValue() }}</a></td>
         <td class="center actions_row collapsing">
-            <a href="{{ edit_link }}" class="tooltip action">
-                <i class="ui edit icon"></i>
-                <span class="visually-hidden">{{ _T("Edit %property", "auto")|replace({"%property": m.brand.getValue() ~ ' ' ~ m.model}) }}</span>
-            </a>
-            <a
-                class="delete tooltip"
-                href="{{ url_for("removeModel", {"id": m.id}) }}"
-            >
-                <i class="ui red trash icon"></i>
-                <span class="visually-hidden">{{ _T("%property: remove from database", "auto")|replace({"%property": m.brand.getValue() ~ ' ' ~ m.model}) }}</span>
-            </a>
+            {% set label = m.brand.getValue() ~ ' ' ~ m.model %}
+            {{ macros.drawListAction(_T("Edit %property", "auto")|replace({"%property": label}), {'name': 'modelEdit', 'args': {'id': m.id}}, 'edit') }}
+            {{ macros.drawListAction(_T("%property: remove from database", "auto")|replace({"%property": label}), {'name': 'removeModel', 'args': {'id': m.id}}, 'red trash', 'delete') }}
         </td>
     </tr>
     {% else %}
-        <tr><td colspan="4" class="emptylist">{{ _T("no record found", "auto") }}</td></tr>
+        <tr><td colspan="{{ columns_count }}" class="emptylist">{{ _T("no record found", "auto") }}</td></tr>
     {% endfor %}
 {% endblock %}

@@ -5,10 +5,15 @@
  #}
 
 {% extends 'elements/list.html.twig' %}
+{% import "macros.twig" as macros %}
 
 {% set field = obj.getField() %}
 
 {% set nb = list|length %}
+
+{% set columns = [
+    {'label': field_name}
+] %}
 
 {% block infoline %}
     {% set infoline = {
@@ -31,13 +36,6 @@
     </a>
 {% endblock %}
 
-{% block header %}
-    {% set columns = [
-        {'label': field_name}
-    ] %}
-    {{ parent() }}
-{% endblock %}
-
 {% block body %}
     {% for o in list %}
         {% set edit_link = url_for("propertyEdit", {"property": obj.getRouteName(), "id": o.getId()}) %}
@@ -50,20 +48,11 @@
             </a>
         </td>
         <td class="center actions_row collapsing">
-            <a href="{{ edit_link }}" class="tooltip action">
-                <i class="ui edit icon"></i>
-                <span class="visually-hidden">{{ _T("Edit %property", "auto")|replace({"%property": o.getValue()}) }}</span>
-            </a>
-            <a
-                class="delete tooltip"
-                href="{{ url_for("removeProperty", {"property": obj.getRouteName(), "id": o.getId()}) }}"
-            >
-                <i class="ui red trash icon"></i>
-                <span class="visually-hidden">{{ _T("%property: remove from database", "auto")|replace({"%property": o.getValue()}) }}</span>
-            </a>
+            {{ macros.drawListAction(_T("Edit %property", "auto")|replace({"%property": o.getValue()}), {'name': 'propertyEdit', 'args': {'property': obj.getRouteName(), 'id': o.getId()}}, 'edit') }}
+            {{ macros.drawListAction(_T("%property: remove from database", "auto")|replace({"%property": o.getValue()}), {'name': 'removeProperty', 'args': {'property': obj.getRouteName(), 'id': o.getId()}}, 'red trash', 'delete') }}
         </td>
     </tr>
     {% else %}
-        <tr><td colspan="3" class="emptylist">{{ _T("no record found", "auto") }}</td></tr>
+        <tr><td colspan="{{ columns_count }}" class="emptylist">{{ _T("no record found", "auto") }}</td></tr>
     {% endfor %}
 {% endblock %}

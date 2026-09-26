@@ -8,6 +8,16 @@
 
 {% set nb = autos|length %}
 {% set is_public = not login.isLogged() %}
+{% set no_action = true %}
+
+{% set columns = [
+    {'label': _T("Picture"), 'collapse': true},
+    {'label': _T("Name", "auto")},
+    {'label': _T("Owner", "auto")},
+    {'label': _T("Brand", "auto")},
+    {'label': _T("Model", "auto")},
+    {'label': _T("Description", "auto")},
+] %}
 
 {% set form = {
     'route': {
@@ -19,19 +29,6 @@
     {% set infoline = {
         'label': _Tn("%count vehicle", "%count vehicles", count_vehicles, 'auto')|replace({"%count": count_vehicles}),
     } %}
-    {{ parent() }}
-{% endblock %}
-
-{% block header %}
-    {% set no_action = true %}
-    {% set columns = [
-        {'label': _T("Picture"), 'collapse': true},
-        {'label': _T("Name", "auto")},
-        {'label': _T("Owner", "auto")},
-        {'label': _T("Brand", "auto")},
-        {'label': _T("Model", "auto")},
-        {'label': _T("Description", "auto")},
-    ] %}
     {{ parent() }}
 {% endblock %}
 
@@ -86,7 +83,7 @@
             </td>
         </tr>
     {% else %}
-        <tr><td colspan="6" class="emptylist">{{ _T("No car in the database", "auto") }}</td></tr>
+        <tr><td colspan="{{ columns_count }}" class="emptylist">{{ _T("No car in the database", "auto") }}</td></tr>
     {% endfor %}
 {% endblock %}
 
