@@ -12,10 +12,17 @@ namespace GaletteAuto\Controllers;
 
 use Analog\Analog;
 use Galette\Repository\Members;
+use GaletteAuto\AbstractObject;
 use GaletteAuto\Auto;
+use GaletteAuto\Body;
+use GaletteAuto\Brand;
+use GaletteAuto\Color;
+use GaletteAuto\Finition;
 use GaletteAuto\History;
 use GaletteAuto\Model;
 use GaletteAuto\Picture;
+use GaletteAuto\State;
+use GaletteAuto\Transmission;
 use GaletteAuto\VehicleAccess;
 use Laminas\Db\ResultSet\ResultSet;
 use Slim\Psr7\Request;
@@ -25,6 +32,7 @@ use Galette\Entity\Adherent;
 use GaletteAuto\Filters\ModelsList;
 use GaletteAuto\Filters\AutosList;
 use GaletteAuto\Repository\Models;
+use GaletteAuto\Repository\Properties;
 use GaletteAuto\Repository\Vehicles;
 use DI\Attribute\Inject;
 
@@ -73,6 +81,18 @@ class Controller extends AbstractPluginController
     protected function getVehicles(): Vehicles
     {
         return new Vehicles($this->plugins, $this->zdb, $this->login, $this->history);
+    }
+
+    /**
+     * Get the whole list of a property
+     *
+     * @param class-string<AbstractObject> $class Property class name
+     *
+     * @return array<int, AbstractObject>
+     */
+    protected function getProperties(string $class): array
+    {
+        return (new Properties($this->zdb, $this->preferences, $this->login, $class))->getList();
     }
 
     /**
@@ -369,12 +389,12 @@ class Controller extends AbstractPluginController
             'require_dialog'    => true,
             'car'               => $auto,
             'models'            => $models->getList($auto->getModel()->getBrand()->getId()),
-            'brands'            => $auto->getModel()->getBrand()->getList(),
-            'colors'            => $auto->getColor()->getList(),
-            'bodies'            => $auto->getBody()->getList(),
-            'transmissions'     => $auto->getTransmission()->getList(),
-            'finitions'         => $auto->getFinition()->getList(),
-            'states'            => $auto->getState()->getList(),
+            'brands'            => $this->getProperties(Brand::class),
+            'colors'            => $this->getProperties(Color::class),
+            'bodies'            => $this->getProperties(Body::class),
+            'transmissions'     => $this->getProperties(Transmission::class),
+            'finitions'         => $this->getProperties(Finition::class),
+            'states'            => $this->getProperties(State::class),
             'fuels'             => $auto->listFuels(),
             'time'              => time(),
             'required'          => $auto->getRequired()

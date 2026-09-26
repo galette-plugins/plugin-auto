@@ -145,28 +145,6 @@ class Model
     }
 
     /**
-     * Delete some models
-     *
-     * @param array<int> $ids Array of models id to delete
-     */
-    public function delete(array $ids): bool
-    {
-        try {
-            $delete = $this->zdb->delete(AUTO_PREFIX . self::TABLE);
-            $delete->where->in(self::PK, $ids);
-            $this->zdb->execute($delete);
-            return true;
-        } catch (\Exception $e) {
-            Analog::log(
-                '[' . get_class($this) . '] Cannot delete models from ids `'
-                . implode(' - ', $ids) . '` | ' . $e->getMessage(),
-                Analog::WARNING
-            );
-            throw $e;
-        }
-    }
-
-    /**
      * Get model ID
      */
     public function getId(): ?int

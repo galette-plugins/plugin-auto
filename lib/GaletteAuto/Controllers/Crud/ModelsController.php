@@ -16,6 +16,7 @@ use GaletteAuto\Brand;
 use GaletteAuto\Filters\ModelsList;
 use GaletteAuto\Model;
 use GaletteAuto\Repository\Models;
+use GaletteAuto\Repository\Properties;
 use Slim\Psr7\Request;
 use Slim\Psr7\Response;
 
@@ -192,12 +193,12 @@ class ModelsController extends AbstractPluginController
             }
         }
 
-        $brand = new Brand($this->zdb);
+        $brands = new Properties($this->zdb, $this->preferences, $this->login, Brand::class);
         $params = [
             'page_title'        => $title,
             'mode'              => ($action === 'add' ? 'new' : 'modif'),
             'model'             => $model,
-            'brands'            => $brand->getList(),
+            'brands'            => $brands->getList(),
         ];
 
         // display page
@@ -335,16 +336,17 @@ class ModelsController extends AbstractPluginController
      */
     protected function doDelete(array $args, array $post): bool
     {
-        $model = new Model($this->zdb);
-
-        if (!is_array($post['id'])) {
-            $ids = (array)$post['id'];
-        } else {
-            $ids = $post['id'];
-        }
+        $ids = array_map('intval', (array)$post['id']);
+        $models = new Models(
+            $this->zdb,
+            $this->preferences,
+            $this->login,
+            new ModelsList()
+        );
 
         try {
-            return $model->delete($ids);
+            $models->remove($ids);
+            return true;
         } catch (\Throwable $e) {
             if ($this->zdb->isForeignKeyException($e)) {
                 $this->flash->addMessage(

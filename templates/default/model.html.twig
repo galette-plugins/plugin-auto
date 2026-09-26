@@ -24,7 +24,7 @@
 
                 {% set brand_list_values = {(-1): _T("Choose a brand", "auto")} %}
                 {% for brand in brands %}
-                    {% set brand_list_values = brand_list_values + {(brand.id_brand): brand.brand} %}
+                    {% set brand_list_values = brand_list_values + {(brand.getId()): brand.getValue()} %}
                 {% endfor %}
 
                 {% if brands|length > 0 %}

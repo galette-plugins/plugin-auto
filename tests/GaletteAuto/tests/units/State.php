@@ -27,10 +27,16 @@ class State extends GaletteTestCase
     public function testEmpty(): void
     {
         $state = new \GaletteAuto\State($this->zdb);
+        $states = new \GaletteAuto\Repository\Properties(
+            $this->zdb,
+            $this->preferences,
+            $this->login,
+            \GaletteAuto\State::class
+        );
         $this->assertSame('State', $state->getFieldLabel());
 
-        $this->assertCount(0, $state->getList());
-        $this->assertSame('0 states', $state->displayCount());
+        $this->assertCount(0, $states->getList());
+        $this->assertSame('0 states', $state->getCountLabel($states->getCount()));
     }
 
     /**
@@ -39,20 +45,26 @@ class State extends GaletteTestCase
     public function testCrud(): void
     {
         $state = new \GaletteAuto\State($this->zdb);
+        $states = new \GaletteAuto\Repository\Properties(
+            $this->zdb,
+            $this->preferences,
+            $this->login,
+            \GaletteAuto\State::class
+        );
         //ensure the table is empty
-        $this->assertCount(0, $state->getList());
+        $this->assertCount(0, $states->getList());
 
         //Add new state
         $state->setValue('Good');
         $this->assertTrue($state->store(true));
         $first_id = $state->getId();
 
-        $this->assertCount(1, $state->getList());
-        $listed_state = $state->getList()[0];
-        $this->assertInstanceOf(\ArrayObject::class, $listed_state);
-        $this->assertGreaterThan(0, $listed_state['id_state']);
-        $this->assertSame('Good', $listed_state['state']);
-        $this->assertSame('1 state', $state->displayCount());
+        $this->assertCount(1, $states->getList());
+        $listed_state = $states->getList()[0];
+        $this->assertInstanceOf(\GaletteAuto\State::class, $listed_state);
+        $this->assertGreaterThan(0, $listed_state->getId());
+        $this->assertSame('Good', $listed_state->getValue());
+        $this->assertSame('1 state', $state->getCountLabel($states->getCount()));
 
         //add another one
         $state = new \GaletteAuto\State($this->zdb);
@@ -60,23 +72,22 @@ class State extends GaletteTestCase
         $this->assertTrue($state->store(true));
         $id = $state->getId();
 
-        $this->assertCount(2, $state->getList());
-        $this->assertSame('2 states', $state->displayCount());
+        $this->assertCount(2, $states->getList());
+        $this->assertSame('2 states', $state->getCountLabel($states->getCount()));
 
         $state = new \GaletteAuto\State($this->zdb);
         $this->assertTrue($state->load($id));
         $state->setValue('Wreck');
         $this->assertTrue($state->store());
 
-        $this->assertCount(2, $state->getList());
-        $this->assertSame('2 states', $state->displayCount());
+        $this->assertCount(2, $states->getList());
+        $this->assertSame('2 states', $state->getCountLabel($states->getCount()));
 
-        $state = new \GaletteAuto\State($this->zdb);
-        $this->assertTrue($state->delete([$first_id]));
-        $list = $state->getList();
+        $states->remove([$first_id]);
+        $list = $states->getList();
         $this->assertCount(1, $list);
         $last_state = $list[0];
-        $this->assertSame($id, (int)$last_state['id_state']);
+        $this->assertSame($id, $last_state->getId());
     }
 
     /**

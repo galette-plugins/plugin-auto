@@ -38,7 +38,13 @@ class Model extends GaletteTestCase
         $this->assertTrue($brand->store(true));
         $second_brand_id = $brand->getId();
 
-        $this->assertCount(2, $brand->getList());
+        $brands = new \GaletteAuto\Repository\Properties(
+            $this->zdb,
+            $this->preferences,
+            $this->login,
+            \GaletteAuto\Brand::class
+        );
+        $this->assertCount(2, $brands->getList());
 
         $models = new \GaletteAuto\Repository\Models(
             $this->zdb,
@@ -123,11 +129,14 @@ class Model extends GaletteTestCase
         $this->assertTrue($model->store(true));
 
         $this->assertCount(3, $models->getList());
+        $this->assertSame(3, $models->getCount());
         $this->assertCount(2, $models->getList($first_brand_id));
+        //count follows the brand filter
+        $this->assertSame(2, $models->getCount());
         $this->assertCount(1, $models->getList($second_brand_id));
+        $this->assertSame(1, $models->getCount());
 
-        $model = new \GaletteAuto\Model($this->zdb);
-        $this->assertTrue($model->delete([$id_model]));
+        $models->remove([$id_model]);
 
         $this->assertCount(2, $models->getList());
         $this->assertCount(1, $models->getList($first_brand_id));

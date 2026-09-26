@@ -13,13 +13,10 @@ namespace GaletteAuto\Repository;
 use Galette\Core\Db;
 use Galette\Core\Preferences;
 use Galette\Core\Login;
-use Galette\Repository\Repository;
 use GaletteAuto\Model;
 use GaletteAuto\Brand;
 use GaletteAuto\Filters\ModelsList;
-use Analog\Analog;
 use Laminas\Db\ResultSet\ResultSet;
-use Laminas\Db\Sql\Expression;
 use Laminas\Db\Sql\Select;
 
 /**
@@ -28,12 +25,9 @@ use Laminas\Db\Sql\Select;
  * @author Johan Cwiklinski <johan@x-tnd.be>
  */
 
-class Models extends Repository
+class Models extends AbstractRepository
 {
-    public const string TABLE = Model::TABLE;
-    public const string PK = Model::PK;
-
-    private int $count;
+    protected const string ALIAS = 'm';
 
     /**
      * Main constructor
@@ -45,69 +39,63 @@ class Models extends Repository
      */
     public function __construct(Db $zdb, Preferences $preferences, Login $login, ModelsList $filters)
     {
-        parent::__construct($zdb, $preferences, $login, null, 'GaletteAuto', AUTO_PREFIX);
-        $this->setFilters($filters);
+        parent::__construct($zdb, $preferences, $login, 'Model', $filters);
     }
 
     /**
      * Get the list of all models
      *
-     * @param ?int $brandId   Optional brand we want models for
+     * @param ?int $brandId   Optional brand we want models for; the whole list is retrieved then
      * @param bool $as_object Whether to return an array of objects or a ResultSet
      *
-     * @return array<int, Model>|ResultSet
+     * @return ($as_object is true ? array<int, Model> : ResultSet)
      */
     public function getList(?int $brandId = null, bool $as_object = true): array|ResultSet
     {
         $select = $this->buildSelect();
-
         if ($brandId !== null) {
-            $select->where(
-                [
-                    'm.' . Brand::PK => $brandId
-                ]
-            );
-        } else {
-            $this->filters->setLimits($select);
+            $select->where(['m.' . Brand::PK => $brandId]);
         }
-        $results = $this->zdb->execute($select);
+        $results = $this->fetchRows($select, $brandId === null);
 
-        if ($as_object) {
-            $models = [];
-            foreach ($results as $r) {
-                $pk = self::PK;
-                $models[$r->$pk] = new Model($this->zdb, $r);
-            }
-            return $models;
-        } else {
+        if (!$as_object) {
             return $results;
         }
+
+        $models = [];
+        foreach ($results as $r) {
+            $models[(int)$r[Model::PK]] = new Model($this->zdb, $r);
+        }
+        return $models;
+    }
+
+    /**
+     * Get table name, without prefixes
+     */
+    protected function getTable(): string
+    {
+        return Model::TABLE;
+    }
+
+    /**
+     * Get primary key name
+     */
+    protected function getPk(): string
+    {
+        return Model::PK;
     }
 
     /**
      * Builds the SELECT statement
-     *
-     * @return Select SELECT statement
      */
-    private function buildSelect(): Select
+    protected function buildSelect(): Select
     {
-        try {
-            $select = $this->zdb->select(AUTO_PREFIX . self::TABLE, 'm');
-            $select->join(
-                ['b' => PREFIX_DB . AUTO_PREFIX . Brand::TABLE],
-                'm.' . Brand::PK . '= b.' . Brand::PK
-            );
-            $select->order(self::buildOrderClause());
-            $this->proceedCount($select);
-
-            return $select;
-        } catch (\Exception $e) {
-            Analog::log(
-                'Cannot build SELECT clause for models | ' . $e->getMessage(),
-                Analog::WARNING
-            );
-            throw $e;
-        }
+        $select = parent::buildSelect();
+        $select->join(
+            ['b' => PREFIX_DB . AUTO_PREFIX . Brand::TABLE],
+            'm.' . Brand::PK . ' = b.' . Brand::PK
+        );
+        return $select;
     }
 
     /**
@@ -115,7 +103,7 @@ class Models extends Repository
      *
      * @return array<string> SQL ORDER clause
      */
-    private function buildOrderClause(): array
+    protected function buildOrderClause(): array
     {
         $order = [];
 
@@ -128,61 +116,8 @@ class Models extends Repository
                 $order[] = 'm.model ' . $this->filters->getDirection();
                 break;
         }
+        $order[] = 'm.' . Model::PK . ' ASC';
 
         return $order;
-    }
-
-    /**
-     * Count contributions from the query
-     *
-     * @param Select $select Original select
-     */
-    private function proceedCount(Select $select): void
-    {
-        try {
-            $countSelect = clone $select;
-            $countSelect->reset($countSelect::COLUMNS);
-            $countSelect->reset($countSelect::JOINS);
-            $countSelect->reset($countSelect::ORDER);
-            $countSelect->columns(
-                [
-                    self::PK => new Expression('COUNT(' . self::PK . ')')
-                ]
-            );
-
-            $results = $this->zdb->execute($countSelect);
-            $result = $results->current();
-
-            $k = self::PK;
-            $this->count = (int)$result->$k;
-
-            if ($this->count > 0) {
-                $this->filters->setCounter($this->count);
-            }
-        } catch (\Exception $e) {
-            Analog::log(
-                'Cannot count models | ' . $e->getMessage(),
-                Analog::WARNING
-            );
-            throw $e;
-        }
-    }
-
-    /**
-     * Add default values in database
-     *
-     * @param bool $check_first Check first if it seems initialized, defaults to true
-     */
-    public function installInit(bool $check_first = true): bool
-    {
-        return true;
-    }
-
-    /**
-     * Get count for current query
-     */
-    public function getCount(): int
-    {
-        return $this->count;
     }
 }

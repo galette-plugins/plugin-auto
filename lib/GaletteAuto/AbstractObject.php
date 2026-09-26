@@ -12,11 +12,8 @@ namespace GaletteAuto;
 
 use ArrayObject;
 use Analog\Analog;
-use Laminas\Db\Sql\Expression;
-use Laminas\Db\Sql\Select;
 use Slim\Routing\RouteParser;
 use Galette\Core\Db;
-use GaletteAuto\Filters\PropertiesList;
 
 /**
  * Automobile Object abstract class for galette Auto plugin
@@ -48,9 +45,6 @@ abstract class AbstractObject
     protected Db $zdb;
     protected ?int $id = null;
     protected ?string $value = null;
-    protected ?PropertiesList $filters = null;
-
-    private int $count;
 
     /**
      * Default constructor
@@ -76,31 +70,6 @@ abstract class AbstractObject
     {
         $class = self::getClassForPropName($property);
         return new $class($zdb);
-    }
-
-    /**
-     * Get the list
-     *
-     * @return array<int, ArrayObject<string, mixed>>
-     */
-    public function getList(): array
-    {
-        try {
-            $select = $this->buildSelect();
-            $results = $this->zdb->execute($select);
-            $list = [];
-            foreach ($results as $row) {
-                $list[] = $row;
-            }
-            return $list;
-        } catch (\Exception $e) {
-            Analog::log(
-                '[' . get_class($this) . '] Cannot load ' . static::TABLE
-                . ' list | ' . $e->getMessage(),
-                Analog::ERROR
-            );
-            throw $e;
-        }
     }
 
     /**
@@ -187,39 +156,6 @@ abstract class AbstractObject
             );
             return false;
         }
-    }
-
-    /**
-     * Delete some records
-     *
-     * @param int[] $ids Array of records id to delete
-     */
-    public function delete(array $ids): bool
-    {
-        try {
-            $delete = $this->zdb->delete(AUTO_PREFIX . static::TABLE);
-            $delete->where->in(static::PK, $ids);
-            $this->zdb->execute($delete);
-            return true;
-        } catch (\Exception $e) {
-            Analog::log(
-                '[' . get_class($this) . '] Cannot delete ' . static::TABLE
-                . ' from ids `' . implode(' - ', $ids) . '` | ' . $e->getMessage(),
-                Analog::WARNING
-            );
-            throw $e;
-        }
-    }
-
-    /**
-     * Set filters
-     *
-     * @param PropertiesList $filters Filters
-     */
-    public function setFilters(PropertiesList $filters): self
-    {
-        $this->filters = $filters;
-        return $this;
     }
 
     /**
@@ -343,84 +279,5 @@ abstract class AbstractObject
             throw new \RuntimeException('Unknown property ' . $property);
         }
         return self::CLASSES[$property];
-    }
-
-    /**
-     * Builds the SELECT statement
-     *
-     * @return Select SELECT statement
-     */
-    private function buildSelect(): Select
-    {
-        try {
-            $select = $this->zdb->select(AUTO_PREFIX . static::TABLE);
-            $select->order([static::FIELD . ' ASC', static::PK . ' ASC']);
-            if (isset($this->filters)) {
-                $this->filters->setLimits($select);
-            }
-            $this->proceedCount($select);
-
-            return $select;
-        } catch (\Exception $e) {
-            Analog::log(
-                'Cannot build SELECT clause | ' . $e->getMessage(),
-                Analog::WARNING
-            );
-            throw $e;
-        }
-    }
-
-    /**
-     * Count objects from the query
-     *
-     * @param Select $select Original select
-     */
-    private function proceedCount(Select $select): void
-    {
-        try {
-            $countSelect = clone $select;
-            $countSelect->reset($countSelect::COLUMNS);
-            $countSelect->reset($countSelect::JOINS);
-            $countSelect->reset($countSelect::ORDER);
-            $countSelect->reset($countSelect::LIMIT);
-            $countSelect->reset($countSelect::OFFSET);
-            $countSelect->columns(
-                [
-                    static::PK => new Expression('COUNT(' . static::PK . ')')
-                ]
-            );
-
-            $results = $this->zdb->execute($countSelect);
-            $result = $results->current();
-
-            $k = static::PK;
-            $this->count = (int)$result->$k;
-
-            if ($this->count > 0 && isset($this->filters)) {
-                $this->filters->setCounter($this->count);
-            }
-        } catch (\Exception $e) {
-            Analog::log(
-                'Cannot count models | ' . $e->getMessage(),
-                Analog::WARNING
-            );
-            throw $e;
-        }
-    }
-
-    /**
-     * Get count for list
-     */
-    public function getCount(): int
-    {
-        return $this->count;
-    }
-
-    /**
-     * Display localized count for object
-     */
-    public function displayCount(): string
-    {
-        return $this->getCountLabel($this->getCount());
     }
 }

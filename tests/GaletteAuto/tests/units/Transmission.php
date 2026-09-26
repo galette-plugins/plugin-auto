@@ -27,10 +27,16 @@ class Transmission extends GaletteTestCase
     public function testEmpty(): void
     {
         $transmission = new \GaletteAuto\Transmission($this->zdb);
+        $transmissions = new \GaletteAuto\Repository\Properties(
+            $this->zdb,
+            $this->preferences,
+            $this->login,
+            \GaletteAuto\Transmission::class
+        );
         $this->assertSame('Transmission', $transmission->getFieldLabel());
 
-        $this->assertCount(0, $transmission->getList());
-        $this->assertSame('0 transmissions', $transmission->displayCount());
+        $this->assertCount(0, $transmissions->getList());
+        $this->assertSame('0 transmissions', $transmission->getCountLabel($transmissions->getCount()));
     }
 
     /**
@@ -39,20 +45,26 @@ class Transmission extends GaletteTestCase
     public function testCrud(): void
     {
         $transmission = new \GaletteAuto\Transmission($this->zdb);
+        $transmissions = new \GaletteAuto\Repository\Properties(
+            $this->zdb,
+            $this->preferences,
+            $this->login,
+            \GaletteAuto\Transmission::class
+        );
         //ensure the table is empty
-        $this->assertCount(0, $transmission->getList());
+        $this->assertCount(0, $transmissions->getList());
 
         //Add new transmission
         $transmission->setValue('Manual');
         $this->assertTrue($transmission->store(true));
         $first_id = $transmission->getId();
 
-        $this->assertCount(1, $transmission->getList());
-        $listed_transmission = $transmission->getList()[0];
-        $this->assertInstanceOf(\ArrayObject::class, $listed_transmission);
-        $this->assertGreaterThan(0, $listed_transmission['id_transmission']);
-        $this->assertSame('Manual', $listed_transmission['transmission']);
-        $this->assertSame('1 transmission', $transmission->displayCount());
+        $this->assertCount(1, $transmissions->getList());
+        $listed_transmission = $transmissions->getList()[0];
+        $this->assertInstanceOf(\GaletteAuto\Transmission::class, $listed_transmission);
+        $this->assertGreaterThan(0, $listed_transmission->getId());
+        $this->assertSame('Manual', $listed_transmission->getValue());
+        $this->assertSame('1 transmission', $transmission->getCountLabel($transmissions->getCount()));
 
         //add another one
         $transmission = new \GaletteAuto\Transmission($this->zdb);
@@ -60,23 +72,22 @@ class Transmission extends GaletteTestCase
         $this->assertTrue($transmission->store(true));
         $id = $transmission->getId();
 
-        $this->assertCount(2, $transmission->getList());
-        $this->assertSame('2 transmissions', $transmission->displayCount());
+        $this->assertCount(2, $transmissions->getList());
+        $this->assertSame('2 transmissions', $transmission->getCountLabel($transmissions->getCount()));
 
         $transmission = new \GaletteAuto\Transmission($this->zdb);
         $this->assertTrue($transmission->load($id));
         $transmission->setValue('Automatic');
         $this->assertTrue($transmission->store());
 
-        $this->assertCount(2, $transmission->getList());
-        $this->assertSame('2 transmissions', $transmission->displayCount());
+        $this->assertCount(2, $transmissions->getList());
+        $this->assertSame('2 transmissions', $transmission->getCountLabel($transmissions->getCount()));
 
-        $transmission = new \GaletteAuto\Transmission($this->zdb);
-        $this->assertTrue($transmission->delete([$first_id]));
-        $list = $transmission->getList();
+        $transmissions->remove([$first_id]);
+        $list = $transmissions->getList();
         $this->assertCount(1, $list);
         $last_transmission = $list[0];
-        $this->assertSame($id, (int)$last_transmission['id_transmission']);
+        $this->assertSame($id, $last_transmission->getId());
     }
 
     /**

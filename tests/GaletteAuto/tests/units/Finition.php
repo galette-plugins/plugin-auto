@@ -27,10 +27,16 @@ class Finition extends GaletteTestCase
     public function testEmpty(): void
     {
         $finition = new \GaletteAuto\Finition($this->zdb);
+        $finitions = new \GaletteAuto\Repository\Properties(
+            $this->zdb,
+            $this->preferences,
+            $this->login,
+            \GaletteAuto\Finition::class
+        );
         $this->assertSame('Finition', $finition->getFieldLabel());
 
-        $this->assertCount(0, $finition->getList());
-        $this->assertSame('0 finitions', $finition->displayCount());
+        $this->assertCount(0, $finitions->getList());
+        $this->assertSame('0 finitions', $finition->getCountLabel($finitions->getCount()));
     }
 
     /**
@@ -39,20 +45,26 @@ class Finition extends GaletteTestCase
     public function testCrud(): void
     {
         $finition = new \GaletteAuto\Finition($this->zdb);
+        $finitions = new \GaletteAuto\Repository\Properties(
+            $this->zdb,
+            $this->preferences,
+            $this->login,
+            \GaletteAuto\Finition::class
+        );
         //ensure the table is empty
-        $this->assertCount(0, $finition->getList());
+        $this->assertCount(0, $finitions->getList());
 
         //Add new finition
         $finition->setValue('Feline');
         $this->assertTrue($finition->store(true));
         $first_id = $finition->getId();
 
-        $this->assertCount(1, $finition->getList());
-        $listed_finition = $finition->getList()[0];
-        $this->assertInstanceOf(\ArrayObject::class, $listed_finition);
-        $this->assertGreaterThan(0, $listed_finition['id_finition']);
-        $this->assertSame('Feline', $listed_finition['finition']);
-        $this->assertSame('1 finition', $finition->displayCount());
+        $this->assertCount(1, $finitions->getList());
+        $listed_finition = $finitions->getList()[0];
+        $this->assertInstanceOf(\GaletteAuto\Finition::class, $listed_finition);
+        $this->assertGreaterThan(0, $listed_finition->getId());
+        $this->assertSame('Feline', $listed_finition->getValue());
+        $this->assertSame('1 finition', $finition->getCountLabel($finitions->getCount()));
 
         //add another one
         $finition = new \GaletteAuto\Finition($this->zdb);
@@ -60,23 +72,22 @@ class Finition extends GaletteTestCase
         $this->assertTrue($finition->store(true));
         $id = $finition->getId();
 
-        $this->assertCount(2, $finition->getList());
-        $this->assertSame('2 finitions', $finition->displayCount());
+        $this->assertCount(2, $finitions->getList());
+        $this->assertSame('2 finitions', $finition->getCountLabel($finitions->getCount()));
 
         $finition = new \GaletteAuto\Finition($this->zdb);
         $this->assertTrue($finition->load($id));
         $finition->setValue('RS');
         $this->assertTrue($finition->store());
 
-        $this->assertCount(2, $finition->getList());
-        $this->assertSame('2 finitions', $finition->displayCount());
+        $this->assertCount(2, $finitions->getList());
+        $this->assertSame('2 finitions', $finition->getCountLabel($finitions->getCount()));
 
-        $finition = new \GaletteAuto\Finition($this->zdb);
-        $this->assertTrue($finition->delete([$first_id]));
-        $list = $finition->getList();
+        $finitions->remove([$first_id]);
+        $list = $finitions->getList();
         $this->assertCount(1, $list);
         $last_finition = $list[0];
-        $this->assertSame($id, (int)$last_finition['id_finition']);
+        $this->assertSame($id, $last_finition->getId());
     }
 
     /**

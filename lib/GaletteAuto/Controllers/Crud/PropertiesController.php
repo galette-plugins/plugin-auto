@@ -24,6 +24,7 @@ use Slim\Psr7\Response;
 use GaletteAuto\Filters\ModelsList;
 use GaletteAuto\Filters\PropertiesList;
 use GaletteAuto\Repository\Models;
+use GaletteAuto\Repository\Properties;
 
 /**
  * Galette Auto plugin controller for properties (brands, models, colors, ...)
@@ -148,7 +149,6 @@ class PropertiesController extends AbstractPluginController
         if (isset($get['nbshow']) && is_numeric($get['nbshow'])) {
             $filters->show = $get['nbshow'];
         }
-        $obj->setFilters($filters);
 
         switch ($option) {
             case 'page':
@@ -161,9 +161,11 @@ class PropertiesController extends AbstractPluginController
 
         $this->saveFilters($obj, $filters);
 
+        $properties = $this->getRepository($obj::class, $filters);
         $params = [
             'page_title'    => $obj->getListTitle(),
-            'list'          => $obj->getList(),
+            'list'          => $properties->getList(),
+            'count_label'   => $obj->getCountLabel($properties->getCount()),
             'field_name'    => $obj->getFieldLabel(),
             'add_text'      => $obj->getAddText(),
             'obj'           => $obj,
@@ -466,16 +468,11 @@ class PropertiesController extends AbstractPluginController
                 _T("Removal has not been confirmed!")
             );
         } else {
-            if (!is_array($post['id'])) {
-                $ids = (array)$post['id'];
-            } else {
-                $ids = $post['id'];
-            }
-
+            $ids = array_map('intval', (array)$post['id']);
             $object = AbstractObject::fromPropertyName($this->zdb, $property);
 
             try {
-                $object->delete($ids);
+                $this->getRepository($object::class)->remove($ids);
                 $this->flash->addMessage(
                     'success_detected',
                     $object->getRemovedMessage(count($ids))
@@ -503,6 +500,17 @@ class PropertiesController extends AbstractPluginController
                 ]
             );
         }
+    }
+
+    /**
+     * Get properties repository
+     *
+     * @param class-string<AbstractObject> $class   Property class name
+     * @param ?PropertiesList              $filters Filters
+     */
+    protected function getRepository(string $class, ?PropertiesList $filters = null): Properties
+    {
+        return new Properties($this->zdb, $this->preferences, $this->login, $class, $filters);
     }
 
     /**

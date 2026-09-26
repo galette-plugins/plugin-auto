@@ -27,10 +27,16 @@ class Brand extends GaletteTestCase
     public function testEmpty(): void
     {
         $brand = new \GaletteAuto\Brand($this->zdb);
+        $brands = new \GaletteAuto\Repository\Properties(
+            $this->zdb,
+            $this->preferences,
+            $this->login,
+            \GaletteAuto\Brand::class
+        );
         $this->assertSame('Brand', $brand->getFieldLabel());
 
-        $this->assertCount(0, $brand->getList());
-        $this->assertSame('0 brands', $brand->displayCount());
+        $this->assertCount(0, $brands->getList());
+        $this->assertSame('0 brands', $brand->getCountLabel($brands->getCount()));
     }
 
     /**
@@ -39,20 +45,26 @@ class Brand extends GaletteTestCase
     public function testCrud(): void
     {
         $brand = new \GaletteAuto\Brand($this->zdb);
+        $brands = new \GaletteAuto\Repository\Properties(
+            $this->zdb,
+            $this->preferences,
+            $this->login,
+            \GaletteAuto\Brand::class
+        );
         //ensure the table is empty
-        $this->assertCount(0, $brand->getList());
+        $this->assertCount(0, $brands->getList());
 
         //Add new brand
         $brand->setValue('Audi');
         $this->assertTrue($brand->store(true));
         $first_id = $brand->getId();
 
-        $this->assertCount(1, $brand->getList());
-        $listed_brand = $brand->getList()[0];
-        $this->assertInstanceOf(\ArrayObject::class, $listed_brand);
-        $this->assertGreaterThan(0, $listed_brand['id_brand']);
-        $this->assertSame('Audi', $listed_brand['brand']);
-        $this->assertSame('1 brand', $brand->displayCount());
+        $this->assertCount(1, $brands->getList());
+        $listed_brand = $brands->getList()[0];
+        $this->assertInstanceOf(\GaletteAuto\Brand::class, $listed_brand);
+        $this->assertGreaterThan(0, $listed_brand->getId());
+        $this->assertSame('Audi', $listed_brand->getValue());
+        $this->assertSame('1 brand', $brand->getCountLabel($brands->getCount()));
 
         //add another one
         $brand = new \GaletteAuto\Brand($this->zdb);
@@ -60,23 +72,22 @@ class Brand extends GaletteTestCase
         $this->assertTrue($brand->store(true));
         $id = $brand->getId();
 
-        $this->assertCount(2, $brand->getList());
-        $this->assertSame('2 brands', $brand->displayCount());
+        $this->assertCount(2, $brands->getList());
+        $this->assertSame('2 brands', $brand->getCountLabel($brands->getCount()));
 
         $brand = new \GaletteAuto\Brand($this->zdb);
         $this->assertTrue($brand->load($id));
         $brand->setValue('Mercedes');
         $this->assertTrue($brand->store());
 
-        $this->assertCount(2, $brand->getList());
-        $this->assertSame('2 brands', $brand->displayCount());
+        $this->assertCount(2, $brands->getList());
+        $this->assertSame('2 brands', $brand->getCountLabel($brands->getCount()));
 
-        $brand = new \GaletteAuto\Brand($this->zdb);
-        $this->assertTrue($brand->delete([$first_id]));
-        $list = $brand->getList();
+        $brands->remove([$first_id]);
+        $list = $brands->getList();
         $this->assertCount(1, $list);
         $last_brand = $list[0];
-        $this->assertSame($id, (int)$last_brand['id_brand']);
+        $this->assertSame($id, $last_brand->getId());
     }
 
     /**

@@ -27,10 +27,16 @@ class Color extends GaletteTestCase
     public function testEmpty(): void
     {
         $color = new \GaletteAuto\Color($this->zdb);
+        $colors = new \GaletteAuto\Repository\Properties(
+            $this->zdb,
+            $this->preferences,
+            $this->login,
+            \GaletteAuto\Color::class
+        );
         $this->assertSame('Color', $color->getFieldLabel());
 
-        $this->assertCount(0, $color->getList());
-        $this->assertSame('0 colors', $color->displayCount());
+        $this->assertCount(0, $colors->getList());
+        $this->assertSame('0 colors', $color->getCountLabel($colors->getCount()));
     }
 
     /**
@@ -39,20 +45,26 @@ class Color extends GaletteTestCase
     public function testCrud(): void
     {
         $color = new \GaletteAuto\Color($this->zdb);
+        $colors = new \GaletteAuto\Repository\Properties(
+            $this->zdb,
+            $this->preferences,
+            $this->login,
+            \GaletteAuto\Color::class
+        );
         //ensure the table is empty
-        $this->assertCount(0, $color->getList());
+        $this->assertCount(0, $colors->getList());
 
         //Add new color
         $color->setValue('Red');
         $this->assertTrue($color->store(true));
         $first_id = $color->getId();
 
-        $this->assertCount(1, $color->getList());
-        $listed_color = $color->getList()[0];
-        $this->assertInstanceOf(\ArrayObject::class, $listed_color);
-        $this->assertGreaterThan(0, $listed_color['id_color']);
-        $this->assertSame('Red', $listed_color['color']);
-        $this->assertSame('1 color', $color->displayCount());
+        $this->assertCount(1, $colors->getList());
+        $listed_color = $colors->getList()[0];
+        $this->assertInstanceOf(\GaletteAuto\Color::class, $listed_color);
+        $this->assertGreaterThan(0, $listed_color->getId());
+        $this->assertSame('Red', $listed_color->getValue());
+        $this->assertSame('1 color', $color->getCountLabel($colors->getCount()));
 
         //add another one
         $color = new \GaletteAuto\Color($this->zdb);
@@ -60,25 +72,24 @@ class Color extends GaletteTestCase
         $this->assertTrue($color->store(true));
         $id = $color->getId();
 
-        $this->assertCount(2, $color->getList());
-        $this->assertSame('2 colors', $color->displayCount());
+        $this->assertCount(2, $colors->getList());
+        $this->assertSame('2 colors', $color->getCountLabel($colors->getCount()));
         //sorted by value
-        $this->assertSame(['Blu', 'Red'], array_map(fn($row) => $row['color'], $color->getList()));
+        $this->assertSame(['Blu', 'Red'], array_map(fn($row) => $row->getValue(), $colors->getList()));
 
         $color = new \GaletteAuto\Color($this->zdb);
         $this->assertTrue($color->load($id));
         $color->setValue('Blue');
         $this->assertTrue($color->store());
 
-        $this->assertCount(2, $color->getList());
-        $this->assertSame('2 colors', $color->displayCount());
+        $this->assertCount(2, $colors->getList());
+        $this->assertSame('2 colors', $color->getCountLabel($colors->getCount()));
 
-        $color = new \GaletteAuto\Color($this->zdb);
-        $this->assertTrue($color->delete([$first_id]));
-        $list = $color->getList();
+        $colors->remove([$first_id]);
+        $list = $colors->getList();
         $this->assertCount(1, $list);
         $last_color = $list[0];
-        $this->assertSame($id, (int)$last_color['id_color']);
+        $this->assertSame($id, $last_color->getId());
     }
 
     /**

@@ -28,7 +28,7 @@
 
                 {% set brand_list_values = {(-1): _T("Choose a brand", "auto")} %}
                 {% for brand in brands %}
-                    {% set brand_list_values = brand_list_values + {(brand.id_brand): brand.brand} %}
+                    {% set brand_list_values = brand_list_values + {(brand.getId()): brand.getValue()} %}
                 {% endfor %}
 
                 {% include "components/forms/select.html.twig" with {
@@ -157,7 +157,7 @@
 
                 {% set color_list_values = {(-1): _T("Choose a color", "auto")} %}
                 {% for color in colors %}
-                    {% set color_list_values = color_list_values + {(color.id_color): color.color} %}
+                    {% set color_list_values = color_list_values + {(color.getId()): color.getValue()} %}
                 {% endfor %}
 
                 {% include "components/forms/select.html.twig" with {
@@ -170,7 +170,7 @@
 
                 {% set state_list_values = {(-1): _T("Choose a state", "auto")} %}
                 {% for state in states %}
-                    {% set state_list_values = state_list_values + {(state.id_state): state.state} %}
+                    {% set state_list_values = state_list_values + {(state.getId()): state.getValue()} %}
                 {% endfor %}
 
                 {% include "components/forms/select.html.twig" with {
@@ -199,7 +199,7 @@
             <div class="active content">
                 {% set body_list_values = {(-1): _T("Choose a body", "auto")} %}
                 {% for body in bodies %}
-                    {% set body_list_values = body_list_values + {(body.id_body): body.body} %}
+                    {% set body_list_values = body_list_values + {(body.getId()): body.getValue()} %}
                 {% endfor %}
 
                 {% include "components/forms/select.html.twig" with {
@@ -212,7 +212,7 @@
 
                 {% set transmission_list_values = {(-1): _T("Choose a transmission", "auto")} %}
                 {% for transmission in transmissions %}
-                    {% set transmission_list_values = transmission_list_values + {(transmission.id_transmission): transmission.transmission} %}
+                    {% set transmission_list_values = transmission_list_values + {(transmission.getId()): transmission.getValue()} %}
                 {% endfor %}
 
                 {% include "components/forms/select.html.twig" with {
@@ -225,7 +225,7 @@
 
                 {% set finition_list_values = {(-1): _T("Choose a finition", "auto")} %}
                 {% for finition in finitions %}
-                    {% set finition_list_values = finition_list_values + {(finition.id_finition): finition.finition} %}
+                    {% set finition_list_values = finition_list_values + {(finition.getId()): finition.getValue()} %}
                 {% endfor %}
 
                 {% include "components/forms/select.html.twig" with {

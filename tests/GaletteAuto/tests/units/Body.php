@@ -27,10 +27,16 @@ class Body extends GaletteTestCase
     public function testEmpty(): void
     {
         $body = new \GaletteAuto\Body($this->zdb);
+        $bodies = new \GaletteAuto\Repository\Properties(
+            $this->zdb,
+            $this->preferences,
+            $this->login,
+            \GaletteAuto\Body::class
+        );
         $this->assertSame('Body', $body->getFieldLabel());
 
-        $this->assertCount(0, $body->getList());
-        $this->assertSame('0 bodies', $body->displayCount());
+        $this->assertCount(0, $bodies->getList());
+        $this->assertSame('0 bodies', $body->getCountLabel($bodies->getCount()));
     }
 
     /**
@@ -39,20 +45,26 @@ class Body extends GaletteTestCase
     public function testCrud(): void
     {
         $body = new \GaletteAuto\Body($this->zdb);
+        $bodies = new \GaletteAuto\Repository\Properties(
+            $this->zdb,
+            $this->preferences,
+            $this->login,
+            \GaletteAuto\Body::class
+        );
         //ensure the table is empty
-        $this->assertCount(0, $body->getList());
+        $this->assertCount(0, $bodies->getList());
 
         //Add new body
         $body->setValue('Coupe');
         $this->assertTrue($body->store(true));
         $first_id = $body->getId();
 
-        $this->assertCount(1, $body->getList());
-        $listed_body = $body->getList()[0];
-        $this->assertInstanceOf(\ArrayObject::class, $listed_body);
-        $this->assertGreaterThan(0, $listed_body['id_body']);
-        $this->assertSame('Coupe', $listed_body['body']);
-        $this->assertSame('1 body', $body->displayCount());
+        $this->assertCount(1, $bodies->getList());
+        $listed_body = $bodies->getList()[0];
+        $this->assertInstanceOf(\GaletteAuto\Body::class, $listed_body);
+        $this->assertGreaterThan(0, $listed_body->getId());
+        $this->assertSame('Coupe', $listed_body->getValue());
+        $this->assertSame('1 body', $body->getCountLabel($bodies->getCount()));
 
         //add another one
         $body = new \GaletteAuto\Body($this->zdb);
@@ -60,23 +72,22 @@ class Body extends GaletteTestCase
         $this->assertTrue($body->store(true));
         $id = $body->getId();
 
-        $this->assertCount(2, $body->getList());
-        $this->assertSame('2 bodies', $body->displayCount());
+        $this->assertCount(2, $bodies->getList());
+        $this->assertSame('2 bodies', $body->getCountLabel($bodies->getCount()));
 
         $body = new \GaletteAuto\Body($this->zdb);
         $this->assertTrue($body->load($id));
         $body->setValue('Break');
         $this->assertTrue($body->store());
 
-        $this->assertCount(2, $body->getList());
-        $this->assertSame('2 bodies', $body->displayCount());
+        $this->assertCount(2, $bodies->getList());
+        $this->assertSame('2 bodies', $body->getCountLabel($bodies->getCount()));
 
-        $body = new \GaletteAuto\Body($this->zdb);
-        $this->assertTrue($body->delete([$first_id]));
-        $list = $body->getList();
+        $bodies->remove([$first_id]);
+        $list = $bodies->getList();
         $this->assertCount(1, $list);
         $last_body = $list[0];
-        $this->assertSame($id, (int)$last_body['id_body']);
+        $this->assertSame($id, $last_body->getId());
     }
 
     /**

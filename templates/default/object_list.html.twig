@@ -6,14 +6,13 @@
 
 {% extends 'elements/list.html.twig' %}
 
-{% set pk = obj.getPk() %}
 {% set field = obj.getField() %}
 
 {% set nb = list|length %}
 
 {% block infoline %}
     {% set infoline = {
-        'label': obj.displayCount(),
+        'label': count_label,
         'route': {
             'name': 'propertyFilter',
             'args': {'property': field}
@@ -41,26 +40,26 @@
 
 {% block body %}
     {% for o in list %}
-        {% set edit_link = url_for("propertyEdit", {"property": obj.getRouteName(), "id": o[pk]}) %}
+        {% set edit_link = url_for("propertyEdit", {"property": obj.getRouteName(), "id": o.getId()}) %}
     <tr>
         <td data-col-label="{{ field_name }}">
             <a
-                href="{% if obj.hasDetails() %}{{ url_for("propertyShow", {"property": obj.getRouteName(), "id": o[pk]}) }}{% else %}{{ edit_link }}{% endif %}"
+                href="{% if obj.hasDetails() %}{{ url_for("propertyShow", {"property": obj.getRouteName(), "id": o.getId()}) }}{% else %}{{ edit_link }}{% endif %}"
             >
-                {{ o[field] }}
+                {{ o.getValue() }}
             </a>
         </td>
         <td class="center actions_row collapsing">
             <a href="{{ edit_link }}" class="tooltip action">
                 <i class="ui edit icon"></i>
-                <span class="visually-hidden">{{ _T("Edit %property", "auto")|replace({"%property": o[field]}) }}</span>
+                <span class="visually-hidden">{{ _T("Edit %property", "auto")|replace({"%property": o.getValue()}) }}</span>
             </a>
             <a
                 class="delete tooltip"
-                href="{{ url_for("removeProperty", {"property": obj.getRouteName(), "id": o[pk]}) }}"
+                href="{{ url_for("removeProperty", {"property": obj.getRouteName(), "id": o.getId()}) }}"
             >
                 <i class="ui red trash icon"></i>
-                <span class="visually-hidden">{{ _T("%property: remove from database", "auto")|replace({"%property": o[field]}) }}</span>
+                <span class="visually-hidden">{{ _T("%property: remove from database", "auto")|replace({"%property": o.getValue()}) }}</span>
             </a>
         </td>
     </tr>

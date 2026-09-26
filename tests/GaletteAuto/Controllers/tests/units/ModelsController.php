@@ -234,7 +234,7 @@ class ModelsController extends GaletteRoutingTestCase
         $this->app->handle($request);
         $this->expectFlashData(['error_detected' => ['This model is used by one or more vehicles, it cannot be deleted.']]);
         $this->expectLogEntry(\Analog\Analog::ERROR, 'Query error: DELETE FROM');
-        $this->expectLogEntry(\Analog\Analog::WARNING, 'Cannot delete models from ids `' . $used . '`');
+        $this->expectLogEntry(\Analog\Analog::ERROR, 'Cannot remove models #' . $used . ' |');
         $this->expectNoLogEntry();
         if (!$this->zdb->isPostgres()) {
             $this->expected_mysql_warnings[] = new \ArrayObject([
