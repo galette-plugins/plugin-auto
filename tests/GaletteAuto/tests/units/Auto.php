@@ -20,6 +20,7 @@ use Galette\Tests\GaletteTestCase;
 class Auto extends GaletteTestCase
 {
     protected int $seed = 20240212212207;
+    protected bool $load_plugins = true;
 
     protected \Galette\Core\Plugins $plugins;
 
@@ -78,11 +79,12 @@ class Auto extends GaletteTestCase
 
         $this->logSuperAdmin();
         $access = new \GaletteAuto\VehicleAccess($this->zdb, $this->login, $this->preferences);
+        $prefs = new \GaletteAuto\AutoPreferences($this->preferences);
         $vehicles = new \GaletteAuto\Repository\Vehicles($this->plugins, $this->zdb, $this->login, $this->history);
         $auto = new \GaletteAuto\Auto($this->plugins, $this->zdb);
 
         $data = [];
-        $this->assertFalse($auto->check($data, $access));
+        $this->assertFalse($auto->check($data, $access, $prefs));
         $this->assertSame(
             [
                 '- Mandatory field <a href="#registration">registration</a> empty.',
@@ -109,7 +111,7 @@ class Auto extends GaletteTestCase
             'state' => $state_id,
             'transmission' => $transmission_id,
         ];
-        $this->assertFalse($auto->check($data, $access));
+        $this->assertFalse($auto->check($data, $access, $prefs));
         $this->assertSame(
             [
                 '- Mandatory field <a href="#registration">registration</a> empty.',
@@ -139,7 +141,7 @@ class Auto extends GaletteTestCase
             'transmission' => $transmission_id,
             'owner_id' => $adh->id,
         ];
-        $check = $auto->check($data, $access);
+        $check = $auto->check($data, $access, $prefs);
         $this->assertSame([], $auto->getErrors());
         $this->assertTrue($check);
 
@@ -199,7 +201,7 @@ class Auto extends GaletteTestCase
             'owner_id' => $adh2->id,
             'change_owner' => true,
         ];
-        $check = $auto->check($data, $access);
+        $check = $auto->check($data, $access, $prefs);
         $this->assertSame([], $auto->getErrors());
         $this->assertTrue($check);
 
@@ -235,7 +237,7 @@ class Auto extends GaletteTestCase
             'transmission' => $transmission_id,
             'owner_id' => $adh->id,
         ];
-        $check = $auto->check($data, $access);
+        $check = $auto->check($data, $access, $prefs);
         $this->assertSame([], $auto->getErrors());
         $this->assertTrue($check);
 

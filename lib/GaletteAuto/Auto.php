@@ -64,21 +64,6 @@ class Auto
     private Plugins $plugins;
     private Db $zdb;
 
-    /** @var array<string, int> */
-    private array $required = [
-        'name'                      => 1,
-        'model'                     => 1,
-        'first_registration_date'   => 1,
-        'first_circulation_date'    => 1,
-        'color'                     => 1,
-        'state'                     => 1,
-        'registration'              => 1,
-        'body'                      => 1,
-        'transmission'              => 1,
-        'finition'                  => 1,
-        'fuel'                      => 1
-    ];
-
     private ?int $id = null;
     private ?string $registration = null;
     private ?string $name = null;
@@ -133,6 +118,8 @@ class Auto
             'seats'                     => mb_strtolower(_T("Seats", "auto")),
             'horsepower'                => mb_strtolower(_T("Horsepower", "auto")),
             'engine_size'               => mb_strtolower(_T("Engine size", "auto")),
+            'chassis_number'            => mb_strtolower(_T("Chassis number", "auto")),
+            'comment'                   => mb_strtolower(_T("Comment", "auto")),
             'color'                     => mb_strtolower(_T("Color", "auto")),
             'state'                     => mb_strtolower(_T("State", "auto")),
             'finition'                  => mb_strtolower(_T("Finition", "auto")),
@@ -320,20 +307,20 @@ class Auto
     /**
      * Check posted values validity
      *
-     * @param array<string,mixed> $post   All values to check, basically the $_POST array
-     *                                    after sending the form
-     * @param VehicleAccess       $access Access rules for current user
+     * @param array<string,mixed> $post        All values to check, basically the $_POST array
+     *                                         after sending the form
+     * @param VehicleAccess       $access      Access rules for current user
+     * @param AutoPreferences     $preferences Plugin preferences
      */
-    public function check(array $post, VehicleAccess $access): bool
+    public function check(array $post, VehicleAccess $access, AutoPreferences $preferences): bool
     {
         $this->errors = [];
 
         //check for required fields, and correct values
-        $required = $this->getRequired();
         foreach (self::POSTED_FIELDS as $prop) {
             $value = $post[$prop] ?? null;
 
-            if (($value == '' || $value == null) && in_array($prop, array_keys($required))) {
+            if (($value == '' || $value == null) && $preferences->isRequired($prop)) {
                 $this->errors[] = str_replace(
                     '%field',
                     '<a href="#' . $prop . '">' . $this->getPropName($prop) . '</a>',
@@ -414,7 +401,9 @@ class Auto
                     break;
                     //constants
                 case 'fuel':
-                    if (in_array((int)$value, array_keys($this->listFuels()), true)) {
+                    if ($value === null || $value === '') {
+                        $this->fuel = null;
+                    } elseif (in_array((int)$value, array_keys($this->listFuels()), true)) {
                         $this->fuel = (int)$value;
                     } else {
                         $this->errors[] = _T("- You must choose a fuel in the list", "auto");
@@ -478,22 +467,6 @@ class Auto
     public function getErrors(): array
     {
         return $this->errors;
-    }
-
-    /**
-     * Get required fields
-     *
-     * @return array<string,int>
-     */
-    public function getRequired(): array
-    {
-        $required = $this->required;
-
-        if (file_exists(GALETTE_CONFIG_PATH . 'local_auto_required.inc.php')) {
-            $required = require GALETTE_CONFIG_PATH . 'local_auto_required.inc.php';
-        }
-
-        return $required;
     }
 
     /**

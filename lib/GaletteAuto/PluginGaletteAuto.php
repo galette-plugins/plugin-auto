@@ -17,6 +17,7 @@ use Galette\Core\Plugins\DashboardProviderInterface;
 use Galette\Core\Plugins\InstallableInterface;
 use Galette\Core\Plugins\MemberActionProviderInterface;
 use Galette\Core\Plugins\MenuProviderInterface;
+use Galette\Core\Plugins\PreferencesProviderInterface;
 use Galette\Core\Plugins\PublicPagesProviderInterface;
 use Galette\Entity\Adherent;
 use Galette\Core\GalettePlugin;
@@ -27,7 +28,7 @@ use Galette\Core\GalettePlugin;
  * @author Johan Cwiklinski <johan@x-tnd.be>
  */
 
-class PluginGaletteAuto extends GalettePlugin implements MenuProviderInterface, DashboardProviderInterface, MemberActionProviderInterface, InstallableInterface, PublicPagesProviderInterface
+class PluginGaletteAuto extends GalettePlugin implements MenuProviderInterface, DashboardProviderInterface, MemberActionProviderInterface, InstallableInterface, PublicPagesProviderInterface, PreferencesProviderInterface
 {
     #[Inject]
     private readonly Db $zdb; //@phpstan-ignore property.uninitializedReadonly,property.onlyRead (injected from DI)
@@ -117,6 +118,16 @@ class PluginGaletteAuto extends GalettePlugin implements MenuProviderInterface, 
         }
 
         return $menus;
+    }
+
+    /**
+     * Get the preferences the plugin declares
+     *
+     * @return array<string, array<string, mixed>>
+     */
+    public function getPreferences(): array
+    {
+        return AutoPreferences::getSchema();
     }
 
     /**

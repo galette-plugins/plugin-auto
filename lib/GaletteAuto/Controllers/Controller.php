@@ -14,6 +14,7 @@ use Analog\Analog;
 use Galette\Repository\Members;
 use GaletteAuto\AbstractObject;
 use GaletteAuto\Auto;
+use GaletteAuto\AutoPreferences;
 use GaletteAuto\Body;
 use GaletteAuto\Brand;
 use GaletteAuto\Color;
@@ -73,6 +74,14 @@ class Controller extends AbstractPluginController
             [_T("You do not have enough privileges.", "auto")],
             $this->routeparser->urlFor('myVehiclesList')
         );
+    }
+
+    /**
+     * Get plugin preferences
+     */
+    protected function getAutoPreferences(): AutoPreferences
+    {
+        return new AutoPreferences($this->preferences);
     }
 
     /**
@@ -366,7 +375,7 @@ class Controller extends AbstractPluginController
         }
 
         if ($this->session->auto !== null) {
-            $auto->check($this->session->auto, $this->getAccess());
+            $auto->check($this->session->auto, $this->getAccess(), $this->getAutoPreferences());
             $this->session->auto = null;
         }
 
@@ -397,7 +406,7 @@ class Controller extends AbstractPluginController
             'states'            => $this->getProperties(State::class),
             'fuels'             => $auto->listFuels(),
             'time'              => time(),
-            'required'          => $auto->getRequired()
+            'required'          => $this->getAutoPreferences()->getRequired()
         ];
 
         // members
@@ -473,7 +482,7 @@ class Controller extends AbstractPluginController
             }
         }
 
-        $res = $auto->check($post, $this->getAccess());
+        $res = $auto->check($post, $this->getAccess(), $this->getAutoPreferences());
         if ($res !== true) {
             $error_detected = $auto->getErrors();
         }
