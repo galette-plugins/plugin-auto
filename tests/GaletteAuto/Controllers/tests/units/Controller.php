@@ -836,7 +836,7 @@ class Controller extends GaletteRoutingTestCase
             $test_response = $this->app->handle($this->createRequest('publicVehiclesList'));
             $this->assertSame(200, $test_response->getStatusCode());
             preg_match_all(
-                '#/vehicle/history/(\d+)" class="vehicle-history"#',
+                '#<button type="button" class="[^"]*vehicle-history" data-url="[^"]*/vehicle/history/(\d+)"#',
                 (string)$test_response->getBody(),
                 $matches
             );
@@ -852,5 +852,20 @@ class Controller extends GaletteRoutingTestCase
         $this->logSuperAdmin();
         $this->assertSame([$own_id, $other_id], $links());
         $this->expectNoLogEntry();
+    }
+
+    /**
+     * Vehicle form opens history with a button
+     */
+    public function testFormHistoryButton(): void
+    {
+        $car_id = $this->createVehicle($this->getMemberOne()->id);
+        $this->logSuperAdmin();
+        $test_response = $this->app->handle($this->createRequest('vehicleEdit', ['id' => (string)$car_id]));
+        $this->expectOK($test_response);
+        $this->assertMatchesRegularExpression(
+            '#<button type="button" class="ui mini basic icon button" data-url="[^"]*/vehicle/history/' . $car_id . '"#',
+            (string)$test_response->getBody()
+        );
     }
 }

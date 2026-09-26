@@ -122,10 +122,10 @@
                             {{ car.owner.sfullname }}
                             {% if login.isAdmin() or login.isStaff() or login.isGroupManager() %}
                                 {# Does car's history should be visible by the actual owner? #}
-                                <a href="{{ url_for("vehicleHistory", {"id": car.id}) }}" title="{{ _T("Show full car state history", "auto") }}" id="state_history">
-                                    <i class="ui history icon"></i>
+                                <button type="button" class="ui mini basic icon button" data-url="{{ url_for("vehicleHistory", {"id": car.id}) }}" title="{{ _T("Show full car state history", "auto") }}" id="state_history">
+                                    <i class="ui history icon" aria-hidden="true"></i>
                                     <span class="visually-hidden">{{ _T("Car state history", "auto") }}</span>
-                                </a>
+                                </button>
 
                                 <div id="change_owner-checkbox" class="ui toggle checkbox">
                                     <input type="checkbox" name="change_owner" id="change_owner" value="1"/>
@@ -335,14 +335,13 @@
                 });
 
         {% if mode != 'new' %}
-                $('#state_history').click(function() {
+                $('#state_history').on('click', function() {
                     $.ajax({
-                        url: this.href,
+                        url: $(this).data('url'),
                         success: function(res){
                             _history_dialog(res);
                         }
                     });
-                    return false;
                 });
 
                 var _history_dialog = function(res) {
