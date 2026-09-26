@@ -476,6 +476,28 @@ class Auto
     }
 
     /**
+     * Get year of first circulation
+     */
+    public function getFirstCirculationYear(): ?int
+    {
+        if (empty($this->first_circulation_date)) {
+            return null;
+        }
+        return (int)substr($this->first_circulation_date, 0, 4);
+    }
+
+    /**
+     * Get fuel label
+     */
+    public function getFuelLabel(): ?string
+    {
+        if ($this->fuel === null) {
+            return null;
+        }
+        return $this->listFuels()[$this->fuel] ?? null;
+    }
+
+    /**
      * Does the current car has a picture?
      */
     public function hasPicture(): bool

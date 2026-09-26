@@ -793,4 +793,34 @@ class Controller extends GaletteRoutingTestCase
         //the management list keeps its own pagination
         $this->assertFalse(isset($this->session->vehicles_filters));
     }
+
+    /**
+     * Public page describes vehicles: identity, then technical specifications
+     */
+    public function testPublicListDescription(): void
+    {
+        $car_id = $this->createVehicle($this->getMemberOne()->id);
+        $other_id = $this->createVehicle($this->getMemberOne()->id, 'Unknown');
+        $update = $this->zdb->update(AUTO_PREFIX . Auto::TABLE)
+            ->set(['car_engine_size' => 1998, 'car_horsepower' => 110])
+            ->where([Auto::PK => $car_id]);
+        $this->zdb->execute($update);
+        $update = $this->zdb->update(AUTO_PREFIX . Auto::TABLE)
+            ->set(['car_fuel' => null])
+            ->where([Auto::PK => $other_id]);
+        $this->zdb->execute($update);
+
+        $this->setPublicVehicles(\Galette\Enums\PublicPageVisibility::Everyone);
+        $test_response = $this->app->handle($this->createRequest('publicVehiclesList'));
+        $this->assertSame(200, $test_response->getStatusCode());
+        $this->expectNoLogEntry();
+        $body = (string)$test_response->getBody();
+        $this->assertStringContainsString('<strong>2001 · Berline · Standard</strong>', $body);
+        $this->assertStringContainsString(
+            '<div class="ui small grey text">1,998 cc · 110 hp · Diesel · Manual · Grey</div>',
+            $body
+        );
+        //missing specifications are left out
+        $this->assertStringContainsString('<div class="ui small grey text">Manual · Grey</div>', $body);
+    }
 }

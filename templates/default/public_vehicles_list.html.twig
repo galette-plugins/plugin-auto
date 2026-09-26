@@ -30,6 +30,7 @@
         {'label': _T("Owner", "auto")},
         {'label': _T("Brand", "auto")},
         {'label': _T("Model", "auto")},
+        {'label': _T("Description", "auto")},
     ] %}
     {{ parent() }}
 {% endblock %}
@@ -57,8 +58,26 @@
             <td data-col-label="{{ _T("Owner", "auto") }}">{{ public_owners[auto.id] ? auto.owner.sfullname : '—' }}</td>
             <td data-col-label="{{ _T("Brand", "auto") }}">{{ brand.value }}</td>
             <td data-col-label="{{ _T("Model", "auto") }}">{{ auto.model.model }}</td>
+            <td data-col-label="{{ _T("Description", "auto") }}">
+                {# what the car is, then how it is built #}
+                {% set identity = [auto.getFirstCirculationYear(), auto.body.value, auto.finition.value]|filter(v => v) %}
+                {% set specs = [] %}
+                {% if auto.engine_size %}
+                    {% set specs = specs|merge([_T("%1$s cc", "auto")|replace({'%1$s': auto.engine_size|format_number({}, 'decimal', 'default', i18n.getWebID())})]) %}
+                {% endif %}
+                {% if auto.horsepower %}
+                    {% set specs = specs|merge([_T("%1$s hp", "auto")|replace({'%1$s': auto.horsepower|format_number({}, 'decimal', 'default', i18n.getWebID())})]) %}
+                {% endif %}
+                {% set specs = specs|merge([auto.getFuelLabel(), auto.transmission.value, auto.color.value]|filter(v => v)) %}
+                {% if identity|length > 0 %}
+                    <strong>{{ identity|join(' · ') }}</strong>
+                {% endif %}
+                {% if specs|length > 0 %}
+                    <div class="ui small grey text">{{ specs|join(' · ') }}</div>
+                {% endif %}
+            </td>
         </tr>
     {% else %}
-        <tr><td colspan="5" class="emptylist">{{ _T("No car in the database", "auto") }}</td></tr>
+        <tr><td colspan="6" class="emptylist">{{ _T("No car in the database", "auto") }}</td></tr>
     {% endfor %}
 {% endblock %}
