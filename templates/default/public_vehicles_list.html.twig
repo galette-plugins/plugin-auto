@@ -25,7 +25,7 @@
 {% block header %}
     {% set no_action = true %}
     {% set columns = [
-        {'label': _T("Car's photo", "auto"), 'collapse': true},
+        {'label': _T("Picture"), 'collapse': true},
         {'label': _T("Name", "auto")},
         {'label': _T("Owner", "auto")},
         {'label': _T("Brand", "auto")},
@@ -40,7 +40,7 @@
         {% set brand = auto.model.brand %}
 
         <tr>
-            <td class="collapsing" data-col-label="{{ _T("Car's photo", "auto") }}">
+            <td class="collapsing" data-col-label="{{ _T("Picture") }}">
                 {# a thumbnail: the picture scaled down to 80 pixels wide at most #}
                 {% set photo_width = auto.picture.getOptimalWidth() %}
                 {% set thumb_width = min(photo_width, 80) %}
