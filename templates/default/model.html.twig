@@ -10,7 +10,7 @@
     <form class="ui form" action="{% if mode == "new" %}{{ url_for("doModelAdd") }}{% else %}{{ url_for("doModelEdit", {"id": model.id}) }}{% endif %}" method="post" id="modifform">
         <div class="ui styled fluid accordion field">
             <div class="active title">
-                <i class="icon dropdown"></i>
+                <i class="icon dropdown" aria-hidden="true"></i>
                 {{ page_title }}
             </div>
             <div class="active content">
@@ -45,7 +45,7 @@
 
         <div class="ui basic center aligned fitted segment">
             <button type="submit" name="valid" class="action ui labeled icon primary button">
-                <i class="save icon"></i> {{ _T("Save") }}
+                <i class="save icon" aria-hidden="true"></i> {{ _T("Save") }}
             </button>
             <input type="hidden" name="{{ mode }}" value="1"/>
             {% if mode != "new" %}

@@ -41,7 +41,7 @@
                         {%  elseif owner.isWoman() %}
                             <i class="ui female icon tooltip"><span class="visually-hidden">{{ _T('Is a woman') }}</span></i>
                         {% else %}
-                            <i class="ui icon"></i>
+                            <i class="ui icon" aria-hidden="true"></i>
                         {% endif %}
                         {{ owner.sfullname }}
                     </td>

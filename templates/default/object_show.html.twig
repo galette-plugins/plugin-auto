@@ -24,18 +24,17 @@
                 {{ _T("Registered models for the brand '%s'", "auto")|replace({'%s': obj.getValue()}) }}
             </div>
         </h2>
-        <div class="ui relaxed divided list">
+        <ul class="ui relaxed divided list">
             {% for model in models %}
-                <div class="item">
+                <li class="item">
                     <div class="content">
                         <div class="header">
-                            <a href="{{ url_for("modelEdit", {"action": "edit", "id": model.id}) }}">{{ model.model }}</a>
+                            <a href="{{ url_for("modelEdit", {"id": model.id}) }}">{{ model.model }}</a>
                         </div>
                     </div>
-                </div>
-                <li></li>
+                </li>
             {% endfor %}
-        </div>
+        </ul>
     {% else %}
         <div class="ui info message">
             <p>{{ _T("The brand '%s' does not have any registered model at this time.", "auto")|replace({'%s': obj.getValue()}) }}</p>
