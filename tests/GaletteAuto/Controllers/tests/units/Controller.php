@@ -855,7 +855,7 @@ class Controller extends GaletteRoutingTestCase
     }
 
     /**
-     * Vehicle form opens history with a button
+     * Vehicle form opens history with a button, for the owner too
      */
     public function testFormHistoryButton(): void
     {
@@ -863,10 +863,24 @@ class Controller extends GaletteRoutingTestCase
         $this->logSuperAdmin();
         $test_response = $this->app->handle($this->createRequest('vehicleEdit', ['id' => (string)$car_id]));
         $this->expectOK($test_response);
+        $body = (string)$test_response->getBody();
         $this->assertMatchesRegularExpression(
-            '#<button type="button" class="ui mini basic icon button" data-url="[^"]*/vehicle/history/' . $car_id . '"#',
-            (string)$test_response->getBody()
+            '#<button type="button" class="ui mini basic icon button vehicle-history" data-url="[^"]*/vehicle/history/' . $car_id . '"#',
+            $body
         );
+        $this->assertStringContainsString('<label for="change_owner">', $body);
+        $this->login->logout();
+
+        //owner sees history too, but cannot give the vehicle away
+        $this->logMember($this->dataAdherentOne());
+        $test_response = $this->app->handle($this->createRequest('vehicleEdit', ['id' => (string)$car_id]));
+        $this->expectOK($test_response);
+        $body = (string)$test_response->getBody();
+        $this->assertMatchesRegularExpression(
+            '#<button type="button" class="ui mini basic icon button vehicle-history" data-url="[^"]*/vehicle/history/' . $car_id . '"#',
+            $body
+        );
+        $this->assertStringNotContainsString('change_owner', $body);
     }
 
     /**

@@ -93,29 +93,6 @@
 {% block javascripts %}
     {{ parent() }}
     <script type="text/javascript">
-        $(function() {
-            $('.vehicle-history').on('click', function() {
-                $.ajax({
-                    url: $(this).data('url'),
-                    success: function(res) {
-                        $('body').modal({
-                            title: '{{ _T("Car's history", "auto")|e('js') }}',
-                            content: res,
-                            class: 'large'
-                        }).modal('show');
-                    },
-                    error: function() {
-                        {% include "elements/js/modal.js.twig" with {
-                            modal_title_twig: _T("An error occurred displaying history :(", "auto")|e("js"),
-                            modal_without_content: true,
-                            modal_class: "mini",
-                            modal_deny_only: true,
-                            modal_cancel_text: _T("Close")|e("js"),
-                            modal_classname: "redalert",
-                        } %}
-                    }
-                });
-            });
-        });
+        {% include "@PluginGaletteAuto/history_modal.js.twig" %}
     </script>
 {% endblock %}
