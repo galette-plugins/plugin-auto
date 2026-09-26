@@ -203,3 +203,97 @@ jobs:
         run: |
           cd galette-core/galette/plugins/plugin-auto
           ../../vendor/bin/phpunit --test-suffix=.php --bootstrap tests/TestsBootstrap.php --no-coverage --process-isolation tests/GaletteAuto/
+
+  upgrade:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        db-image: ['mysql:8.4', 'mariadb:11', 'postgres:17']
+      fail-fast: false
+
+    env:
+      DB: ${{ matrix.db-image }}
+
+    services:
+      # Label used to access the service container
+      db:
+        # Docker Hub image
+        image: ${{ matrix.db-image }}
+        # Provide env variables for both mysql and pgsql
+        env:
+          POSTGRES_USER: galette_tests
+          POSTGRES_PASSWORD: g@l3tte
+          POSTGRES_DB: galette_tests
+          MYSQL_USER: galette_tests
+          MYSQL_PASSWORD: g@l3tte
+          MYSQL_ROOT_PASSWORD: g@l3tte
+          MYSQL_DATABASE: galette_tests
+        # Open network ports for both mysql and pgsql
+        ports:
+          - 3306:3306
+          - 5432:5432
+        # Set health checks to wait until postgres has started
+        options: >-
+          --health-cmd="bash -c 'if [[ -n $(command -v pg_isready) ]]; then pg_isready; else if [[ -n $(command -v mysqladmin) ]]; then mysqladmin ping; else mariadb-admin ping; fi fi'"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=10
+
+    name: Upgrade from previous release on ${{ matrix.db-image }}
+
+    steps:
+      - name: PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          tools: composer, pecl
+          coverage: none
+          extensions: apcu
+          ini-values: apc.enable_cli=1
+
+      - name: Build Galette
+        uses: galette/.github/actions/build-galette@main
+        with:
+          php-version: '8.4'
+
+      - name: Checkout plugin
+        uses: actions/checkout@v7
+        with:
+          path: galette-core/galette/plugins/plugin-auto
+          fetch-depth: 0
+
+      - name: Find previous release
+        run: |
+          cd galette-core/galette/plugins/plugin-auto
+          echo "PREVIOUS_RELEASE=$(git tag --list '[0-9]*' --sort=-v:refname --no-contains HEAD | head -n1)" >> $GITHUB_ENV
+
+      - name: Install previous release for PostgreSQL
+        env:
+          PGPASSWORD: g@l3tte
+        run: |
+          cd galette-core
+          bin/console galette:install -v --dbtype=pgsql --dbhost=localhost --dbname=galette_tests --dbuser=galette_tests --dbpass=g@l3tte --admin=admin --password=admin --no-interaction -w
+          git -C galette/plugins/plugin-auto show "$PREVIOUS_RELEASE:scripts/pgsql.sql" \
+            | psql -v ON_ERROR_STOP=1 -h localhost -U galette_tests galette_tests
+        if: startsWith(matrix.db-image, 'postgres')
+
+      - name: Install previous release for MariaDB
+        run: |
+          cd galette-core
+          mysql -e 'create database IF NOT EXISTS galette_tests;' -u galette_tests --password=g@l3tte -h 127.0.0.1 -P 3306
+          bin/console galette:install -v --dbtype=mysql --dbhost=127.0.0.1 --dbname=galette_tests --dbuser=galette_tests --dbpass=g@l3tte --admin=admin --password=admin --no-interaction -w
+          git -C galette/plugins/plugin-auto show "$PREVIOUS_RELEASE:scripts/mysql.sql" \
+            | mysql -u galette_tests --password=g@l3tte -h 127.0.0.1 -P 3306 galette_tests
+        if: startsWith(matrix.db-image, 'mysql') || startsWith(matrix.db-image, 'mariadb')
+
+      - name: Upgrade
+        run: |
+          cd galette-core
+          bin/console galette:plugins:install-db --no-interaction plugin-auto | tee upgrade.log
+          grep -q 'Database for plugin "plugin-auto" upgraded' upgrade.log
+
+      - name: Unit tests
+        run: |
+          cd galette-core/galette/plugins/plugin-auto
+          ../../vendor/bin/phpunit --test-suffix=.php --bootstrap tests/TestsBootstrap.php --no-coverage --process-isolation tests/GaletteAuto/
