@@ -27,7 +27,7 @@ class History extends GaletteTestCase
     public function testGetFields(): void
     {
         $history = new \GaletteAuto\History($this->zdb);
-        $this->assertCount(6, $history->fields);
+        $this->assertCount(6, $history->getFields());
     }
 
     /**

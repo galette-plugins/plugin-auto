@@ -520,16 +520,15 @@ class Controller extends AbstractPluginController
      */
     public function vehicleHistory(Request $request, Response $response, int $id): Response
     {
-        $apk = Auto::PK;
         $history = new History($this->zdb, $id);
         $auto = new Auto($this->plugins, $this->zdb);
-        if (!$auto->load($history->$apk) || !$this->getAccess()->canManageMember($auto->owner_id)) {
+        if (!$auto->load((int)$history->getCarId()) || !$this->getAccess()->canManageMember($auto->owner_id)) {
             return $this->accessDenied($response, 'Trying to show history of vehicle #' . $id);
         }
 
         $params = [
             'entries'       => $history->getEntries(),
-            'page_title'    => str_replace('%d', (string)$history->$apk, _T("History of car #%d", "auto")),
+            'page_title'    => str_replace('%d', (string)$history->getCarId(), _T("History of car #%d", "auto")),
             'mode'          => $this->isAjax($request) ? 'ajax' : ''
         ];
 

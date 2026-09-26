@@ -161,10 +161,10 @@ class Auto extends GaletteTestCase
                 'car_registration',
                 'id_color',
                 'id_state',
-                'formatted_date',
-                'owner',
                 'color',
-                'state'
+                'state',
+                'formatted_date',
+                'owner'
             ],
             array_keys($entry)
         );

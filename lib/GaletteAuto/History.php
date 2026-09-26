@@ -19,36 +19,34 @@ use Galette\Entity\Adherent;
  * Automobile History class for galette Auto plugin
  *
  * @author Johan Cwiklinski <johan@x-tnd.be>
- *
- * @property int                             $id_car
- * @property array<string, string>           $fields
- * @property array<int, array<string,mixed>> $entries
  */
 class History
 {
     public const string TABLE = 'history';
 
-    private Db $zdb;
-
     /**
-     * @var array<string, string> $fields fields list and type
+     * Tracked fields; any change on one of them adds an entry
+     *
+     * @var array<string>
      */
-    private array $fields = [
-        Auto::PK            => 'integer',
-        Adherent::PK        => 'integer',
-        'history_date'      => 'datetime',
-        'car_registration'  => 'text',
-        Color::PK           => 'integer',
-        State::PK           => 'integer'
+    private const array FIELDS = [
+        Auto::PK,
+        Adherent::PK,
+        'history_date',
+        'car_registration',
+        Color::PK,
+        State::PK
     ];
+
+    private Db $zdb;
 
     /**
      * history entries
      *
      * @var array<int, array<string,mixed>> $entries
      */
-    private array $entries;
-    private int $id_car;
+    private array $entries = [];
+    private ?int $id_car = null;
 
     /**
      * Default constructor
@@ -74,12 +72,20 @@ class History
         $this->id_car = $id;
 
         try {
-            $select = $this->zdb->select(AUTO_PREFIX . self::TABLE);
-            $select->where(
+            $select = $this->zdb->select(AUTO_PREFIX . self::TABLE, 'h');
+            $select->join(
+                ['c' => PREFIX_DB . AUTO_PREFIX . Color::TABLE],
+                'h.' . Color::PK . ' = c.' . Color::PK,
+                [Color::FIELD]
+            )->join(
+                ['s' => PREFIX_DB . AUTO_PREFIX . State::TABLE],
+                'h.' . State::PK . ' = s.' . State::PK,
+                [State::FIELD]
+            )->where(
                 [
-                    Auto::PK => $id
+                    'h.' . Auto::PK => $id
                 ]
-            )->order('history_date ASC');
+            )->order('h.history_date ASC');
 
             $results = $this->zdb->execute($select);
             $this->formatEntries($results->toArray());
@@ -97,7 +103,7 @@ class History
     /**
      * Get the most recent history entry
      *
-     * @return ArrayObject<string, int|string>|false row
+     * @return ArrayObject<string, mixed>|false row
      */
     public function getLatest(): ArrayObject|false
     {
@@ -134,21 +140,20 @@ class History
     private function formatEntries(array $entries): void
     {
         $this->entries = [];
+        $owners = [];
         foreach ($entries as $entry) {
             //put a formatted date to show
             $date = new \DateTime($entry['history_date']);
             $entry['formatted_date'] = $date->format(__('Y-m-d'));
 
-            //associate member to current history entry
-            $entry['owner'] = new Adherent($this->zdb, (int)$entry['id_adh']);
-
-            //associate color
-            $color = new Color($this->zdb, (int)$entry['id_color']);
-            $entry['color'] = $color->getValue();
-
-            //associate state
-            $state = new State($this->zdb, (int)$entry['id_state']);
-            $entry['state'] = $state->getValue();
+            //associate member to current history entry, once per member
+            $id_adh = (int)$entry[Adherent::PK];
+            if (!isset($owners[$id_adh])) {
+                $owner = new Adherent($this->zdb);
+                $owner->disableAllDeps()->load($id_adh);
+                $owners[$id_adh] = $owner;
+            }
+            $entry['owner'] = $owners[$id_adh];
 
             $this->entries[] = $entry;
         }
@@ -161,33 +166,13 @@ class History
      */
     public function register(array $props): void
     {
-        Analog::log(
-            '[' . get_class($this) . '] Trying to register a new history entry.',
-            Analog::DEBUG
-        );
-
         try {
-            $fields = $this->fields;
-            ksort($fields);
-            ksort($props);
-
-            $values = [];
-            foreach ($props as $key => $prop) {
-                $values[$key] = $prop;
-            }
-
             $insert = $this->zdb->insert(AUTO_PREFIX . self::TABLE);
-            $insert->values($values);
+            $insert->values(array_intersect_key($props, array_flip(self::FIELDS)));
             $add = $this->zdb->execute($insert);
 
-            if ($add->count() > 0) {
-                Analog::log(
-                    '[' . get_class($this)
-                    . '] new AutoHistory entry set successfully.',
-                    Analog::DEBUG
-                );
-            } else {
-                throw new \Exception(
+            if ($add->count() === 0) {
+                throw new \RuntimeException(
                     'An error occurred registering car new history entry :('
                 );
             }
@@ -202,28 +187,21 @@ class History
     }
 
     /**
-     * Global getter method
-     *
-     * @param string $name name of the property we want to retrieve
-     *
-     * @return mixed the called property
+     * Get car ID
      */
-    public function __get(string $name): mixed
+    public function getCarId(): ?int
     {
-        switch ($name) {
-            case Auto::PK:
-                return $this->$name;
-            case 'fields':
-                return array_keys($this->fields);
-        }
+        return $this->id_car;
+    }
 
-        throw new \RuntimeException(
-            sprintf(
-                'Unable to get property "%s::%s"!',
-                __CLASS__,
-                $name
-            )
-        );
+    /**
+     * Get tracked fields
+     *
+     * @return array<string>
+     */
+    public function getFields(): array
+    {
+        return self::FIELDS;
     }
 
     /**

@@ -406,7 +406,7 @@ class Auto
 
             if ($this->fire_history) {
                 $h_props = [];
-                foreach ($this->history->fields as $prop) {
+                foreach ($this->history->getFields() as $prop) {
                     if ($prop != 'history_date') {
                         $h_props[$prop] = $this->$prop;
                     } else {
