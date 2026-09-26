@@ -99,7 +99,7 @@ class Model extends GaletteTestCase
         ];
         $this->assertTrue($model->check($data));
         $this->assertTrue($model->store(true));
-        $id_model = $model->id;
+        $id_model = $model->getId();
 
         $this->assertCount(2, $models->getList());
 

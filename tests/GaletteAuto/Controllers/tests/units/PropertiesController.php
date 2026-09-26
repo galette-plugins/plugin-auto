@@ -231,7 +231,7 @@ class PropertiesController extends GaletteRoutingTestCase
             'car_first_registration_date' => '2001-02-12',
             'car_first_circulation_date' => '2001-02-13',
             'car_creation_date' => date('Y-m-d'),
-            \GaletteAuto\Model::PK => $model->id,
+            \GaletteAuto\Model::PK => $model->getId(),
             \Galette\Entity\Adherent::PK => $this->getMemberOne()->id,
         ]);
         $this->zdb->execute($insert);

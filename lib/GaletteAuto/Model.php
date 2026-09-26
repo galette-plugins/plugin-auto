@@ -19,10 +19,6 @@ use Laminas\Db\ResultSet\ResultSet;
  * Automobile Models class for galette Auto plugin
  *
  * @author Johan Cwiklinski <johan@x-tnd.be>
- *
- * @property int    $id
- * @property string $model
- * @property Brand  $brand
  */
 class Model
 {
@@ -30,12 +26,12 @@ class Model
     public const string PK = 'id_model';
     public const string FIELD = 'model';
 
-    protected int $id;
-    protected string $model;
+    protected ?int $id = null;
+    protected ?string $model = null;
     protected Brand $brand;
 
     /** @var string[] */
-    private array $errors;
+    private array $errors = [];
     private Db $zdb;
 
     /**
@@ -96,8 +92,13 @@ class Model
     private function loadFromRS(ArrayObject $r): void
     {
         $this->id = (int)$r[self::PK];
-        $this->model = (string)$r['model'];
-        $this->brand->load((int)$r[Brand::PK]);
+        $this->model = (string)$r[self::FIELD];
+        if (isset($r[Brand::FIELD])) {
+            //brand has been joined
+            $this->brand->loadFromRow($r);
+        } else {
+            $this->brand->load((int)$r[Brand::PK]);
+        }
     }
 
     /**
@@ -166,26 +167,27 @@ class Model
     }
 
     /**
-     * Global getter method
-     *
-     * @param string $name name of the property we want to retrieve
-     *
-     * @return mixed the called property
+     * Get model ID
      */
-    public function __get(string $name): mixed
+    public function getId(): ?int
     {
-        return $this->$name ?? null;
+        return $this->id;
     }
 
     /**
-     * Global isset method
-     * Required for twig to access properties via __get
-     *
-     * @param string $name name of the property we want to retrieve
+     * Get model name
      */
-    public function __isset(string $name): bool
+    public function getModel(): ?string
     {
-        return property_exists($this, $name);
+        return $this->model;
+    }
+
+    /**
+     * Get model brand
+     */
+    public function getBrand(): Brand
+    {
+        return $this->brand;
     }
 
     /**

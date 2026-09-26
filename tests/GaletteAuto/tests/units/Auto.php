@@ -74,7 +74,7 @@ class Auto extends GaletteTestCase
         ];
         $this->assertTrue($model->check($data));
         $this->assertTrue($model->store(true));
-        $model_id = $model->id;
+        $model_id = $model->getId();
 
         $this->logSuperAdmin();
         $access = new \GaletteAuto\VehicleAccess($this->zdb, $this->login, $this->preferences);

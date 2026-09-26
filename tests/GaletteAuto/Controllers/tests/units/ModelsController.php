@@ -57,7 +57,7 @@ class ModelsController extends GaletteRoutingTestCase
         $model = new Model($this->zdb);
         $this->assertTrue($model->check(['model' => $name, 'brand' => $this->brand_id]));
         $this->assertTrue($model->store(true));
-        return $model->id;
+        return $model->getId();
     }
 
     /**
@@ -77,8 +77,8 @@ class ModelsController extends GaletteRoutingTestCase
             $test_response->getHeaders()
         );
         $this->expectFlashData(['success_detected' => ['Model has been saved!']]);
-        $this->assertSame('306', (new Model($this->zdb, $first))->model);
-        $this->assertSame('308', (new Model($this->zdb, $second))->model);
+        $this->assertSame('306', (new Model($this->zdb, $first))->getModel());
+        $this->assertSame('308', (new Model($this->zdb, $second))->getModel());
     }
 
     /**
@@ -102,7 +102,7 @@ class ModelsController extends GaletteRoutingTestCase
         $test_response = $this->app->handle($request);
         $this->assertSame(200, $test_response->getStatusCode());
         $this->assertStringContainsString('value="Posted model"', (string)$test_response->getBody());
-        $this->assertSame('307', (new Model($this->zdb, $id))->model);
+        $this->assertSame('307', (new Model($this->zdb, $id))->getModel());
     }
 
     /**

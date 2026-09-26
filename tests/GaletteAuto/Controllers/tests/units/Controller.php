@@ -54,7 +54,7 @@ class Controller extends GaletteRoutingTestCase
         $model = new \GaletteAuto\Model($this->zdb);
         $this->assertTrue($model->check(['model' => '307', 'brand' => $this->props['brand']]));
         $this->assertTrue($model->store(true));
-        $this->props['model'] = $model->id;
+        $this->props['model'] = $model->getId();
     }
 
     /**

@@ -319,7 +319,7 @@ class Auto
                         $values[$k] = $this->finition->getId();
                         break;
                     case Model::PK:
-                        $values[$k] = $this->model->id;
+                        $values[$k] = $this->model->getId();
                         break;
                     case Adherent::PK:
                         $values[$k] = $this->owner->id;

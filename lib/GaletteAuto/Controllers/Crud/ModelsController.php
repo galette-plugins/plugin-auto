@@ -182,7 +182,7 @@ class ModelsController extends AbstractPluginController
         if ($action === 'edit') {
             $title = sprintf(
                 _T("Change model '%s'", "auto"),
-                $model->model
+                $model->getModel()
             );
         } else {
             $title = _T("New model", "auto");
@@ -322,7 +322,7 @@ class ModelsController extends AbstractPluginController
             return sprintf(
                 //TRANS: first parameter is the model name
                 _T('Remove model "%1$s"', 'auto'),
-                $model->model
+                $model->getModel()
             );
         }
     }
