@@ -6,6 +6,8 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
+declare(strict_types=1);
+
 namespace GaletteAuto\tests\units;
 
 use Galette\Tests\GaletteTestCase;

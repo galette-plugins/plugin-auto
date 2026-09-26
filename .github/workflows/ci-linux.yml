@@ -89,7 +89,7 @@ jobs:
       - name: CS
         run: |
           cd galette-core/galette/plugins/plugin-auto
-          ../../vendor/bin/phpcs lib/ ./*.php
+          ../../vendor/bin/phpcs lib/ tests/ ./*.php
 
       - name: CS Fixer
         if: matrix.php-is-min

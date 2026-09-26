@@ -6,6 +6,8 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
+declare(strict_types=1);
+
 namespace GaletteAuto\tests\units;
 
 use Galette\Tests\GaletteTestCase;
@@ -19,8 +21,9 @@ class History extends GaletteTestCase
 {
     protected int $seed = 20240130141727;
 
-    //no crud tests here; they're part of Auto tests
-
+    /**
+     * Test fields list; CRUD is tested along with Auto
+     */
     public function testGetFields(): void
     {
         $history = new \GaletteAuto\History($this->zdb);
