@@ -50,8 +50,8 @@ class Finition extends GaletteTestCase
         $this->assertCount(1, $finition->getList());
         $listed_finition = $finition->getList()[0];
         $this->assertInstanceOf(\ArrayObject::class, $listed_finition);
-        $this->assertGreaterThan(0, $listed_finition->id_finition);
-        $this->assertSame('Feline', $listed_finition->finition);
+        $this->assertGreaterThan(0, $listed_finition['id_finition']);
+        $this->assertSame('Feline', $listed_finition['finition']);
         $this->assertSame('1 finition', $finition->displayCount());
 
         //add another one
@@ -76,7 +76,7 @@ class Finition extends GaletteTestCase
         $list = $finition->getList();
         $this->assertCount(1, $list);
         $last_finition = $list[0];
-        $this->assertSame($id, (int)$last_finition->id_finition);
+        $this->assertSame($id, (int)$last_finition['id_finition']);
     }
 
     /**
@@ -88,7 +88,7 @@ class Finition extends GaletteTestCase
         $this->expectNoLogEntry();
         $this->assertFalse($finition->load(999));
         $this->expectLogEntry(
-            \Analog::ERROR,
+            \Analog\Analog::ERROR,
             '[GaletteAuto\Finition] Cannot load finitions from id `999`'
         );
     }

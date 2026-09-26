@@ -4,6 +4,7 @@ parameters:
     level: 6
     paths:
         - lib/
+        - tests/
     scanFiles:
         - _config.inc.php
         - ../../includes/sys_config/paths.inc.php
@@ -14,5 +15,3 @@ parameters:
         - ../../lib/
     universalObjectCratesClasses:
         - RKA\Session
-    ignoreErrors:
-        - '/Access to an undefined property ArrayObject.*/'

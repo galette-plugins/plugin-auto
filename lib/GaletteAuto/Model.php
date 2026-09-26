@@ -41,8 +41,8 @@ class Model
     /**
      * Default constructor
      *
-     * @param Db                                       $zdb  Database instance
-     * @param ArrayObject<string, int|string>|int|null $args model's id to load or ResultSet. Defaults to null
+     * @param Db                                  $zdb  Database instance
+     * @param ArrayObject<string, mixed>|int|null $args model's id to load or ResultSet. Defaults to null
      */
     public function __construct(Db $zdb, ArrayObject|int|null $args = null)
     {
@@ -91,14 +91,13 @@ class Model
     /**
      * Populate object from a resultset row
      *
-     * @param ArrayObject<string, int|string> $r the resultset row
+     * @param ArrayObject<string, mixed> $r the resultset row
      */
     private function loadFromRS(ArrayObject $r): void
     {
-        $this->id = (int)$r->id_model;
-        $this->model = $r->model;
-        $id_brand = Brand::PK;
-        $this->brand->load((int)$r->$id_brand);
+        $this->id = (int)$r[self::PK];
+        $this->model = (string)$r['model'];
+        $this->brand->load((int)$r[Brand::PK]);
     }
 
     /**

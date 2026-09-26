@@ -50,8 +50,8 @@ class Transmission extends GaletteTestCase
         $this->assertCount(1, $transmission->getList());
         $listed_transmission = $transmission->getList()[0];
         $this->assertInstanceOf(\ArrayObject::class, $listed_transmission);
-        $this->assertGreaterThan(0, $listed_transmission->id_transmission);
-        $this->assertSame('Manual', $listed_transmission->transmission);
+        $this->assertGreaterThan(0, $listed_transmission['id_transmission']);
+        $this->assertSame('Manual', $listed_transmission['transmission']);
         $this->assertSame('1 transmission', $transmission->displayCount());
 
         //add another one
@@ -76,7 +76,7 @@ class Transmission extends GaletteTestCase
         $list = $transmission->getList();
         $this->assertCount(1, $list);
         $last_transmission = $list[0];
-        $this->assertSame($id, (int)$last_transmission->id_transmission);
+        $this->assertSame($id, (int)$last_transmission['id_transmission']);
     }
 
     /**
@@ -88,7 +88,7 @@ class Transmission extends GaletteTestCase
         $this->expectNoLogEntry();
         $this->assertFalse($transmission->load(999));
         $this->expectLogEntry(
-            \Analog::ERROR,
+            \Analog\Analog::ERROR,
             '[GaletteAuto\Transmission] Cannot load transmissions from id `999`'
         );
     }

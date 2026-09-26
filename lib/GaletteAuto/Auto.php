@@ -155,9 +155,9 @@ class Auto
     /**
      * Default constructor
      *
-     * @param Plugins                          $plugins Plugins
-     * @param Db                               $zdb     Database instance
-     * @param ?ArrayObject<string, int|string> $args    A resultset row to load
+     * @param Plugins                     $plugins Plugins
+     * @param Db                          $zdb     Database instance
+     * @param ?ArrayObject<string, mixed> $args    A resultset row to load
      */
     public function __construct(Plugins $plugins, Db $zdb, ?ArrayObject $args = null)
     {
@@ -233,41 +233,33 @@ class Auto
     /**
      * Populate object from a resultset row
      *
-     * @param ArrayObject<string, int|string> $r a resultset row
+     * @param ArrayObject<string, mixed> $r a resultset row
      */
     private function loadFromRS(ArrayObject $r): void
     {
-        $pk = self::PK;
-        $this->id = (int)$r->$pk;
-        $this->registration = $r->car_registration;
-        $this->name = $r->car_name;
-        $this->first_registration_date = $r->car_first_registration_date;
-        $this->first_circulation_date = $r->car_first_circulation_date;
-        $this->mileage = $r->car_mileage != null ? (int)$r->car_mileage : null;
-        $this->comment = $r->car_comment;
-        $this->chassis_number = $r->car_chassis_number;
-        $this->seats = $r->car_seats != null ? (int)$r->car_seats : null;
-        $this->horsepower = $r->car_horsepower != null ? (int)$r->car_horsepower : null;
-        $this->engine_size = $r->car_engine_size != null ? (int)$r->car_engine_size : null;
-        $this->creation_date = $r->car_creation_date;
-        $this->fuel = $r->car_fuel != null ? (int)$r->car_fuel : null;
+        $this->id = (int)$r[self::PK];
+        $this->registration = (string)$r['car_registration'];
+        $this->name = (string)$r['car_name'];
+        $this->first_registration_date = (string)$r['car_first_registration_date'];
+        $this->first_circulation_date = (string)$r['car_first_circulation_date'];
+        $this->mileage = $r['car_mileage'] !== null ? (int)$r['car_mileage'] : null;
+        $this->comment = $r['car_comment'] !== null ? (string)$r['car_comment'] : null;
+        $this->chassis_number = $r['car_chassis_number'] !== null ? (string)$r['car_chassis_number'] : null;
+        $this->seats = $r['car_seats'] !== null ? (int)$r['car_seats'] : null;
+        $this->horsepower = $r['car_horsepower'] !== null ? (int)$r['car_horsepower'] : null;
+        $this->engine_size = $r['car_engine_size'] !== null ? (int)$r['car_engine_size'] : null;
+        $this->creation_date = (string)$r['car_creation_date'];
+        $this->fuel = $r['car_fuel'] !== null ? (int)$r['car_fuel'] : null;
         //External objects
         $this->picture = new Picture($this->plugins, $this->id);
-        $fpk = Finition::PK;
-        $this->finition->load((int)$r->$fpk);
-        $cpk = Color::PK;
-        $this->color->load((int)$r->$cpk);
-        $mpk = Model::PK;
-        $this->model->load((int)$r->$mpk);
-        $tpk = Transmission::PK;
-        $this->transmission->load((int)$r->$tpk);
-        $bpk = Body::PK;
-        $this->body->load((int)$r->$bpk);
-        $opk = Adherent::PK;
-        $this->owner_id = (int)$r->$opk;
+        $this->finition->load((int)$r[Finition::PK]);
+        $this->color->load((int)$r[Color::PK]);
+        $this->model->load((int)$r[Model::PK]);
+        $this->transmission->load((int)$r[Transmission::PK]);
+        $this->body->load((int)$r[Body::PK]);
+        $this->owner_id = (int)$r[Adherent::PK];
         $this->owner->load($this->owner_id);
-        $spk = State::PK;
-        $this->state->load((int)$r->$spk);
+        $this->state->load((int)$r[State::PK]);
         $this->history->load($this->id);
     }
 

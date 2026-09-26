@@ -143,7 +143,7 @@ class Model extends GaletteTestCase
         $this->expectNoLogEntry();
         $this->assertFalse($brand->load(999));
         $this->expectLogEntry(
-            \Analog::ERROR,
+            \Analog\Analog::ERROR,
             '[GaletteAuto\Model] Cannot load model from id `999`'
         );
     }

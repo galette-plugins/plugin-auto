@@ -50,8 +50,8 @@ class Body extends GaletteTestCase
         $this->assertCount(1, $body->getList());
         $listed_body = $body->getList()[0];
         $this->assertInstanceOf(\ArrayObject::class, $listed_body);
-        $this->assertGreaterThan(0, $listed_body->id_body);
-        $this->assertSame('Coupe', $listed_body->body);
+        $this->assertGreaterThan(0, $listed_body['id_body']);
+        $this->assertSame('Coupe', $listed_body['body']);
         $this->assertSame('1 body', $body->displayCount());
 
         //add another one
@@ -76,7 +76,7 @@ class Body extends GaletteTestCase
         $list = $body->getList();
         $this->assertCount(1, $list);
         $last_body = $list[0];
-        $this->assertSame($id, (int)$last_body->id_body);
+        $this->assertSame($id, (int)$last_body['id_body']);
     }
 
     /**
@@ -88,7 +88,7 @@ class Body extends GaletteTestCase
         $this->expectNoLogEntry();
         $this->assertFalse($body->load(999));
         $this->expectLogEntry(
-            \Analog::ERROR,
+            \Analog\Analog::ERROR,
             '[GaletteAuto\Body] Cannot load bodies from id `999`',
         );
     }

@@ -50,8 +50,8 @@ class State extends GaletteTestCase
         $this->assertCount(1, $state->getList());
         $listed_state = $state->getList()[0];
         $this->assertInstanceOf(\ArrayObject::class, $listed_state);
-        $this->assertGreaterThan(0, $listed_state->id_state);
-        $this->assertSame('Good', $listed_state->state);
+        $this->assertGreaterThan(0, $listed_state['id_state']);
+        $this->assertSame('Good', $listed_state['state']);
         $this->assertSame('1 state', $state->displayCount());
 
         //add another one
@@ -76,7 +76,7 @@ class State extends GaletteTestCase
         $list = $state->getList();
         $this->assertCount(1, $list);
         $last_state = $list[0];
-        $this->assertSame($id, (int)$last_state->id_state);
+        $this->assertSame($id, (int)$last_state['id_state']);
     }
 
     /**
@@ -88,7 +88,7 @@ class State extends GaletteTestCase
         $this->expectNoLogEntry();
         $this->assertFalse($state->load(999));
         $this->expectLogEntry(
-            \Analog::ERROR,
+            \Analog\Analog::ERROR,
             '[GaletteAuto\State] Cannot load states from id `999`'
         );
     }

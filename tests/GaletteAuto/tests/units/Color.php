@@ -50,8 +50,8 @@ class Color extends GaletteTestCase
         $this->assertCount(1, $color->getList());
         $listed_color = $color->getList()[0];
         $this->assertInstanceOf(\ArrayObject::class, $listed_color);
-        $this->assertGreaterThan(0, $listed_color->id_color);
-        $this->assertSame('Red', $listed_color->color);
+        $this->assertGreaterThan(0, $listed_color['id_color']);
+        $this->assertSame('Red', $listed_color['color']);
         $this->assertSame('1 color', $color->displayCount());
 
         //add another one
@@ -63,7 +63,7 @@ class Color extends GaletteTestCase
         $this->assertCount(2, $color->getList());
         $this->assertSame('2 colors', $color->displayCount());
         //sorted by value
-        $this->assertSame(['Blu', 'Red'], array_map(fn($row) => $row->color, $color->getList()));
+        $this->assertSame(['Blu', 'Red'], array_map(fn($row) => $row['color'], $color->getList()));
 
         $color = new \GaletteAuto\Color($this->zdb);
         $this->assertTrue($color->load($id));
@@ -78,7 +78,7 @@ class Color extends GaletteTestCase
         $list = $color->getList();
         $this->assertCount(1, $list);
         $last_color = $list[0];
-        $this->assertSame($id, (int)$last_color->id_color);
+        $this->assertSame($id, (int)$last_color['id_color']);
     }
 
     /**
@@ -90,7 +90,7 @@ class Color extends GaletteTestCase
         $this->expectNoLogEntry();
         $this->assertFalse($color->load(999));
         $this->expectLogEntry(
-            \Analog::ERROR,
+            \Analog\Analog::ERROR,
             '[GaletteAuto\Color] Cannot load colors from id `999`'
         );
     }

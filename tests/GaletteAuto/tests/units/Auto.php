@@ -261,7 +261,7 @@ class Auto extends GaletteTestCase
         $this->expectNoLogEntry();
         $this->assertFalse($auto->load($auto_id));
         $this->expectLogEntry(
-            \Analog::ERROR,
+            \Analog\Analog::ERROR,
             '[GaletteAuto\Auto] Cannot load car from id `' . $auto_id . '` | Vehicle not found'
         );
     }
@@ -284,7 +284,7 @@ class Auto extends GaletteTestCase
         $this->expectNoLogEntry();
         $this->assertFalse($auto->load(999));
         $this->expectLogEntry(
-            \Analog::ERROR,
+            \Analog\Analog::ERROR,
             '[GaletteAuto\Auto] Cannot load car from id `999` | Vehicle not found'
         );
     }

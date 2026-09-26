@@ -50,8 +50,8 @@ class Brand extends GaletteTestCase
         $this->assertCount(1, $brand->getList());
         $listed_brand = $brand->getList()[0];
         $this->assertInstanceOf(\ArrayObject::class, $listed_brand);
-        $this->assertGreaterThan(0, $listed_brand->id_brand);
-        $this->assertSame('Audi', $listed_brand->brand);
+        $this->assertGreaterThan(0, $listed_brand['id_brand']);
+        $this->assertSame('Audi', $listed_brand['brand']);
         $this->assertSame('1 brand', $brand->displayCount());
 
         //add another one
@@ -76,7 +76,7 @@ class Brand extends GaletteTestCase
         $list = $brand->getList();
         $this->assertCount(1, $list);
         $last_brand = $list[0];
-        $this->assertSame($id, (int)$last_brand->id_brand);
+        $this->assertSame($id, (int)$last_brand['id_brand']);
     }
 
     /**
@@ -88,7 +88,7 @@ class Brand extends GaletteTestCase
         $this->expectNoLogEntry();
         $this->assertFalse($brand->load(999));
         $this->expectLogEntry(
-            \Analog::ERROR,
+            \Analog\Analog::ERROR,
             '[GaletteAuto\Brand] Cannot load brands from id `999`'
         );
     }

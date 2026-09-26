@@ -64,7 +64,7 @@ abstract class AbstractObject
     /**
      * Get the list
      *
-     * @return array<int, array<string,mixed>>
+     * @return array<int, \ArrayObject<string, mixed>>
      */
     public function getList(): array
     {
