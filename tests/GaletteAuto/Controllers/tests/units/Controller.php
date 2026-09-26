@@ -868,4 +868,142 @@ class Controller extends GaletteRoutingTestCase
             (string)$test_response->getBody()
         );
     }
+
+    /**
+     * Get vehicles names listed on a page
+     *
+     * @param \Psr\Http\Message\ResponseInterface $test_response Response
+     * @param string[]                            $names         Names to look for
+     *
+     * @return string[]
+     */
+    private function getListedNames(\Psr\Http\Message\ResponseInterface $test_response, array $names): array
+    {
+        $body = (string)$test_response->getBody();
+        return array_values(array_filter($names, fn($name) => str_contains($body, $name)));
+    }
+
+    /**
+     * Vehicles lists content depends on profile
+     */
+    public function testVehiclesListByProfile(): void
+    {
+        $member_one = $this->getMemberOne();
+        $member_two = $this->getMemberTwo();
+        $this->createVehicle($member_one->id, 'Car of one');
+        $this->createVehicle($member_two->id, 'Car of two');
+        $names = ['Car of one', 'Car of two'];
+
+        //staff sees every vehicle
+        $this->logSuperAdmin();
+        $test_response = $this->app->handle($this->createRequest('vehiclesList'));
+        $this->expectOK($test_response);
+        $this->assertSame($names, $this->getListedNames($test_response, $names));
+        $this->login->logout();
+
+        //simple member cannot access the full list, only its own
+        $this->logMember($this->dataAdherentOne());
+        $this->expectAuthMiddlewareRefused($this->app->handle($this->createRequest('vehiclesList')));
+        $test_response = $this->app->handle($this->createRequest('myVehiclesList'));
+        $this->expectOK($test_response);
+        $this->assertSame(['Car of one'], $this->getListedNames($test_response, $names));
+        $this->login->logout();
+
+        //group manager sees its own vehicles and the ones of the members it manages
+        $member_three = $this->createMember(
+            ['login_adh' => 'third.member', 'nom_adh' => 'THIRD', 'prenom_adh' => 'Member', 'email_adh' => 'third@galette.eu']
+            + $this->dataAdherentOne()
+            + ['mdp_adh' => 'third.member']
+        );
+        $this->createVehicle($member_three->id, 'Car of three');
+        $this->makeMemberTwoManager([$member_one]);
+        $this->logMember($this->dataAdherentTwo());
+        $test_response = $this->app->handle($this->createRequest('vehiclesList'));
+        $this->expectOK($test_response);
+        $this->assertSame($names, $this->getListedNames($test_response, $names + [2 => 'Car of three']));
+    }
+
+    /**
+     * Add form shows owner choice to managers only
+     */
+    public function testAddForm(): void
+    {
+        $member_one = $this->getMemberOne();
+
+        $this->logMember($this->dataAdherentOne());
+        $test_response = $this->app->handle($this->createRequest('vehicleAdd'));
+        $this->expectOK($test_response);
+        $this->assertStringNotContainsString('owner_id_elt', (string)$test_response->getBody());
+        $this->login->logout();
+
+        $this->logSuperAdmin();
+        $request = $this->createRequest('vehicleAdd', [], 'GET', 'text/html', ['id_adh' => (string)$member_one->id]);
+        $test_response = $this->app->handle($request);
+        $this->expectOK($test_response);
+        $body = (string)$test_response->getBody();
+        $this->assertStringContainsString('owner_id_elt', $body);
+        $this->assertStringContainsString($member_one->sfullname, $body);
+    }
+
+    /**
+     * History entries are added when registration, color, state or owner change
+     */
+    public function testHistoryTracksChanges(): void
+    {
+        $member_one = $this->getMemberOne();
+        $member_two = $this->getMemberTwo();
+        $this->logSuperAdmin();
+
+        $this->app->handle($this->storeRequest(['owner_id' => (string)$member_one->id, 'change_owner' => '1']));
+        $this->expectFlashData(['success_detected' => ['Vehicle has been saved!']]);
+        $select = $this->zdb->select(AUTO_PREFIX . Auto::TABLE);
+        $car_id = (int)$this->zdb->execute($select)->current()[Auto::PK];
+        $history = new \GaletteAuto\History($this->zdb, $car_id);
+        $this->assertCount(1, $history->getEntries());
+
+        //no tracked change: no new entry
+        $this->app->handle($this->storeRequest(['comment' => 'A comment'], $car_id));
+        $this->expectFlashData(['success_detected' => ['Vehicle has been saved!']]);
+        $history = new \GaletteAuto\History($this->zdb, $car_id);
+        $this->assertCount(1, $history->getEntries());
+
+        //history primary key is on a date with seconds
+        sleep(1);
+        $this->app->handle(
+            $this->storeRequest(['owner_id' => (string)$member_two->id, 'change_owner' => '1'], $car_id)
+        );
+        $this->expectFlashData(['success_detected' => ['Vehicle has been saved!']]);
+        $history = new \GaletteAuto\History($this->zdb, $car_id);
+        $entries = $history->getEntries();
+        $this->assertCount(2, $entries);
+        $this->assertSame($member_one->id, (int)$entries[0]['id_adh']);
+        $this->assertSame($member_two->id, (int)$entries[1]['id_adh']);
+
+        $test_response = $this->app->handle($this->createRequest('vehicleHistory', ['id' => (string)$car_id]));
+        $this->expectOK($test_response);
+        $body = (string)$test_response->getBody();
+        $this->assertStringContainsString($member_one->sfullname, $body);
+        $this->assertStringContainsString($member_two->sfullname, $body);
+    }
+
+    /**
+     * Models of a brand are listed for the vehicle form
+     */
+    public function testAjaxModels(): void
+    {
+        $model = new \GaletteAuto\Model($this->zdb);
+        $brand = new \GaletteAuto\Brand($this->zdb);
+        $brand->value = 'Renault';
+        $this->assertTrue($brand->store(true));
+        $this->assertTrue($model->check(['model' => 'Clio', 'brand' => $brand->id]));
+        $this->assertTrue($model->store(true));
+
+        $this->getMemberOne();
+        $this->logMember($this->dataAdherentOne());
+        $request = $this->createRequest('ajaxModels', [], 'POST')->withParsedBody(['brand' => (string)$brand->id]);
+        $test_response = $this->app->handle($request);
+        $this->assertSame(200, $test_response->getStatusCode());
+        $models = json_decode((string)$test_response->getBody(), true);
+        $this->assertSame(['Clio'], array_column($models, 'model'));
+    }
 }

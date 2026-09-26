@@ -104,4 +104,144 @@ class ModelsController extends GaletteRoutingTestCase
         $this->assertStringContainsString('value="Posted model"', (string)$test_response->getBody());
         $this->assertSame('307', (new Model($this->zdb, $id))->model);
     }
+
+    /**
+     * Make member one manager of a group
+     */
+    private function makeMemberOneManager(): void
+    {
+        $member_one = $this->getMemberOne();
+        $group = new \Galette\Entity\Group();
+        $group->setName('Auto group');
+        $this->assertTrue($group->store());
+        $this->assertTrue($group->setManagers([$member_one]));
+    }
+
+    /**
+     * Create a vehicle of given model, bypassing controller
+     *
+     * @param int $model_id Model ID
+     */
+    private function createVehicle(int $model_id): void
+    {
+        $values = [];
+        foreach (['Body', 'Color', 'Finition', 'State', 'Transmission'] as $property) {
+            $class = '\\GaletteAuto\\' . $property;
+            $object = new $class($this->zdb);
+            $object->value = 'Test ' . $property;
+            $this->assertTrue($object->store(true));
+            $values[$class::PK] = $object->id;
+        }
+        $insert = $this->zdb->insert(AUTO_PREFIX . \GaletteAuto\Auto::TABLE);
+        $insert->values($values + [
+            'car_name' => 'Titine',
+            'car_registration' => 'GA-123-TE',
+            'car_first_registration_date' => '2001-02-12',
+            'car_first_circulation_date' => '2001-02-13',
+            'car_creation_date' => date('Y-m-d'),
+            Model::PK => $model_id,
+            \Galette\Entity\Adherent::PK => $this->getMemberOne()->id,
+        ]);
+        $this->zdb->execute($insert);
+    }
+
+    /**
+     * Models list and forms
+     */
+    public function testListAndForms(): void
+    {
+        $this->createModel('308');
+        $this->createModel('207');
+
+        $this->logSuperAdmin();
+        $test_response = $this->app->handle($this->createRequest('modelsList'));
+        $this->expectOK($test_response);
+        $body = (string)$test_response->getBody();
+        $this->assertLessThan(strpos($body, '308'), strpos($body, '207'));
+        $this->assertStringContainsString('2 models', $body);
+
+        $request = $this->createRequest('modelAdd', [], 'GET', 'text/html', ['brand' => (string)$this->brand_id]);
+        $test_response = $this->app->handle($request);
+        $this->expectOK($test_response);
+        $this->assertStringContainsString('New model', (string)$test_response->getBody());
+
+        $request = $this->createRequest('doModelAdd', [], 'POST')
+            ->withParsedBody(['model' => '406', 'brand' => (string)$this->brand_id]);
+        $test_response = $this->app->handle($request);
+        $this->assertSame(
+            ['Location' => [$this->routeparser->urlFor('modelsList')]],
+            $test_response->getHeaders()
+        );
+        $this->expectFlashData(['success_detected' => ['New model has been added!']]);
+    }
+
+    /**
+     * Group managers manage models, but cannot remove them
+     */
+    public function testGroupManagerAccess(): void
+    {
+        $id = $this->createModel('307');
+        $this->makeMemberOneManager();
+        $mdata = $this->dataAdherentOne();
+        $this->assertTrue($this->login->login($mdata['login_adh'], $mdata['mdp_adh']));
+
+        $this->expectOK($this->app->handle($this->createRequest('modelsList')));
+        $this->expectOK($this->app->handle($this->createRequest('modelEdit', ['id' => (string)$id])));
+        $this->expectAuthMiddlewareRefused(
+            $this->app->handle($this->createRequest('removeModel', ['id' => (string)$id]))
+        );
+    }
+
+    /**
+     * Simple members cannot manage models
+     */
+    public function testMemberAccess(): void
+    {
+        $this->getMemberOne();
+        $mdata = $this->dataAdherentOne();
+        $this->assertTrue($this->login->login($mdata['login_adh'], $mdata['mdp_adh']));
+        $this->expectAuthMiddlewareRefused($this->app->handle($this->createRequest('modelsList')));
+    }
+
+    /**
+     * Remove models
+     */
+    public function testRemove(): void
+    {
+        $unused = $this->createModel('307');
+        $used = $this->createModel('308');
+        $this->createVehicle($used);
+
+        $this->logSuperAdmin();
+        $test_response = $this->app->handle($this->createRequest('removeModel', ['id' => (string)$unused]));
+        $this->expectOK($test_response);
+        $this->assertStringContainsString('Remove model &quot;307&quot;', (string)$test_response->getBody());
+
+        $request = $this->createRequest('doRemoveModel', ['id' => (string)$unused], 'POST')
+            ->withParsedBody(['id' => (string)$unused, 'confirm' => '1']);
+        $test_response = $this->app->handle($request);
+        $this->assertSame(
+            ['Location' => [$this->routeparser->urlFor('modelsList')]],
+            $test_response->getHeaders()
+        );
+        $this->expectFlashData(['success_detected' => ['Successfully deleted!']]);
+        $this->assertFalse((new Model($this->zdb))->load($unused));
+        $this->expectLogEntry(\Analog\Analog::ERROR, 'Cannot load model from id `' . $unused . '`');
+
+        //used model cannot be removed; last check, pgsql aborts the transaction
+        $request = $this->createRequest('doRemoveModel', ['id' => (string)$used], 'POST')
+            ->withParsedBody(['id' => (string)$used, 'confirm' => '1']);
+        $this->app->handle($request);
+        $this->expectFlashData(['error_detected' => ['This model is used by one or more vehicles, it cannot be deleted.']]);
+        $this->expectLogEntry(\Analog\Analog::ERROR, 'Query error: DELETE FROM');
+        $this->expectLogEntry(\Analog\Analog::WARNING, 'Cannot delete models from ids `' . $used . '`');
+        $this->expectNoLogEntry();
+        if (!$this->zdb->isPostgres()) {
+            $this->expected_mysql_warnings[] = new \ArrayObject([
+                'Level' => 'Error',
+                'Code' => 1451,
+                'Message' => 'regex:/^Cannot delete or update a parent row: a foreign key constraint fails/',
+            ]);
+        }
+    }
 }
