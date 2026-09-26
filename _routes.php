@@ -10,6 +10,7 @@ declare(strict_types=1);
 
 use Galette\Middleware\Authenticate;
 use GaletteAuto\Controllers\Controller;
+use GaletteAuto\Controllers\PreferencesController;
 use GaletteAuto\Controllers\Crud\PropertiesController;
 use GaletteAuto\Controllers\Crud\ModelsController;
 
@@ -219,3 +220,13 @@ $app->post(
     '/{property:brand|color|state|finition|body|transmission}/remove[/{id:\d+}]',
     [PropertiesController::class, 'doRemoveProperty']
 )->setName('doRemoveProperty')->add(Authenticate::class);
+
+$app->get(
+    '/preferences',
+    [PreferencesController::class, 'preferences']
+)->setName('autoPreferences')->add(Authenticate::class);
+
+$app->post(
+    '/preferences',
+    [PreferencesController::class, 'storePreferences']
+)->setName('storeAutoPreferences')->add(Authenticate::class);

@@ -1,0 +1,42 @@
+{#
+ # This file is part of Galette Auto plugin (https://galette.eu).
+ # SPDX-FileCopyrightText: Copyright © 2009-2026 The Galette Team
+ # SPDX-License-Identifier: GPL-3.0-or-later
+ #}
+
+{% extends 'page.html.twig' %}
+
+{% block content %}
+<form action="{{ url_for("storeAutoPreferences") }}" method="post" class="ui form">
+    <div class="ui segment">
+        <h2 class="ui header">{{ _T("Required fields", "auto") }}</h2>
+        <p>{{ _T("Model, brand, dates, color, state, body, transmission and finition are always required.", "auto") }}</p>
+        {# labels in one column, toggles in the next: they line up whatever the label length #}
+        {% for field, label in fields %}
+            <div class="inline fields">
+                <div class="six wide field">
+                    <label for="{{ field }}">{{ label|capitalize }}</label>
+                </div>
+                <div class="ten wide field">
+                    <div class="ui toggle checkbox">
+                        <input
+                            type="checkbox"
+                            name="pref_auto_required_{{ field }}"
+                            id="{{ field }}"
+                            value="1"
+                            {% if required[field] %} checked="checked"{% endif %}
+                        />
+                        <label></label>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+    <div class="ui basic center aligned segment">
+        <button type="submit" class="ui labeled icon primary button action">
+            <i class="save icon" aria-hidden="true"></i> {{ _T("Save") }}
+        </button>
+    </div>
+</form>
+{% endblock %}

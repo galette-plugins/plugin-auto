@@ -104,6 +104,13 @@ class PluginGaletteAuto extends GalettePlugin implements MenuProviderInterface, 
                 ];
             }
 
+            if ($login->isAdmin()) {
+                $menus['plugin_auto']['items'][] = [
+                    'label' => _T("Preferences", "auto"),
+                    'route' => ['name' => 'autoPreferences']
+                ];
+            }
+
             // Super Admin is not a regular user
             if (!$login->isSuperAdmin()) {
                 $menus['myaccount'] = [
