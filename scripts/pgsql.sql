@@ -105,7 +105,8 @@ DROP TABLE IF EXISTS galette_auto_models CASCADE;
 CREATE TABLE galette_auto_models (
   id_model integer DEFAULT nextval('galette_auto_models_id_seq'::text) NOT NULL,
   model character varying(50) NOT NULL,
-  id_brand integer NOT NULL REFERENCES galette_auto_brands (id_brand) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  id_brand integer NOT NULL
+    CONSTRAINT galette_auto_models_id_brand_fkey REFERENCES galette_auto_brands (id_brand) ON DELETE RESTRICT ON UPDATE CASCADE,
   PRIMARY KEY (id_model)
 );
 
@@ -141,33 +142,51 @@ CREATE TABLE galette_auto_cars (
   car_horsepower integer DEFAULT NULL,
   car_engine_size integer DEFAULT NULL,
   car_fuel integer DEFAULT NULL,
-  id_color integer NOT NULL REFERENCES galette_auto_colors (id_color) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  id_body integer NOT NULL REFERENCES galette_auto_bodies (id_body) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  id_state integer NOT NULL REFERENCES galette_auto_states (id_state) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  id_transmission integer NOT NULL REFERENCES galette_auto_transmissions (id_transmission) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  id_finition integer NOT NULL REFERENCES galette_auto_finitions (id_finition) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  id_model integer NOT NULL REFERENCES galette_auto_models (id_model) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  id_adh integer NOT NULL REFERENCES galette_adherents (id_adh) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  id_color integer NOT NULL
+    CONSTRAINT galette_auto_cars_id_color_fkey REFERENCES galette_auto_colors (id_color) ON DELETE RESTRICT ON UPDATE CASCADE,
+  id_body integer NOT NULL
+    CONSTRAINT galette_auto_cars_id_body_fkey REFERENCES galette_auto_bodies (id_body) ON DELETE RESTRICT ON UPDATE CASCADE,
+  id_state integer NOT NULL
+    CONSTRAINT galette_auto_cars_id_state_fkey REFERENCES galette_auto_states (id_state) ON DELETE RESTRICT ON UPDATE CASCADE,
+  id_transmission integer NOT NULL
+    CONSTRAINT galette_auto_cars_id_transmission_fkey REFERENCES galette_auto_transmissions (id_transmission) ON DELETE RESTRICT ON UPDATE CASCADE,
+  id_finition integer NOT NULL
+    CONSTRAINT galette_auto_cars_id_finition_fkey REFERENCES galette_auto_finitions (id_finition) ON DELETE RESTRICT ON UPDATE CASCADE,
+  id_model integer NOT NULL
+    CONSTRAINT galette_auto_cars_id_model_fkey REFERENCES galette_auto_models (id_model) ON DELETE RESTRICT ON UPDATE CASCADE,
+  id_adh integer NOT NULL
+    CONSTRAINT galette_auto_cars_id_adh_fkey REFERENCES galette_adherents (id_adh) ON DELETE CASCADE ON UPDATE CASCADE,
   PRIMARY KEY (id_car)
 );
 
 -- Table structure for table galette_auto_history
-DROP TABLE IF EXISTS galette_auto_history;
+DROP TABLE IF EXISTS galette_auto_history CASCADE;
 CREATE TABLE galette_auto_history (
-  id_car integer NOT NULL REFERENCES galette_auto_cars (id_car) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  id_adh integer NOT NULL REFERENCES galette_adherents (id_adh) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  id_car integer NOT NULL
+    CONSTRAINT galette_auto_history_id_car_fkey REFERENCES galette_auto_cars (id_car) ON DELETE CASCADE ON UPDATE CASCADE,
+  id_adh integer NOT NULL
+    CONSTRAINT galette_auto_history_id_adh_fkey REFERENCES galette_adherents (id_adh) ON DELETE CASCADE ON UPDATE CASCADE,
   history_date timestamp NOT NULL,
   car_registration character varying(10) NOT NULL,
-  id_color integer NOT NULL REFERENCES galette_auto_colors (id_color) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  id_state integer NOT NULL REFERENCES galette_auto_states (id_state) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  id_color integer NOT NULL
+    CONSTRAINT galette_auto_history_id_color_fkey REFERENCES galette_auto_colors (id_color) ON DELETE RESTRICT ON UPDATE CASCADE,
+  id_state integer NOT NULL
+    CONSTRAINT galette_auto_history_id_state_fkey REFERENCES galette_auto_states (id_state) ON DELETE RESTRICT ON UPDATE CASCADE,
   PRIMARY KEY (id_car,id_adh,history_date)
 );
 
 -- Table structure for table galette_auto_pictures
 DROP TABLE IF EXISTS galette_auto_pictures CASCADE;
 CREATE TABLE galette_auto_pictures (
-  id_car integer NOT NULL REFERENCES galette_auto_cars (id_car) ON DELETE CASCADE ON UPDATE CASCADE,
+  id_car integer NOT NULL
+    CONSTRAINT galette_auto_pictures_id_car_fkey REFERENCES galette_auto_cars (id_car) ON DELETE CASCADE ON UPDATE CASCADE,
   picture bytea NOT NULL,
   format character varying(10) NOT NULL DEFAULT '',
   PRIMARY KEY (id_car)
 );
+
+-- Foreign keys are not indexed by PostgreSQL
+CREATE INDEX galette_auto_models_id_brand_idx ON galette_auto_models (id_brand);
+CREATE INDEX galette_auto_cars_id_model_idx ON galette_auto_cars (id_model);
+CREATE INDEX galette_auto_cars_id_adh_idx ON galette_auto_cars (id_adh);
+CREATE INDEX galette_auto_history_id_adh_idx ON galette_auto_history (id_adh);

@@ -295,6 +295,55 @@ class Vehicles
     }
 
     /**
+     * Remove a member's vehicles, with their history and photos
+     *
+     * Member is also dropped from the history of vehicles they formerly
+     * owned: they are part of its primary key.
+     *
+     * @param int $id_adh Member ID
+     *
+     * @throws \Throwable
+     */
+    public function removeForMember(int $id_adh): void
+    {
+        $transaction = !$this->zdb->inTransaction();
+
+        try {
+            if ($transaction) {
+                $this->zdb->beginTransaction();
+            }
+
+            $select = $this->zdb->select(AUTO_PREFIX . Auto::TABLE);
+            $select->columns([Auto::PK])->where([Adherent::PK => $id_adh]);
+            $ids = array_map(
+                fn($row) => (int)$row[Auto::PK],
+                $this->zdb->execute($select)->toArray()
+            );
+
+            if (count($ids) > 0) {
+                $this->remove($ids);
+            }
+
+            $delete = $this->zdb->delete(AUTO_PREFIX . History::TABLE);
+            $delete->where([Adherent::PK => $id_adh]);
+            $this->zdb->execute($delete);
+
+            if ($transaction) {
+                $this->zdb->commit();
+            }
+        } catch (\Throwable $e) {
+            if ($transaction) {
+                $this->zdb->rollback();
+            }
+            Analog::log(
+                '[' . static::class . '] Cannot remove vehicles of member #' . $id_adh . ' | ' . $e->getMessage(),
+                Analog::ERROR
+            );
+            throw $e;
+        }
+    }
+
+    /**
      * Build vehicles select, joining their properties
      */
     private function buildSelect(): Select

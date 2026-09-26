@@ -117,4 +117,14 @@ class PluginGaletteAuto extends GaletteTestCase
         $this->setRawPreference($name, \Galette\Enums\PublicPageVisibility::Inherit->value);
         $this->assertSame([], $plugin->getPublicMenuItems());
     }
+
+    /**
+     * Tables where vehicles outlive their owner come from before 1.1; the
+     * CI upgrade job covers them, schema changes cannot be rolled back on MySQL
+     */
+    public function testLegacyDbVersion(): void
+    {
+        $plugin = $this->container->get(\GaletteAuto\PluginGaletteAuto::class);
+        $this->assertNull($plugin->getLegacyDbVersion());
+    }
 }
