@@ -1,3 +1,17 @@
+* Unreleased
+- Galette 1.3 compatible
+- Access to vehicles, their pictures and history is checked against their owner
+- Public page lists every vehicle, with its picture; its visibility is set with other public pages, and defaults to "Inherit"
+- Owner name is shown on public page only for members who appear in the public members list
+- Required fields are set from an administration page; values of config/local_auto_required.inc.php are imported once, the file is no longer read and can be removed
+- Removing a member removes their vehicles, pictures and history
+- Owners can see their vehicles history; group managers can manage models
+- Vehicles lists can be sorted on name, owner, brand or model, and models list on model or brand
+- Database: utf8mb4 on MySQL, same foreign keys on both engines; upgrade script provided
+- Vehicles list loaded in a few queries, instead of about ten per vehicle
+- Accessibility fixes
+- Many bugfixes (filters and rows per page kept, members can create their vehicles, batch actions, validation errors, ...)
+
 * 2025-12-08 - 2.2.1
 
 * 2025-10-09 - 2.2.0
