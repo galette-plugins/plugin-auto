@@ -402,6 +402,15 @@ def add_libs(rel_name, galette_archive):
     galette.extractall(path=src_dir)
     galette.close()
 
+    # compile translations: MO files are not versioned
+    lang_dir = os.path.join(src_dir, rel_name, 'lang')
+    for pot in fnmatch.filter(os.listdir(lang_dir), '*.pot'):
+        domain = pot[:-len('.pot')]
+        for po in fnmatch.filter(os.listdir(lang_dir), '%s_*.po' % domain):
+            mo_dir = os.path.join(lang_dir, po[len(domain) + 1:-len('.po')], 'LC_MESSAGES')
+            os.makedirs(mo_dir, exist_ok=True)
+            run('msgfmt --check -o "%s" "%s"' % (os.path.join(mo_dir, domain + '.mo'), os.path.join(lang_dir, po)))
+
     plugin_dir = os.path.join(src_dir, rel_name)
 
     # development only, nothing a Galette installation needs

@@ -184,6 +184,11 @@ jobs:
         with:
           path: galette-core/galette/plugins/plugin-auto
 
+      - name: Compile translations
+        run: |
+          cd galette-core
+          bin/console galette:compile-locales plugin-auto
+
       - name: Init for PostgreSQL
         env:
           POSTGRES_HOST: localhost
@@ -265,6 +270,11 @@ jobs:
         with:
           path: galette-core/galette/plugins/plugin-auto
           fetch-depth: 0
+
+      - name: Compile translations
+        run: |
+          cd galette-core
+          bin/console galette:compile-locales plugin-auto
 
       - name: Find previous release
         run: |
