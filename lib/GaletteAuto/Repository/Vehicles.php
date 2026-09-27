@@ -94,7 +94,7 @@ class Vehicles
         }
 
         $this->proceedCount($select, $filters);
-        $select->order(['a.car_name ASC', 'a.' . Auto::PK . ' ASC']);
+        $this->setOrder($select, $filters, $public);
         $filters?->setLimits($select);
 
         $rows = $this->zdb->execute($select)->toArray();
@@ -370,6 +370,50 @@ class Vehicles
             [Brand::FIELD]
         );
         return $select;
+    }
+
+    /**
+     * Order the list, by vehicle name unless filters ask otherwise
+     *
+     * Owners names are hidden on the public list for members who do not
+     * appear in the members list: sorting on them would give them away.
+     *
+     * @param Select     $select  Select to order
+     * @param ?AutosList $filters Filters
+     * @param bool       $public  Public list
+     */
+    private function setOrder(Select $select, ?AutosList $filters, bool $public): void
+    {
+        $orderby = $filters->orderby ?? AutosList::ORDERBY_NAME;
+        $direction = $filters?->getDirection() ?? 'ASC';
+        if ($public && $orderby === AutosList::ORDERBY_OWNER) {
+            $orderby = AutosList::ORDERBY_NAME;
+        }
+
+        $order = [];
+        switch ($orderby) {
+            case AutosList::ORDERBY_OWNER:
+                $select->join(
+                    ['ad' => PREFIX_DB . Adherent::TABLE],
+                    'a.' . Adherent::PK . ' = ad.' . Adherent::PK,
+                    []
+                );
+                $order[] = 'ad.nom_adh ' . $direction;
+                $order[] = 'ad.prenom_adh ' . $direction;
+                break;
+            case AutosList::ORDERBY_BRAND:
+                $order[] = 'br.' . Brand::FIELD . ' ' . $direction;
+                $order[] = 'mo.' . Model::FIELD . ' ' . $direction;
+                break;
+            case AutosList::ORDERBY_MODEL:
+                $order[] = 'mo.' . Model::FIELD . ' ' . $direction;
+                $order[] = 'br.' . Brand::FIELD . ' ' . $direction;
+                break;
+        }
+        $order[] = 'a.car_name ' . ($orderby === AutosList::ORDERBY_NAME ? $direction : 'ASC');
+        $order[] = 'a.' . Auto::PK . ' ASC';
+
+        $select->order($order);
     }
 
     /**

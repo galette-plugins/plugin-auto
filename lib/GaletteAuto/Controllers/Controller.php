@@ -273,7 +273,10 @@ class Controller extends AbstractPluginController
                     $afilters->current_page = (int)$value;
                     break;
                 case 'order':
-                    $afilters->orderby = $value;
+                    //owners names may be hidden on the public list
+                    if (!$public || $value !== AutosList::ORDERBY_OWNER) {
+                        $afilters->orderby = $value;
+                    }
                     break;
             }
         }
@@ -293,7 +296,8 @@ class Controller extends AbstractPluginController
             'page_title'    => $title,
             'title'         => _T("Vehicles list", "auto"),
             'show_mine'     => $mine,
-            'require_dialog' => true
+            'require_dialog' => true,
+            'filters'       => $afilters
         ];
 
         if ($id_adh !== null) {

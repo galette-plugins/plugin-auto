@@ -20,14 +20,17 @@ use Galette\Core\Pagination;
 
 class AutosList extends Pagination
 {
+    public const int ORDERBY_NAME = 0;
+    public const int ORDERBY_OWNER = 1;
+    public const int ORDERBY_BRAND = 2;
+    public const int ORDERBY_MODEL = 3;
+
     /**
      * Returns the field we want to default set order to
-     *
-     * @return string field name
      */
-    protected function getDefaultOrder(): string
+    protected function getDefaultOrder(): int
     {
-        return 'car_name';
+        return self::ORDERBY_NAME;
     }
 
     /**

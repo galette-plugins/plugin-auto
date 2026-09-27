@@ -10,17 +10,21 @@
 {% set is_public = not login.isLogged() %}
 {% set no_action = true %}
 
+{# owner is not sortable: names of members who are not public are hidden #}
 {% set columns = [
     {'label': _T("Picture"), 'collapse': true},
-    {'label': _T("Name", "auto")},
+    {'label': _T("Name", "auto"), 'order': constant('GaletteAuto\\Filters\\AutosList::ORDERBY_NAME')},
     {'label': _T("Owner", "auto")},
-    {'label': _T("Brand", "auto")},
-    {'label': _T("Model", "auto")},
+    {'label': _T("Brand", "auto"), 'order': constant('GaletteAuto\\Filters\\AutosList::ORDERBY_BRAND')},
+    {'label': _T("Model", "auto"), 'order': constant('GaletteAuto\\Filters\\AutosList::ORDERBY_MODEL')},
     {'label': _T("Description", "auto")},
 ] %}
 
 {% set form = {
     'route': {
+        'name': 'publicVehiclesList'
+    },
+    'order': {
         'name': 'publicVehiclesList'
     }
 } %}

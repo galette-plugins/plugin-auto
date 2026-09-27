@@ -14,6 +14,7 @@ use Analog\Analog;
 use Galette\Entity\Adherent;
 use Galette\Tests\GaletteRoutingTestCase;
 use GaletteAuto\Auto;
+use GaletteAuto\Filters\AutosList;
 
 /**
  * Vehicles controller tests
@@ -1019,5 +1020,131 @@ class Controller extends GaletteRoutingTestCase
         $this->assertSame(200, $test_response->getStatusCode());
         $models = json_decode((string)$test_response->getBody(), true);
         $this->assertSame(['Clio'], array_column($models, 'model'));
+    }
+
+    /**
+     * Create a model
+     *
+     * @param string $name  Model name
+     * @param int    $brand Brand ID
+     */
+    private function createModel(string $name, int $brand): int
+    {
+        $model = new \GaletteAuto\Model($this->zdb);
+        $this->assertTrue($model->check(['model' => $name, 'brand' => $brand]));
+        $model->store(true);
+        return (int)$model->getId();
+    }
+
+    /**
+     * Get vehicles names in the order they are listed on a page
+     *
+     * @param \Psr\Http\Message\ResponseInterface $test_response Response
+     * @param string[]                            $names         Names to look for
+     *
+     * @return string[]
+     */
+    private function getListedOrder(\Psr\Http\Message\ResponseInterface $test_response, array $names): array
+    {
+        $this->expectOK($test_response);
+        $body = (string)$test_response->getBody();
+        $positions = [];
+        foreach ($names as $name) {
+            $position = strpos($body, $name);
+            $this->assertNotFalse($position, $name . ' is not listed');
+            $positions[$name] = $position;
+        }
+        asort($positions);
+        return array_keys($positions);
+    }
+
+    /**
+     * Vehicles lists are sorted by name, owner, brand or model
+     */
+    public function testVehiclesListOrder(): void
+    {
+        $member_one = $this->getMemberOne();
+        $member_two = $this->getMemberTwo();
+        $renault = new \GaletteAuto\Brand($this->zdb);
+        $renault->setValue('Renault');
+        $renault->store(true);
+
+        //each order gives a different sequence
+        $vehicles = [
+            'Car Alpha' => [$member_two->id, $this->createModel('308', (int)$renault->getId())],
+            'Car Beta' => [$member_two->id, $this->props['model']],
+            'Car Gamma' => [$member_one->id, $this->createModel('407', $this->props['brand'])],
+        ];
+        foreach ($vehicles as $name => [$id_adh, $id_model]) {
+            $update = $this->zdb->update(AUTO_PREFIX . Auto::TABLE);
+            $update->set([\GaletteAuto\Model::PK => $id_model])->where([Auto::PK => $this->createVehicle($id_adh, $name)]);
+            $this->zdb->execute($update);
+        }
+        $names = array_keys($vehicles);
+        $order = fn(int $orderby): \Psr\Http\Message\ResponseInterface => $this->app->handle(
+            $this->createRequest('vehiclesList', ['option' => 'order', 'value' => (string)$orderby])
+        );
+
+        $this->logSuperAdmin();
+        $test_response = $this->app->handle($this->createRequest('vehiclesList'));
+        $this->assertSame(['Car Alpha', 'Car Beta', 'Car Gamma'], $this->getListedOrder($test_response, $names));
+        $this->assertStringContainsString(
+            $this->routeparser->urlFor('vehiclesList', ['option' => 'order', 'value' => (string)AutosList::ORDERBY_OWNER]),
+            (string)$test_response->getBody()
+        );
+
+        //same column again: reversed
+        $test_response = $order(AutosList::ORDERBY_NAME);
+        $this->assertSame(['Car Gamma', 'Car Beta', 'Car Alpha'], $this->getListedOrder($test_response, $names));
+        $this->assertStringContainsString('aria-sort="descending"', (string)$test_response->getBody());
+
+        //owner, then vehicle name
+        $this->assertSame(['Car Gamma', 'Car Alpha', 'Car Beta'], $this->getListedOrder($order(AutosList::ORDERBY_OWNER), $names));
+        //brand, then model
+        $this->assertSame(['Car Beta', 'Car Gamma', 'Car Alpha'], $this->getListedOrder($order(AutosList::ORDERBY_BRAND), $names));
+        $test_response = $order(AutosList::ORDERBY_MODEL);
+        $this->assertSame(['Car Beta', 'Car Alpha', 'Car Gamma'], $this->getListedOrder($test_response, $names));
+        $this->assertStringContainsString('aria-sort="ascending"', (string)$test_response->getBody());
+
+        //member list sorts on its own route
+        $test_response = $this->app->handle($this->createRequest('memberVehiclesList', ['id' => (string)$member_two->id]));
+        $this->assertSame(['Car Beta', 'Car Alpha'], $this->getListedOrder($test_response, ['Car Alpha', 'Car Beta']));
+        $this->assertStringContainsString(
+            $this->routeparser->urlFor(
+                'memberVehiclesList',
+                ['id' => (string)$member_two->id, 'option' => 'order', 'value' => (string)AutosList::ORDERBY_NAME]
+            ),
+            (string)$test_response->getBody()
+        );
+        $this->login->logout();
+
+        //own vehicles can be sorted and paginated
+        $this->logMember($this->dataAdherentTwo());
+        $test_response = $this->app->handle(
+            $this->createRequest('myVehiclesList', ['option' => 'order', 'value' => (string)AutosList::ORDERBY_NAME])
+        );
+        $this->assertSame(['Car Alpha', 'Car Beta'], $this->getListedOrder($test_response, ['Car Alpha', 'Car Beta']));
+        $this->setRawPreference('pref_numrows', 1);
+        $this->session->vehicles_filters = null;
+        $test_response = $this->app->handle($this->createRequest('myVehiclesList'));
+        $this->assertStringContainsString(
+            $this->routeparser->urlFor('myVehiclesList', ['option' => 'page', 'value' => '2']),
+            (string)$test_response->getBody()
+        );
+        $this->login->logout();
+
+        //public list cannot be sorted on owners, some of them are hidden
+        $this->setPublicVehicles(\Galette\Enums\PublicPageVisibility::Everyone);
+        $test_response = $this->app->handle(
+            $this->createRequest('publicVehiclesList', ['option' => 'order', 'value' => (string)AutosList::ORDERBY_OWNER])
+        );
+        //still one vehicle per page: the first by name, not by owner
+        $this->assertSame(['Car Alpha'], $this->getListedOrder($test_response, ['Car Alpha']));
+        $this->assertStringNotContainsString('Car Gamma', (string)$test_response->getBody());
+        $this->assertSame(AutosList::ORDERBY_NAME, $this->session->public_vehicles_filters->orderby);
+        $this->assertStringNotContainsString(
+            $this->routeparser->urlFor('publicVehiclesList', ['option' => 'order', 'value' => (string)AutosList::ORDERBY_OWNER]),
+            (string)$test_response->getBody()
+        );
     }
 }

@@ -45,7 +45,7 @@ $app->group('/public', function () use ($app): void {
 })->add(\Galette\Middleware\PublicPages::class);
 
 $app->get(
-    '/my-vehicles',
+    '/my-vehicles[/{option:page|order}/{value:\d+}]',
     [Controller::class, 'myVehiclesList']
 )->setName('myVehiclesList')->add(Authenticate::class);
 
