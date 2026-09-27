@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-25 04:13+0200\n"
+"POT-Creation-Date: 2026-09-27 18:13+0200\n"
 "PO-Revision-Date: 2026-05-02 12:09+0000\n"
 "Last-Translator: Weblate Translation Memory <noreply-mt-weblate-translation-"
 "memory@weblate.org>\n"
@@ -23,310 +23,158 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
 "X-Generator: Weblate 5.17.1\n"
 
-#: ../_routes.php:115
-msgid "No vehicle was selected, please check at least one name."
+#: ../lib/GaletteAuto/Controllers/PreferencesController.php:48
+msgid "Cars preferences"
 msgstr ""
-"எந்த வாகனமும் தேர்ந்தெடுக்கப்படவில்லை, தயவுசெய்து குறைந்தது ஒரு பெயரையோ சரிபார்க்கவும்."
 
-#: ../lib/GaletteAuto/Controllers/Controller.php:73
+#: ../lib/GaletteAuto/Controllers/PreferencesController.php:76
+#, fuzzy
+#| msgid "%count vehicles have been successfully deleted."
+msgid "Preferences have been successfully stored!"
+msgstr "%count வாகனங்கள் வெற்றிகரமாக நீக்கப்பட்டுள்ளன."
+
+#: ../lib/GaletteAuto/Controllers/Controller.php:74
 msgid "You do not have enough privileges."
 msgstr "உங்களுக்கு போதுமான சலுகைகள் இல்லை."
 
-#: ../lib/GaletteAuto/Controllers/Controller.php:181
-#: ../lib/GaletteAuto/PluginGaletteAuto.php:96
+#: ../lib/GaletteAuto/Controllers/Controller.php:288
+#: ../lib/GaletteAuto/PluginGaletteAuto.php:101
 msgid "Cars list"
 msgstr "கார்கள் பட்டியல்"
 
-#: ../lib/GaletteAuto/Controllers/Controller.php:183
-#: ../lib/GaletteAuto/PluginGaletteAuto.php:109
-#: ../lib/GaletteAuto/PluginGaletteAuto.php:154
+#: ../lib/GaletteAuto/Controllers/Controller.php:290
+#: ../lib/GaletteAuto/PluginGaletteAuto.php:121
+#: ../lib/GaletteAuto/PluginGaletteAuto.php:197
 msgid "My cars"
 msgstr "என் கார்கள்"
 
-#: ../lib/GaletteAuto/Controllers/Controller.php:185
-#: ../lib/GaletteAuto/PluginGaletteAuto.php:184
+#: ../lib/GaletteAuto/Controllers/Controller.php:292
+#: ../lib/GaletteAuto/PluginGaletteAuto.php:227
 msgid "Member's cars"
 msgstr "உறுப்பினரின் கார்கள்"
 
-#: ../lib/GaletteAuto/Controllers/Controller.php:190
+#: ../lib/GaletteAuto/Controllers/Controller.php:297
 msgid "Vehicles list"
 msgstr "வாகனங்கள் பட்டியல்"
 
-#: ../lib/GaletteAuto/Controllers/Controller.php:267
+#: ../lib/GaletteAuto/Controllers/Controller.php:387
 msgid "New vehicle"
 msgstr "புதிய வண்டி"
 
-#: ../lib/GaletteAuto/Controllers/Controller.php:268
+#: ../lib/GaletteAuto/Controllers/Controller.php:388
 #, php-format
 msgid "Change vehicle '%s'"
 msgstr "வாகனத்தை மாற்றவும் '%s'"
 
-#: ../lib/GaletteAuto/Controllers/Controller.php:380
+#: ../lib/GaletteAuto/Controllers/Controller.php:504
 msgid "- An error has occurred while saving vehicle in the database."
 msgstr "- தரவுத்தளத்தில் வாகனத்தை சேமிக்கும் போது பிழை ஏற்பட்டது."
 
-#: ../lib/GaletteAuto/Controllers/Controller.php:382
+#: ../lib/GaletteAuto/Controllers/Controller.php:506
 msgid "Vehicle has been saved!"
 msgstr "வண்டி சேமிக்கப்பட்டுள்ளது!"
 
-#: ../lib/GaletteAuto/Controllers/Controller.php:448
+#: ../lib/GaletteAuto/Controllers/Controller.php:569
 #, php-format
 msgid "History of car #%d"
 msgstr "காரின் வரலாறு #%d"
 
-#: ../lib/GaletteAuto/Controllers/Controller.php:511
-#: ../lib/GaletteAuto/Controllers/Controller.php:555
+#: ../lib/GaletteAuto/Controllers/Controller.php:628
+#: ../lib/GaletteAuto/Controllers/Controller.php:703
 msgid "Vehicle"
 msgstr "வண்டி"
 
-#: ../lib/GaletteAuto/Controllers/Controller.php:514
+#: ../lib/GaletteAuto/Controllers/Controller.php:631
 #, php-format
 msgid "Remove vehicle %1$s"
 msgstr "வண்டி %1$s ஐ அகற்றவும்"
 
-#: ../lib/GaletteAuto/Controllers/Controller.php:557
+#: ../lib/GaletteAuto/Controllers/Controller.php:655
+msgid "No vehicle was selected, please check at least one name."
+msgstr ""
+"எந்த வாகனமும் தேர்ந்தெடுக்கப்படவில்லை, தயவுசெய்து குறைந்தது ஒரு பெயரையோ சரிபார்க்கவும்."
+
+#: ../lib/GaletteAuto/Controllers/Controller.php:705
 msgid "Remove vehicles"
 msgstr "வாகனங்களை அகற்றவும்"
 
-#: ../lib/GaletteAuto/Controllers/Controller.php:561
+#: ../lib/GaletteAuto/Controllers/Controller.php:709
 #, php-format
 msgid "You are about to remove %count vehicle."
 msgid_plural "You are about to remove %count vehicles."
 msgstr[0] "நீங்கள் %count வாகனத்தை அகற்ற உள்ளீர்கள்."
 msgstr[1] "நீங்கள் %count வாகனங்களை அகற்ற உள்ளீர்கள்."
 
-#: ../lib/GaletteAuto/Controllers/Controller.php:599
+#: ../lib/GaletteAuto/Controllers/Controller.php:751
 msgid "An error occurred trying to remove vehicles :/"
 msgstr "வாகனங்களை அகற்ற முயற்சிக்கும் பிழை ஏற்பட்டது:/"
 
-#: ../lib/GaletteAuto/Controllers/Controller.php:609
+#: ../lib/GaletteAuto/Controllers/Controller.php:761
 #, php-format
 msgid "%count vehicles have been successfully deleted."
 msgstr "%count வாகனங்கள் வெற்றிகரமாக நீக்கப்பட்டுள்ளன."
 
-#: ../lib/GaletteAuto/Controllers/Crud/PropertiesController.php:150
-#: ../lib/GaletteAuto/PluginGaletteAuto.php:59
-msgid "Colors list"
-msgstr "வண்ணங்கள் பட்டியல்"
-
-#: ../lib/GaletteAuto/Controllers/Crud/PropertiesController.php:151
-msgid "Add new color"
-msgstr "புதிய வண்ணத்தைச் சேர்க்கவும்"
-
-#: ../lib/GaletteAuto/Controllers/Crud/PropertiesController.php:155
-#: ../lib/GaletteAuto/PluginGaletteAuto.php:63
-msgid "States list"
-msgstr "மாநிலங்களின் பட்டியல்"
-
-#: ../lib/GaletteAuto/Controllers/Crud/PropertiesController.php:156
-msgid "Add new state"
-msgstr "புதிய மாநிலத்தைச் சேர்க்கவும்"
-
-#: ../lib/GaletteAuto/Controllers/Crud/PropertiesController.php:160
-#: ../lib/GaletteAuto/PluginGaletteAuto.php:67
-msgid "Finitions list"
-msgstr "பட்டியல் முடிவுகள்"
-
-#: ../lib/GaletteAuto/Controllers/Crud/PropertiesController.php:161
-msgid "Add new finition"
-msgstr "புதிய பினிசனைச் சேர்க்கவும்"
-
-#: ../lib/GaletteAuto/Controllers/Crud/PropertiesController.php:165
-#: ../lib/GaletteAuto/PluginGaletteAuto.php:71
-msgid "Bodies list"
-msgstr "உடல்கள் பட்டியல்"
-
-#: ../lib/GaletteAuto/Controllers/Crud/PropertiesController.php:166
-msgid "Add new body"
-msgstr "புதிய உடலைச் சேர்க்கவும்"
-
-#: ../lib/GaletteAuto/Controllers/Crud/PropertiesController.php:170
-#: ../lib/GaletteAuto/PluginGaletteAuto.php:75
-msgid "Transmissions list"
-msgstr "பரிமாற்றங்கள் பட்டியல்"
-
-#: ../lib/GaletteAuto/Controllers/Crud/PropertiesController.php:171
-msgid "Add new transmission"
-msgstr "புதிய பரிமாற்றத்தைச் சேர்க்கவும்"
-
-#: ../lib/GaletteAuto/Controllers/Crud/PropertiesController.php:175
-#: ../lib/GaletteAuto/PluginGaletteAuto.php:79
-msgid "Brands list"
-msgstr "பிராண்டுகள் பட்டியல்"
-
-#: ../lib/GaletteAuto/Controllers/Crud/PropertiesController.php:176
-#: ../templates/default/object_show.html.twig:17
-msgid "Add new brand"
-msgstr "புதிய பிராண்டைச் சேர்க்கவும்"
-
-#: ../lib/GaletteAuto/Controllers/Crud/PropertiesController.php:279
+#: ../lib/GaletteAuto/Controllers/Crud/PropertiesController.php:245
 msgid "New"
 msgstr "புதிய"
 
-#: ../lib/GaletteAuto/Controllers/Crud/PropertiesController.php:285
+#: ../lib/GaletteAuto/Controllers/Crud/PropertiesController.php:251
 #, php-format
 msgid "Change '%s'"
 msgstr "'%s' ஐ மாற்றவும்"
 
-#: ../lib/GaletteAuto/Controllers/Crud/PropertiesController.php:351
-msgid "- No id provided for modifying this record! (internal)"
-msgstr "- இந்த பதிவை மாற்றுவதற்கு ஐடி எதுவும் வழங்கப்படவில்லை! (உள்)"
-
-#: ../lib/GaletteAuto/Controllers/Crud/PropertiesController.php:357
-#: ../lib/GaletteAuto/Model.php:208
+#: ../lib/GaletteAuto/Controllers/Crud/PropertiesController.php:318
+#: ../lib/GaletteAuto/Model.php:186
 msgid "- You must provide a value!"
 msgstr "- நீங்கள் ஒரு மதிப்பை வழங்க வேண்டும்!"
 
-#: ../lib/GaletteAuto/Controllers/Crud/PropertiesController.php:366
-#: ../lib/GaletteAuto/Controllers/Crud/ModelsController.php:245
-msgid "- An error occurred while saving record. Please try again."
-msgstr "- பதிவைச் சேமிக்கும்போது பிழை ஏற்பட்டது. மீண்டும் முயற்சிக்கவும்."
-
-#: ../lib/GaletteAuto/Controllers/Crud/PropertiesController.php:371
+#: ../lib/GaletteAuto/Controllers/Crud/PropertiesController.php:329
 msgid "New %property has been added!"
 msgstr "புதிய %சொத்து சேர்க்கப்பட்டுள்ளது!"
 
-#: ../lib/GaletteAuto/Controllers/Crud/PropertiesController.php:372
+#: ../lib/GaletteAuto/Controllers/Crud/PropertiesController.php:330
 msgid "%property has been saved!"
 msgstr "%சொத்து சேமிக்கப்பட்டுள்ளது!"
 
-#: ../lib/GaletteAuto/Controllers/Crud/PropertiesController.php:426
+#: ../lib/GaletteAuto/Controllers/Crud/PropertiesController.php:338
+#: ../lib/GaletteAuto/Controllers/Crud/ModelsController.php:248
+msgid "- An error occurred while saving record. Please try again."
+msgstr "- பதிவைச் சேமிக்கும்போது பிழை ஏற்பட்டது. மீண்டும் முயற்சிக்கவும்."
+
+#: ../lib/GaletteAuto/Controllers/Crud/PropertiesController.php:386
 #, php-format
 msgid "Show '%s' brand"
 msgstr "'%s' பிராண்டைக் காட்டு"
 
-#: ../lib/GaletteAuto/Controllers/Crud/PropertiesController.php:481
+#: ../lib/GaletteAuto/Controllers/Crud/PropertiesController.php:440
 #, php-format
 msgid "Remove %1$s %2$s"
 msgstr "%1$s %2$s ஐ அகற்று"
 
-#: ../lib/GaletteAuto/Controllers/Crud/PropertiesController.php:532
-#, php-format
-msgid "%1$s color has been successfully deleted."
-msgid_plural "%1$s colors have been successfully deleted."
-msgstr[0] "%1$s நிறம் வெற்றிகரமாக நீக்கப்பட்டது."
-msgstr[1] "%1$s வண்ணங்கள் வெற்றிகரமாக நீக்கப்பட்டுள்ளன."
-
-#: ../lib/GaletteAuto/Controllers/Crud/PropertiesController.php:536
-#, php-format
-msgid "%1$s state has been successfully deleted."
-msgid_plural "%1$s states have been successfully deleted."
-msgstr[0] "%1$s நிலை வெற்றிகரமாக நீக்கப்பட்டது."
-msgstr[1] "%1$s மாநிலங்கள் வெற்றிகரமாக நீக்கப்பட்டுள்ளன."
-
-#: ../lib/GaletteAuto/Controllers/Crud/PropertiesController.php:540
-#, php-format
-msgid "%1$s finition has been successfully deleted."
-msgid_plural "%1$s finitions have been successfully deleted."
-msgstr[0] "%1$s பினிசன் வெற்றிகரமாக நீக்கப்பட்டது."
-msgstr[1] "%1$s பினிசன்கள் வெற்றிகரமாக நீக்கப்பட்டுள்ளன."
-
-#: ../lib/GaletteAuto/Controllers/Crud/PropertiesController.php:544
-#, php-format
-msgid "%1$s body has been successfully deleted."
-msgid_plural "%1$s bodies have been successfully deleted."
-msgstr[0] "%1$s உடல் வெற்றிகரமாக நீக்கப்பட்டது."
-msgstr[1] "%1$s உடல்கள் வெற்றிகரமாக நீக்கப்பட்டுள்ளன."
-
-#: ../lib/GaletteAuto/Controllers/Crud/PropertiesController.php:548
-#, php-format
-msgid "%1$s transmission has been successfully deleted."
-msgid_plural "%1$s transmissions have been successfully deleted."
-msgstr[0] "%1$s பரிமாற்றம் வெற்றிகரமாக நீக்கப்பட்டது."
-msgstr[1] "%1$s பரிமாற்றங்கள் வெற்றிகரமாக நீக்கப்பட்டுள்ளன."
-
-#: ../lib/GaletteAuto/Controllers/Crud/PropertiesController.php:552
-#, php-format
-msgid "%1$s brand has been successfully deleted."
-msgid_plural "%1$s brands have been successfully deleted."
-msgstr[0] "%1$s சூட்டுக்குறி வெற்றிகரமாக நீக்கப்பட்டது."
-msgstr[1] "%1$s பிராண்டுகள் வெற்றிகரமாக நீக்கப்பட்டுள்ளன."
-
-#: ../lib/GaletteAuto/Controllers/Crud/PropertiesController.php:569
-msgid "This color is used by one or more vehicles, it cannot be deleted."
-msgstr ""
-"இந்த வண்ணம் ஒன்று அல்லது அதற்கு மேற்பட்ட வாகனங்களால் பயன்படுத்தப்படுகிறது, அதை நீக்க "
-"முடியாது."
-
-#: ../lib/GaletteAuto/Controllers/Crud/PropertiesController.php:573
-msgid "This state is used by one or more vehicles, it cannot be deleted."
-msgstr ""
-"இந்த நிலை ஒன்று அல்லது அதற்கு மேற்பட்ட வாகனங்களால் பயன்படுத்தப்படுகிறது, அதை நீக்க "
-"முடியாது."
-
-#: ../lib/GaletteAuto/Controllers/Crud/PropertiesController.php:577
-msgid "This finition is used by one or more vehicles, it cannot be deleted."
-msgstr ""
-"இந்த பினிசனை ஒன்று அல்லது அதற்கு மேற்பட்ட வாகனங்களால் பயன்படுத்தப்படுகிறது, அதை நீக்க "
-"முடியாது."
-
-#: ../lib/GaletteAuto/Controllers/Crud/PropertiesController.php:581
-msgid "This body is used by one or more vehicles, it cannot be deleted."
-msgstr ""
-"இந்த உடல் ஒன்று அல்லது அதற்கு மேற்பட்ட வாகனங்களால் பயன்படுத்தப்படுகிறது, அதை நீக்க "
-"முடியாது."
-
-#: ../lib/GaletteAuto/Controllers/Crud/PropertiesController.php:585
-msgid ""
-"This transmission is used by one or more vehicles, it cannot be deleted."
-msgstr ""
-"இந்த பரிமாற்றம் ஒன்று அல்லது அதற்கு மேற்பட்ட வாகனங்களால் பயன்படுத்தப்படுகிறது, அதை நீக்க "
-"முடியாது."
-
-#: ../lib/GaletteAuto/Controllers/Crud/PropertiesController.php:589
-msgid "This brand is used by one or more vehicles, it cannot be deleted."
-msgstr ""
-"இந்த சூட்டுக்குறி ஒன்று அல்லது அதற்கு மேற்பட்ட வாகனங்களால் பயன்படுத்தப்படுகிறது, அதை நீக்க "
-"முடியாது."
-
-#: ../lib/GaletteAuto/Controllers/Crud/PropertiesController.php:603
-msgid "An error occurred trying to remove color :/"
-msgstr "வண்ணத்தை அகற்ற முயற்சிக்கும் பிழை ஏற்பட்டது:/"
-
-#: ../lib/GaletteAuto/Controllers/Crud/PropertiesController.php:607
-msgid "An error occurred trying to remove state :/"
-msgstr "நிலையை அகற்ற முயற்சிக்கும் பிழை ஏற்பட்டது:/"
-
-#: ../lib/GaletteAuto/Controllers/Crud/PropertiesController.php:611
-msgid "An error occurred trying to remove finition :/"
-msgstr "பினிசனை அகற்ற முயற்சிக்கும் பிழை ஏற்பட்டது:/"
-
-#: ../lib/GaletteAuto/Controllers/Crud/PropertiesController.php:615
-msgid "An error occurred trying to remove body :/"
-msgstr "உடலை அகற்ற முயற்சிக்கும் பிழை ஏற்பட்டது:/"
-
-#: ../lib/GaletteAuto/Controllers/Crud/PropertiesController.php:619
-msgid "An error occurred trying to remove transmission :/"
-msgstr "பரிமாற்றத்தை அகற்ற முயற்சிக்கும் பிழை ஏற்பட்டது:/"
-
-#: ../lib/GaletteAuto/Controllers/Crud/PropertiesController.php:623
-msgid "An error occurred trying to remove brand :/"
-msgstr "பிராண்டை அகற்ற முயற்சிக்கும் பிழை ஏற்பட்டது:/"
-
-#: ../lib/GaletteAuto/Controllers/Crud/ModelsController.php:110
-#: ../lib/GaletteAuto/PluginGaletteAuto.php:83
+#: ../lib/GaletteAuto/Controllers/Crud/ModelsController.php:112
+#: ../lib/GaletteAuto/PluginGaletteAuto.php:94
 msgid "Models list"
 msgstr "மாதிரிகள் பட்டியல்"
 
-#: ../lib/GaletteAuto/Controllers/Crud/ModelsController.php:189
+#: ../lib/GaletteAuto/Controllers/Crud/ModelsController.php:185
 #, php-format
 msgid "Change model '%s'"
 msgstr "மாதிரியை மாற்றவும் '%s'"
 
-#: ../lib/GaletteAuto/Controllers/Crud/ModelsController.php:193
+#: ../lib/GaletteAuto/Controllers/Crud/ModelsController.php:189
 msgid "New model"
 msgstr "புதிய மாதிரி"
 
-#: ../lib/GaletteAuto/Controllers/Crud/ModelsController.php:247
+#: ../lib/GaletteAuto/Controllers/Crud/ModelsController.php:240
 msgid "New model has been added!"
 msgstr "புதிய மாதிரி சேர்க்கப்பட்டுள்ளது!"
 
-#: ../lib/GaletteAuto/Controllers/Crud/ModelsController.php:248
+#: ../lib/GaletteAuto/Controllers/Crud/ModelsController.php:241
 msgid "Model has been saved!"
 msgstr "மாதிரி சேமிக்கப்பட்டுள்ளது!"
 
 #. TRANS: first parameter is the number of models
-#: ../lib/GaletteAuto/Controllers/Crud/ModelsController.php:322
+#: ../lib/GaletteAuto/Controllers/Crud/ModelsController.php:333
 #, php-format
 msgid "Remove %1$s model"
 msgid_plural "Remove %1$s models"
@@ -334,237 +182,413 @@ msgstr[0] "%1$s மாதிரியை அகற்று"
 msgstr[1] "%1$s மாதிரிகளை அகற்று"
 
 #. TRANS: first parameter is the model name
-#: ../lib/GaletteAuto/Controllers/Crud/ModelsController.php:330
+#: ../lib/GaletteAuto/Controllers/Crud/ModelsController.php:341
 #, php-format
 msgid "Remove model \"%1$s\""
 msgstr "\"%1$s\" மாதிரியை அகற்று"
 
-#: ../lib/GaletteAuto/Controllers/Crud/ModelsController.php:358
+#: ../lib/GaletteAuto/Controllers/Crud/ModelsController.php:370
 msgid "This model is used by one or more vehicles, it cannot be deleted."
 msgstr ""
 "இந்த மாதிரி ஒன்று அல்லது அதற்கு மேற்பட்ட வாகனங்களால் பயன்படுத்தப்படுகிறது, அதை நீக்க "
 "முடியாது."
 
-#: ../lib/GaletteAuto/Controllers/Crud/ModelsController.php:363
+#: ../lib/GaletteAuto/Controllers/Crud/ModelsController.php:375
 msgid "An error occurred while deleting model."
 msgstr "மாதிரியை நீக்கும்போது பிழை ஏற்பட்டது."
 
-#: ../lib/GaletteAuto/Auto.php:168
-#: ../templates/default/vehicles_list.html.twig:40
-#: ../templates/default/vehicles_list.html.twig:64
-#: ../templates/default/public_vehicles_list.html.twig:27
-#: ../templates/default/public_vehicles_list.html.twig:41
-#: ../templates/default/vehicles.html.twig:24
+#: ../lib/GaletteAuto/Auto.php:112
+#: ../templates/default/vehicles_list.html.twig:12
+#: ../templates/default/vehicles_list.html.twig:63
+#: ../templates/default/public_vehicles_list.html.twig:14
+#: ../templates/default/public_vehicles_list.html.twig:57
+#: ../templates/default/vehicles.html.twig:34
 msgid "Name"
 msgstr "பெயர்"
 
-#: ../lib/GaletteAuto/Auto.php:169 ../templates/default/model.html.twig:19
-#: ../templates/default/vehicles_list.html.twig:40
-#: ../templates/default/vehicles_list.html.twig:67
-#: ../templates/default/models_list.html.twig:32
-#: ../templates/default/models_list.html.twig:43
-#: ../templates/default/public_vehicles_list.html.twig:27
-#: ../templates/default/public_vehicles_list.html.twig:44
-#: ../templates/default/vehicles.html.twig:50
+#: ../lib/GaletteAuto/Auto.php:113 ../templates/default/model.html.twig:19
+#: ../templates/default/vehicles_list.html.twig:12
+#: ../templates/default/vehicles_list.html.twig:66
+#: ../templates/default/models_list.html.twig:21
+#: ../templates/default/models_list.html.twig:50
+#: ../templates/default/public_vehicles_list.html.twig:14
+#: ../templates/default/public_vehicles_list.html.twig:69
+#: ../templates/default/vehicles.html.twig:60
 msgid "Model"
 msgstr "மாதிரியுரு"
 
-#: ../lib/GaletteAuto/Auto.php:170 ../templates/default/history.html.twig:21
+#: ../lib/GaletteAuto/Auto.php:114 ../templates/default/history.html.twig:21
 #: ../templates/default/history.html.twig:48
-#: ../templates/default/vehicles.html.twig:186
+#: ../templates/default/vehicles.html.twig:193
 msgid "Registration"
 msgstr "பதிவு"
 
-#: ../lib/GaletteAuto/Auto.php:171 ../templates/default/vehicles.html.twig:57
+#: ../lib/GaletteAuto/Auto.php:115 ../templates/default/vehicles.html.twig:67
 msgid "First registration date"
 msgstr "முதல் பதிவு தேதி"
 
-#: ../lib/GaletteAuto/Auto.php:172 ../templates/default/vehicles.html.twig:64
+#: ../lib/GaletteAuto/Auto.php:116 ../templates/default/vehicles.html.twig:74
 msgid "First circulation date"
 msgstr "முதல் சுழற்சி தேதி"
 
-#: ../lib/GaletteAuto/Auto.php:173 ../templates/default/vehicles.html.twig:71
+#: ../lib/GaletteAuto/Auto.php:117 ../templates/default/vehicles.html.twig:81
 msgid "Mileage"
 msgstr "மைலேச்"
 
-#: ../lib/GaletteAuto/Auto.php:174 ../templates/default/vehicles.html.twig:78
+#: ../lib/GaletteAuto/Auto.php:118 ../templates/default/vehicles.html.twig:88
 msgid "Seats"
 msgstr "இருக்கைகள்"
 
-#: ../lib/GaletteAuto/Auto.php:175 ../templates/default/vehicles.html.twig:248
+#: ../lib/GaletteAuto/Auto.php:119 ../templates/default/vehicles.html.twig:255
 msgid "Horsepower"
 msgstr "குதிரைத்திறன்"
 
-#: ../lib/GaletteAuto/Auto.php:176 ../templates/default/vehicles.html.twig:255
+#: ../lib/GaletteAuto/Auto.php:120 ../templates/default/vehicles.html.twig:262
 msgid "Engine size"
 msgstr "இயந்திர அளவு"
 
-#: ../lib/GaletteAuto/Auto.php:177 ../lib/GaletteAuto/Color.php:50
+#: ../lib/GaletteAuto/Auto.php:121 ../templates/default/vehicles.html.twig:248
+msgid "Chassis number"
+msgstr "சேச் எண்"
+
+#: ../lib/GaletteAuto/Auto.php:122 ../templates/default/vehicles.html.twig:285
+#: ../templates/default/vehicles.html.twig:290
+msgid "Comment"
+msgstr "கருத்து"
+
+#: ../lib/GaletteAuto/Auto.php:123 ../lib/GaletteAuto/Color.php:30
 #: ../templates/default/history.html.twig:24
 #: ../templates/default/history.html.twig:49
-#: ../templates/default/vehicles.html.twig:166
+#: ../templates/default/vehicles.html.twig:173
 msgid "Color"
 msgstr "நிறம்"
 
-#: ../lib/GaletteAuto/Auto.php:178 ../lib/GaletteAuto/State.php:50
+#: ../lib/GaletteAuto/Auto.php:124 ../lib/GaletteAuto/State.php:30
 #: ../templates/default/history.html.twig:27
 #: ../templates/default/history.html.twig:50
-#: ../templates/default/vehicles.html.twig:179
+#: ../templates/default/vehicles.html.twig:186
 msgid "State"
 msgstr "மாநிலம்"
 
-#: ../lib/GaletteAuto/Auto.php:179 ../lib/GaletteAuto/Finition.php:50
-#: ../templates/default/vehicles.html.twig:234
+#: ../lib/GaletteAuto/Auto.php:125 ../lib/GaletteAuto/Finition.php:30
+#: ../templates/default/vehicles.html.twig:241
 msgid "Finition"
 msgstr "முடித்தல்"
 
-#: ../lib/GaletteAuto/Auto.php:180 ../lib/GaletteAuto/Transmission.php:50
-#: ../templates/default/vehicles.html.twig:221
+#: ../lib/GaletteAuto/Auto.php:126 ../lib/GaletteAuto/Transmission.php:30
+#: ../templates/default/vehicles.html.twig:228
 msgid "Transmission"
 msgstr "பரவும் முறை"
 
-#: ../lib/GaletteAuto/Auto.php:181 ../lib/GaletteAuto/Body.php:50
-#: ../templates/default/vehicles.html.twig:208
+#: ../lib/GaletteAuto/Auto.php:127 ../lib/GaletteAuto/Body.php:30
+#: ../templates/default/vehicles.html.twig:215
 msgid "Body"
 msgstr "உடல்"
 
-#: ../lib/GaletteAuto/Auto.php:182 ../templates/default/vehicles.html.twig:268
+#: ../lib/GaletteAuto/Auto.php:128 ../templates/default/vehicles.html.twig:275
 msgid "Fuel"
 msgstr "எரிபொருள்"
 
-#: ../lib/GaletteAuto/Auto.php:283
+#: ../lib/GaletteAuto/Auto.php:217
 msgid "Petrol"
 msgstr "பெட்ரோல்"
 
-#: ../lib/GaletteAuto/Auto.php:284
+#: ../lib/GaletteAuto/Auto.php:218
 msgid "Diesel"
 msgstr "வளியெண்ணை"
 
-#: ../lib/GaletteAuto/Auto.php:285
+#: ../lib/GaletteAuto/Auto.php:219
 msgid "Gas"
 msgstr "வளிமம்"
 
-#: ../lib/GaletteAuto/Auto.php:286
+#: ../lib/GaletteAuto/Auto.php:220
 msgid "Hybrid"
 msgstr "கலப்பினம்"
 
-#: ../lib/GaletteAuto/Auto.php:287
+#: ../lib/GaletteAuto/Auto.php:221
 msgid "Electricity"
 msgstr "மின்சாரம்"
 
-#: ../lib/GaletteAuto/Auto.php:288
+#: ../lib/GaletteAuto/Auto.php:222
 msgid "Bio"
 msgstr "உயிர்"
 
-#: ../lib/GaletteAuto/Auto.php:372
-msgid "New car added"
-msgstr "புதிய கார் சேர்க்கப்பட்டது"
-
-#: ../lib/GaletteAuto/Auto.php:377
-msgid "Fail to add new car."
-msgstr "புதிய காரைச் சேர்க்கத் தவறியது."
-
-#: ../lib/GaletteAuto/Auto.php:394
-msgid "Car updated"
-msgstr "கார் புதுப்பிக்கப்பட்டது"
-
-#: ../lib/GaletteAuto/Auto.php:676
+#: ../lib/GaletteAuto/Auto.php:349
 msgid "- Maximum size for %field is %maxsize (current %cursize)!"
 msgstr "- %field கான அதிகபட்ச அளவு %maxsize (தற்போதைய %cursize)!"
 
-#: ../lib/GaletteAuto/Auto.php:719
+#: ../lib/GaletteAuto/Auto.php:398
 #, php-format
 msgid "- You must enter a positive integer for %s"
 msgstr "- நீங்கள் %s க்கு நேர்மறையான முழு எண்ணை உள்ளிட வேண்டும்"
 
-#: ../lib/GaletteAuto/Auto.php:728
+#: ../lib/GaletteAuto/Auto.php:409
 msgid "- You must choose a fuel in the list"
 msgstr "- நீங்கள் பட்டியலில் ஒரு எரிபொருளைத் தேர்வு செய்ய வேண்டும்"
 
-#: ../lib/GaletteAuto/Auto.php:746
+#: ../lib/GaletteAuto/Auto.php:423
 #, php-format
 msgid "- You must choose a %s in the list"
 msgstr "- நீங்கள் பட்டியலில் ஒரு %s ஐ தேர்வு செய்ய வேண்டும்"
 
-#: ../lib/GaletteAuto/Auto.php:760
+#: ../lib/GaletteAuto/Auto.php:435
 msgid "- you must attach an owner to this car"
 msgstr "- இந்த காரில் உரிமையாளரை நீங்கள் இணைக்க வேண்டும்"
 
-#: ../lib/GaletteAuto/Auto.php:779
+#: ../lib/GaletteAuto/Auto.php:442
+#, fuzzy
+#| msgid "- you must attach an owner to this car"
+msgid "- you cannot attach this car to this member"
+msgstr "- இந்த காரில் உரிமையாளரை நீங்கள் இணைக்க வேண்டும்"
+
+#: ../lib/GaletteAuto/Auto.php:455
 msgid "An error occurred while trying to delete car's photo"
 msgstr "காரின் புகைப்படத்தை நீக்க முயற்சிக்கும்போது பிழை ஏற்பட்டது"
 
-#: ../lib/GaletteAuto/Color.php:83
+#: ../lib/GaletteAuto/Color.php:38 ../lib/GaletteAuto/PluginGaletteAuto.php:64
+msgid "Colors list"
+msgstr "வண்ணங்கள் பட்டியல்"
+
+#: ../lib/GaletteAuto/Color.php:46
+msgid "Add new color"
+msgstr "புதிய வண்ணத்தைச் சேர்க்கவும்"
+
+#: ../lib/GaletteAuto/Color.php:59
 #, php-format
 msgid "%count color"
 msgid_plural "%count colors"
 msgstr[0] "%count நிறம்"
 msgstr[1] "%count நிறங்கள்"
 
-#: ../lib/GaletteAuto/Finition.php:83
+#: ../lib/GaletteAuto/Color.php:71
+#, php-format
+msgid "%1$s color has been successfully deleted."
+msgid_plural "%1$s colors have been successfully deleted."
+msgstr[0] "%1$s நிறம் வெற்றிகரமாக நீக்கப்பட்டது."
+msgstr[1] "%1$s வண்ணங்கள் வெற்றிகரமாக நீக்கப்பட்டுள்ளன."
+
+#: ../lib/GaletteAuto/Color.php:81
+msgid "This color is used by one or more vehicles, it cannot be deleted."
+msgstr ""
+"இந்த வண்ணம் ஒன்று அல்லது அதற்கு மேற்பட்ட வாகனங்களால் பயன்படுத்தப்படுகிறது, அதை நீக்க "
+"முடியாது."
+
+#: ../lib/GaletteAuto/Color.php:89
+msgid "An error occurred trying to remove color :/"
+msgstr "வண்ணத்தை அகற்ற முயற்சிக்கும் பிழை ஏற்பட்டது:/"
+
+#: ../lib/GaletteAuto/Finition.php:38
+#: ../lib/GaletteAuto/PluginGaletteAuto.php:72
+msgid "Finitions list"
+msgstr "பட்டியல் முடிவுகள்"
+
+#: ../lib/GaletteAuto/Finition.php:46
+msgid "Add new finition"
+msgstr "புதிய பினிசனைச் சேர்க்கவும்"
+
+#: ../lib/GaletteAuto/Finition.php:59
 #, php-format
 msgid "%count finition"
 msgid_plural "%count finitions"
 msgstr[0] "%count பூச்சு"
 msgstr[1] "%count முடிந்தது"
 
-#: ../lib/GaletteAuto/Transmission.php:83
+#: ../lib/GaletteAuto/Finition.php:71
+#, php-format
+msgid "%1$s finition has been successfully deleted."
+msgid_plural "%1$s finitions have been successfully deleted."
+msgstr[0] "%1$s பினிசன் வெற்றிகரமாக நீக்கப்பட்டது."
+msgstr[1] "%1$s பினிசன்கள் வெற்றிகரமாக நீக்கப்பட்டுள்ளன."
+
+#: ../lib/GaletteAuto/Finition.php:81
+msgid "This finition is used by one or more vehicles, it cannot be deleted."
+msgstr ""
+"இந்த பினிசனை ஒன்று அல்லது அதற்கு மேற்பட்ட வாகனங்களால் பயன்படுத்தப்படுகிறது, அதை நீக்க "
+"முடியாது."
+
+#: ../lib/GaletteAuto/Finition.php:89
+msgid "An error occurred trying to remove finition :/"
+msgstr "பினிசனை அகற்ற முயற்சிக்கும் பிழை ஏற்பட்டது:/"
+
+#: ../lib/GaletteAuto/Transmission.php:38
+#: ../lib/GaletteAuto/PluginGaletteAuto.php:80
+msgid "Transmissions list"
+msgstr "பரிமாற்றங்கள் பட்டியல்"
+
+#: ../lib/GaletteAuto/Transmission.php:46
+msgid "Add new transmission"
+msgstr "புதிய பரிமாற்றத்தைச் சேர்க்கவும்"
+
+#: ../lib/GaletteAuto/Transmission.php:59
 #, php-format
 msgid "%count transmission"
 msgid_plural "%count transmissions"
 msgstr[0] "%count பரிமாற்றம்"
 msgstr[1] "%count எண்ணுங்கள்"
 
-#: ../lib/GaletteAuto/Body.php:83
+#: ../lib/GaletteAuto/Transmission.php:71
+#, php-format
+msgid "%1$s transmission has been successfully deleted."
+msgid_plural "%1$s transmissions have been successfully deleted."
+msgstr[0] "%1$s பரிமாற்றம் வெற்றிகரமாக நீக்கப்பட்டது."
+msgstr[1] "%1$s பரிமாற்றங்கள் வெற்றிகரமாக நீக்கப்பட்டுள்ளன."
+
+#: ../lib/GaletteAuto/Transmission.php:81
+msgid ""
+"This transmission is used by one or more vehicles, it cannot be deleted."
+msgstr ""
+"இந்த பரிமாற்றம் ஒன்று அல்லது அதற்கு மேற்பட்ட வாகனங்களால் பயன்படுத்தப்படுகிறது, அதை நீக்க "
+"முடியாது."
+
+#: ../lib/GaletteAuto/Transmission.php:89
+msgid "An error occurred trying to remove transmission :/"
+msgstr "பரிமாற்றத்தை அகற்ற முயற்சிக்கும் பிழை ஏற்பட்டது:/"
+
+#: ../lib/GaletteAuto/Body.php:38 ../lib/GaletteAuto/PluginGaletteAuto.php:76
+msgid "Bodies list"
+msgstr "உடல்கள் பட்டியல்"
+
+#: ../lib/GaletteAuto/Body.php:46
+msgid "Add new body"
+msgstr "புதிய உடலைச் சேர்க்கவும்"
+
+#: ../lib/GaletteAuto/Body.php:59
 #, php-format
 msgid "%count body"
 msgid_plural "%count bodies"
 msgstr[0] "%count உடல்"
 msgstr[1] "%count உடல்கள்"
 
-#: ../lib/GaletteAuto/State.php:83
+#: ../lib/GaletteAuto/Body.php:71
+#, php-format
+msgid "%1$s body has been successfully deleted."
+msgid_plural "%1$s bodies have been successfully deleted."
+msgstr[0] "%1$s உடல் வெற்றிகரமாக நீக்கப்பட்டது."
+msgstr[1] "%1$s உடல்கள் வெற்றிகரமாக நீக்கப்பட்டுள்ளன."
+
+#: ../lib/GaletteAuto/Body.php:81
+msgid "This body is used by one or more vehicles, it cannot be deleted."
+msgstr ""
+"இந்த உடல் ஒன்று அல்லது அதற்கு மேற்பட்ட வாகனங்களால் பயன்படுத்தப்படுகிறது, அதை நீக்க "
+"முடியாது."
+
+#: ../lib/GaletteAuto/Body.php:89
+msgid "An error occurred trying to remove body :/"
+msgstr "உடலை அகற்ற முயற்சிக்கும் பிழை ஏற்பட்டது:/"
+
+#: ../lib/GaletteAuto/State.php:38 ../lib/GaletteAuto/PluginGaletteAuto.php:68
+msgid "States list"
+msgstr "மாநிலங்களின் பட்டியல்"
+
+#: ../lib/GaletteAuto/State.php:46
+msgid "Add new state"
+msgstr "புதிய மாநிலத்தைச் சேர்க்கவும்"
+
+#: ../lib/GaletteAuto/State.php:59
 #, php-format
 msgid "%count state"
 msgid_plural "%count states"
 msgstr[0] "%count எண்ணுங்கள்"
 msgstr[1] "%count நிலைகள்"
 
-#: ../lib/GaletteAuto/Autos.php:120
-msgid "Delete vehicles cards"
-msgstr "வாகன அட்டைகளை நீக்கு"
+#: ../lib/GaletteAuto/State.php:71
+#, php-format
+msgid "%1$s state has been successfully deleted."
+msgid_plural "%1$s states have been successfully deleted."
+msgstr[0] "%1$s நிலை வெற்றிகரமாக நீக்கப்பட்டது."
+msgstr[1] "%1$s மாநிலங்கள் வெற்றிகரமாக நீக்கப்பட்டுள்ளன."
 
-#: ../lib/GaletteAuto/Brand.php:58 ../templates/default/model.html.twig:34
-#: ../templates/default/vehicles_list.html.twig:40
-#: ../templates/default/vehicles_list.html.twig:66
-#: ../templates/default/models_list.html.twig:32
-#: ../templates/default/models_list.html.twig:44
-#: ../templates/default/public_vehicles_list.html.twig:27
-#: ../templates/default/public_vehicles_list.html.twig:43
-#: ../templates/default/vehicles.html.twig:37
+#: ../lib/GaletteAuto/State.php:81
+msgid "This state is used by one or more vehicles, it cannot be deleted."
+msgstr ""
+"இந்த நிலை ஒன்று அல்லது அதற்கு மேற்பட்ட வாகனங்களால் பயன்படுத்தப்படுகிறது, அதை நீக்க "
+"முடியாது."
+
+#: ../lib/GaletteAuto/State.php:89
+msgid "An error occurred trying to remove state :/"
+msgstr "நிலையை அகற்ற முயற்சிக்கும் பிழை ஏற்பட்டது:/"
+
+#: ../lib/GaletteAuto/Brand.php:30 ../templates/default/model.html.twig:34
+#: ../templates/default/vehicles_list.html.twig:12
+#: ../templates/default/vehicles_list.html.twig:65
+#: ../templates/default/models_list.html.twig:21
+#: ../templates/default/models_list.html.twig:51
+#: ../templates/default/public_vehicles_list.html.twig:14
+#: ../templates/default/public_vehicles_list.html.twig:68
+#: ../templates/default/vehicles.html.twig:47
 msgid "Brand"
 msgstr "சூட்டுக்குறி"
 
-#: ../lib/GaletteAuto/Brand.php:94
+#: ../lib/GaletteAuto/Brand.php:38 ../lib/GaletteAuto/PluginGaletteAuto.php:84
+msgid "Brands list"
+msgstr "பிராண்டுகள் பட்டியல்"
+
+#: ../lib/GaletteAuto/Brand.php:46
+#: ../templates/default/object_show.html.twig:16
+msgid "Add new brand"
+msgstr "புதிய பிராண்டைச் சேர்க்கவும்"
+
+#: ../lib/GaletteAuto/Brand.php:59
 #, php-format
 msgid "%count brand"
 msgid_plural "%count brands"
 msgstr[0] "%count வியாபாரக் குறி"
 msgstr[1] "%count வியாபாரக் குறிகள்"
 
-#: ../lib/GaletteAuto/PluginGaletteAuto.php:48
+#: ../lib/GaletteAuto/Brand.php:71
+#, php-format
+msgid "%1$s brand has been successfully deleted."
+msgid_plural "%1$s brands have been successfully deleted."
+msgstr[0] "%1$s சூட்டுக்குறி வெற்றிகரமாக நீக்கப்பட்டது."
+msgstr[1] "%1$s பிராண்டுகள் வெற்றிகரமாக நீக்கப்பட்டுள்ளன."
+
+#: ../lib/GaletteAuto/Brand.php:81
+msgid "This brand is used by one or more vehicles, it cannot be deleted."
+msgstr ""
+"இந்த சூட்டுக்குறி ஒன்று அல்லது அதற்கு மேற்பட்ட வாகனங்களால் பயன்படுத்தப்படுகிறது, அதை நீக்க "
+"முடியாது."
+
+#: ../lib/GaletteAuto/Brand.php:89
+msgid "An error occurred trying to remove brand :/"
+msgstr "பிராண்டை அகற்ற முயற்சிக்கும் பிழை ஏற்பட்டது:/"
+
+#: ../lib/GaletteAuto/Repository/Vehicles.php:174
+msgid "New car added"
+msgstr "புதிய கார் சேர்க்கப்பட்டது"
+
+#: ../lib/GaletteAuto/Repository/Vehicles.php:183
+msgid "Car updated"
+msgstr "கார் புதுப்பிக்கப்பட்டது"
+
+#: ../lib/GaletteAuto/Repository/Vehicles.php:263
+#, fuzzy
+#| msgid "No vehicle selected"
+msgid "Vehicle picture deleted"
+msgstr "எந்த வாகனமும் தேர்ந்தெடுக்கப்படவில்லை"
+
+#: ../lib/GaletteAuto/Repository/Vehicles.php:278
+msgid "Delete vehicles cards"
+msgstr "வாகன அட்டைகளை நீக்கு"
+
+#: ../lib/GaletteAuto/PluginGaletteAuto.php:53
 msgid "Cars"
 msgstr "கார்கள்"
 
-#: ../lib/GaletteAuto/PluginGaletteAuto.php:129
+#: ../lib/GaletteAuto/PluginGaletteAuto.php:111
+msgid "Preferences"
+msgstr ""
+
+#: ../lib/GaletteAuto/PluginGaletteAuto.php:151
+#: ../lib/GaletteAuto/PluginGaletteAuto.php:179
 msgid "Vehicles"
 msgstr "வாகனங்கள்"
 
-#: ../lib/GaletteAuto/Model.php:202
+#: ../lib/GaletteAuto/Model.php:180
 msgid "- You must select a brand!"
 msgstr "- நீங்கள் ஒரு பிராண்டைத் தேர்ந்தெடுக்க வேண்டும்!"
 
 #: ../templates/default/model.html.twig:25
-#: ../templates/default/vehicles.html.twig:29
+#: ../templates/default/vehicles.html.twig:39
 msgid "Choose a brand"
 msgstr "ஒரு பிராண்டைத் தேர்வுசெய்க"
 
@@ -580,88 +604,116 @@ msgstr ""
 msgid "Add a brand"
 msgstr "ஒரு பிராண்டைச் சேர்க்கவும்"
 
-#: ../templates/default/vehicles_list.html.twig:109
+#: ../templates/default/vehicles_list.html.twig:12
+#: ../templates/default/vehicles_list.html.twig:64
+#: ../templates/default/public_vehicles_list.html.twig:14
+#: ../templates/default/public_vehicles_list.html.twig:67
+#: ../templates/default/history.html.twig:18
+#: ../templates/default/history.html.twig:36
+#: ../templates/default/vehicles.html.twig:149
+#: ../templates/default/vehicles.html.twig:160
+msgid "Owner"
+msgstr "உரிமையாளர்"
+
+#: ../templates/default/vehicles_list.html.twig:108
 msgid "No vehicle selected"
 msgstr "எந்த வாகனமும் தேர்ந்தெடுக்கப்படவில்லை"
 
-#: ../templates/default/vehicles_list.html.twig:109
+#: ../templates/default/vehicles_list.html.twig:108
 msgid ""
 "Please make sure to select at least one vehicle from the list to perform "
 "this action."
 msgstr ""
 "இந்த செயலைச் செய்ய பட்டியலிலிருந்து குறைந்தது ஒரு வாகனத்தையாவது தேர்ந்தெடுக்கவும்."
 
-#: ../templates/default/vehicles_list.html.twig:19
-#: ../templates/default/public_vehicles_list.html.twig:19
+#: ../templates/default/vehicles_list.html.twig:31
+#: ../templates/default/public_vehicles_list.html.twig:33
 #, php-format
 msgid "%count vehicle"
 msgid_plural "%count vehicles"
 msgstr[0] "%count வாகனம்"
 msgstr[1] "%count வாகனங்கள்"
 
-#: ../templates/default/vehicles_list.html.twig:35
+#: ../templates/default/vehicles_list.html.twig:47
 msgid "Add new vehicle"
 msgstr "புதிய வண்டி சேர்க்கவும்"
 
-#: ../templates/default/vehicles_list.html.twig:40
-#: ../templates/default/vehicles_list.html.twig:65
-#: ../templates/default/public_vehicles_list.html.twig:27
-#: ../templates/default/public_vehicles_list.html.twig:42
-#: ../templates/default/history.html.twig:18
-#: ../templates/default/history.html.twig:36
-#: ../templates/default/vehicles.html.twig:144
-msgid "Owner"
-msgstr "உரிமையாளர்"
-
-#: ../templates/default/vehicles_list.html.twig:70
+#: ../templates/default/vehicles_list.html.twig:69
 msgid "Edit %vehicle"
 msgstr "திருத்து %வாகனம்"
 
-#: ../templates/default/vehicles_list.html.twig:75
+#: ../templates/default/vehicles_list.html.twig:74
 msgid "%vehiclename: remove from database"
 msgstr "%வாகனத்தின் பெயர்: தரவுத்தளத்திலிருந்து அகற்று"
 
-#: ../templates/default/vehicles_list.html.twig:97
+#: ../templates/default/vehicles_list.html.twig:96
 msgid "No car has been registered yet for your account."
 msgstr "உங்கள் கணக்கிற்கு இதுவரை எந்த காரும் பதிவு செய்யப்படவில்லை."
 
-#: ../templates/default/vehicles_list.html.twig:97
-#: ../templates/default/public_vehicles_list.html.twig:47
+#: ../templates/default/vehicles_list.html.twig:96
+#: ../templates/default/public_vehicles_list.html.twig:90
 msgid "No car in the database"
 msgstr "தரவுத்தளத்தில் கார் இல்லை"
 
-#: ../templates/default/models_list.html.twig:12
+#: ../templates/default/models_list.html.twig:27
 #, php-format
 msgid "%count model"
 msgid_plural "%count models"
 msgstr[0] "%count மாதிரி"
 msgstr[1] "%count மாதிரிகள்"
 
-#: ../templates/default/models_list.html.twig:27
+#: ../templates/default/models_list.html.twig:42
 msgid "Add new model"
 msgstr "புதிய மாடலைச் சேர்க்கவும்"
 
-#: ../templates/default/models_list.html.twig:48
-#: ../templates/default/object_list.html.twig:57
+#: ../templates/default/models_list.html.twig:54
+#: ../templates/default/object_list.html.twig:51
 msgid "Edit %property"
 msgstr "%சொத்தைத் திருத்து"
 
 #: ../templates/default/models_list.html.twig:55
-#: ../templates/default/object_list.html.twig:64
+#: ../templates/default/object_list.html.twig:52
 msgid "%property: remove from database"
 msgstr "%சொத்து: தரவுத்தளத்திலிருந்து அகற்று"
 
-#: ../templates/default/models_list.html.twig:60
-#: ../templates/default/object_list.html.twig:69
+#: ../templates/default/models_list.html.twig:59
+#: ../templates/default/object_list.html.twig:56
 msgid "no record found"
 msgstr "எந்த பதிவும் கிடைக்கவில்லை"
 
-#: ../templates/default/object_show.html.twig:25
+#: ../templates/default/public_vehicles_list.html.twig:14
+#: ../templates/default/public_vehicles_list.html.twig:70
+#, fuzzy
+#| msgid "Registration"
+msgid "Description"
+msgstr "பதிவு"
+
+#: ../templates/default/public_vehicles_list.html.twig:60
+#: ../templates/default/vehicles.html.twig:132
+msgid "Show full car state history"
+msgstr "முழு கார் மாநில வரலாற்றைக் காட்டு"
+
+#: ../templates/default/public_vehicles_list.html.twig:62
+#: ../templates/default/vehicles.html.twig:134
+msgid "Car state history"
+msgstr "கார் மாநில வரலாறு"
+
+#: ../templates/default/public_vehicles_list.html.twig:75
+#, php-format
+msgid "%1$s cc"
+msgstr ""
+
+#: ../templates/default/public_vehicles_list.html.twig:78
+#, php-format
+msgid "%1$s hp"
+msgstr ""
+
+#: ../templates/default/object_show.html.twig:24
 #, php-format
 msgid "Registered models for the brand '%s'"
 msgstr "'%s' என்ற பிராண்டிற்கான பதிவு செய்யப்பட்ட மாதிரிகள்"
 
-#: ../templates/default/object_show.html.twig:42
+#: ../templates/default/object_show.html.twig:40
 #, php-format
 msgid "The brand '%s' does not have any registered model at this time."
 msgstr "இந்த நேரத்தில் '%s' பிராண்டில் பதிவுசெய்யப்பட்ட மாதிரி எதுவும் இல்லை."
@@ -670,80 +722,85 @@ msgstr "இந்த நேரத்தில் '%s' பிராண்டி�
 msgid "no history entries"
 msgstr "வரலாற்று உள்ளீடுகள் இல்லை"
 
-#: ../templates/default/vehicles.html.twig:19
-msgid "Car's base informations"
-msgstr "காரின் அடிப்படை தகவல்கள்"
+#: ../templates/default/preferences.html.twig:12
+msgid "Required fields"
+msgstr ""
 
-#: ../templates/default/vehicles.html.twig:42
-#: ../templates/default/vehicles.html.twig:314
+#: ../templates/default/preferences.html.twig:13
+msgid ""
+"Model, brand, dates, color, state, body, transmission and finition are "
+"always required."
+msgstr ""
+
+#: ../templates/default/history_modal.js.twig:13
+msgid "Car's history"
+msgstr "காரின் வரலாறு"
+
+#: ../templates/default/history_modal.js.twig:23
+#, fuzzy
+#| msgid "An error occurred trying to remove body :/"
+msgid "An error occurred displaying history :("
+msgstr "உடலை அகற்ற முயற்சிக்கும் பிழை ஏற்பட்டது:/"
+
+#: ../templates/default/vehicles.html.twig:24
+#: ../templates/default/vehicles.html.twig:52
 msgid "Choose a model"
 msgstr "ஒரு மாதிரியைத் தேர்வுசெய்க"
 
-#: ../templates/default/vehicles.html.twig:89
-#: ../templates/default/vehicles.html.twig:92
+#: ../templates/default/vehicles.html.twig:29
+msgid "Car's base informations"
+msgstr "காரின் அடிப்படை தகவல்கள்"
+
+#: ../templates/default/vehicles.html.twig:99
+#: ../templates/default/vehicles.html.twig:102
 msgid "Car's photo"
 msgstr "காரின் புகைப்படம்"
 
-#: ../templates/default/vehicles.html.twig:114
+#: ../templates/default/vehicles.html.twig:124
 msgid "Current car's state informations"
 msgstr "தற்போதைய காரின் மாநில செய்தி"
 
-#: ../templates/default/vehicles.html.twig:119
+#: ../templates/default/vehicles.html.twig:129
 msgid "Current owner"
 msgstr "தற்போதைய உரிமையாளர்"
 
-#: ../templates/default/vehicles.html.twig:125
-msgid "Show full car state history"
-msgstr "முழு கார் மாநில வரலாற்றைக் காட்டு"
-
-#: ../templates/default/vehicles.html.twig:127
-msgid "Car state history"
-msgstr "கார் மாநில வரலாறு"
-
-#: ../templates/default/vehicles.html.twig:132
+#: ../templates/default/vehicles.html.twig:140
 msgid "Change car's owner"
 msgstr "காரின் உரிமையாளரை மாற்றவும்"
 
-#: ../templates/default/vehicles.html.twig:158
+#: ../templates/default/vehicles.html.twig:165
 msgid "Choose a color"
 msgstr "ஒரு வண்ணத்தைத் தேர்வுசெய்க"
 
-#: ../templates/default/vehicles.html.twig:171
+#: ../templates/default/vehicles.html.twig:178
 msgid "Choose a state"
 msgstr "ஒரு மாநிலத்தைத் தேர்வுசெய்க"
 
-#: ../templates/default/vehicles.html.twig:197
+#: ../templates/default/vehicles.html.twig:204
 msgid "Car's technical informations"
 msgstr "கார் தொழில்நுட்ப செய்தி"
 
-#: ../templates/default/vehicles.html.twig:200
+#: ../templates/default/vehicles.html.twig:207
 msgid "Choose a body"
 msgstr "ஒரு உடலைத் தேர்வுசெய்க"
 
-#: ../templates/default/vehicles.html.twig:213
+#: ../templates/default/vehicles.html.twig:220
 msgid "Choose a transmission"
 msgstr "ஒரு பரிமாற்றத்தைத் தேர்வுசெய்க"
 
-#: ../templates/default/vehicles.html.twig:226
+#: ../templates/default/vehicles.html.twig:233
 msgid "Choose a finition"
 msgstr "ஒரு பினிசனைத் தேர்வுசெய்க"
 
-#: ../templates/default/vehicles.html.twig:241
-msgid "Chassis number"
-msgstr "சேச் எண்"
-
-#: ../templates/default/vehicles.html.twig:260
+#: ../templates/default/vehicles.html.twig:267
 msgid "Choose a fuel"
 msgstr "எரிபொருளைத் தேர்வுசெய்க"
 
-#: ../templates/default/vehicles.html.twig:278
-#: ../templates/default/vehicles.html.twig:283
-msgid "Comment"
-msgstr "கருத்து"
+#~ msgid "- No id provided for modifying this record! (internal)"
+#~ msgstr "- இந்த பதிவை மாற்றுவதற்கு ஐடி எதுவும் வழங்கப்படவில்லை! (உள்)"
 
-#: ../templates/default/vehicles.html.twig:350
-msgid "Car's history"
-msgstr "காரின் வரலாறு"
+#~ msgid "Fail to add new car."
+#~ msgstr "புதிய காரைச் சேர்க்கத் தவறியது."
 
 #, php-format
 #~ msgid "Brand '%s'"
