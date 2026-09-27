@@ -11,13 +11,14 @@
 # Johan "Papa" Cwiklinski, 2010.
 # Johan Cwiklinski <johan AT x-tnd DOT be>, 2011, 2012, 2014.
 # Johan Cwiklinski <trasher@x-tnd.be>, 2020, 2021, 2022, 2023, 2024.
+# Damien <mouette03@yahoo.fr>, 2026.
 msgid ""
 msgstr ""
 "Project-Id-Version: fr_FR@euro\n"
-"Report-Msgid-Bugs-To: \n"
+"Report-Msgid-Bugs-To: translations@galette.eu\n"
 "POT-Creation-Date: 2026-09-27 18:13+0200\n"
-"PO-Revision-Date: 2024-09-15 07:51+0000\n"
-"Last-Translator: Johan Cwiklinski <trasher@x-tnd.be>\n"
+"PO-Revision-Date: 2026-09-28 04:01+0000\n"
+"Last-Translator: Damien <mouette03@yahoo.fr>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/galette/auto-"
 "plugin/fr/>\n"
 "Language: fr_FR\n"
@@ -25,7 +26,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 5.8-dev\n"
+"X-Generator: Weblate 2026.10.dev0\n"
 
 #: ../lib/GaletteAuto/Controllers/PreferencesController.php:48
 #, fuzzy
@@ -712,14 +713,14 @@ msgid "Car state history"
 msgstr "Historique de l'état de la voiture"
 
 #: ../templates/default/public_vehicles_list.html.twig:75
-#, php-format
+#, fuzzy, php-format
 msgid "%1$s cc"
-msgstr ""
+msgstr "%1$s cc"
 
 #: ../templates/default/public_vehicles_list.html.twig:78
-#, php-format
+#, fuzzy, php-format
 msgid "%1$s hp"
-msgstr ""
+msgstr "%1$s hp"
 
 #: ../templates/default/object_show.html.twig:24
 #, php-format
@@ -744,6 +745,8 @@ msgid ""
 "Model, brand, dates, color, state, body, transmission and finition are "
 "always required."
 msgstr ""
+"Modèle, marque, dattes, couleur, état, corps, transmission et finition sont "
+"toujours requis."
 
 # Chaîne Javascript !
 #: ../templates/default/history_modal.js.twig:13
