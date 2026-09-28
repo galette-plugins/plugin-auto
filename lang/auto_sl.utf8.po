@@ -5,9 +5,9 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"Report-Msgid-Bugs-To: \n"
+"Report-Msgid-Bugs-To: translations@galette.eu\n"
 "POT-Creation-Date: 2026-09-27 18:13+0200\n"
-"PO-Revision-Date: 2026-09-23 14:06+0000\n"
+"PO-Revision-Date: 2026-09-28 08:56+0000\n"
 "Last-Translator: Jože Felicijan <joze@felicijan.com>\n"
 "Language-Team: Slovenian <https://hosted.weblate.org/projects/galette/auto-"
 "plugin/sl/>\n"
@@ -21,13 +21,11 @@ msgstr ""
 
 #: ../lib/GaletteAuto/Controllers/PreferencesController.php:48
 msgid "Cars preferences"
-msgstr ""
+msgstr "Nastavitve za avtomobile"
 
 #: ../lib/GaletteAuto/Controllers/PreferencesController.php:76
-#, fuzzy
-#| msgid "%count vehicles have been successfully deleted."
 msgid "Preferences have been successfully stored!"
-msgstr "%count vozil je bilo uspešno izbrisanih."
+msgstr "Nastavitve so bile uspešno shranjene!"
 
 #: ../lib/GaletteAuto/Controllers/Controller.php:74
 msgid "You do not have enough privileges."
@@ -333,10 +331,8 @@ msgid "- you must attach an owner to this car"
 msgstr "- za ta avto morate določiti lastnika"
 
 #: ../lib/GaletteAuto/Auto.php:442
-#, fuzzy
-#| msgid "- you must attach an owner to this car"
 msgid "- you cannot attach this car to this member"
-msgstr "- za ta avto morate določiti lastnika"
+msgstr "- tega avtomobila ne morete dodeliti temu članu"
 
 #: ../lib/GaletteAuto/Auto.php:455
 msgid "An error occurred while trying to delete car's photo"
@@ -571,10 +567,8 @@ msgid "Car updated"
 msgstr "Posodobljen avto"
 
 #: ../lib/GaletteAuto/Repository/Vehicles.php:263
-#, fuzzy
-#| msgid "No vehicle selected"
 msgid "Vehicle picture deleted"
-msgstr "Ni izbranega vozila"
+msgstr "Slika vozila je bila izbrisana"
 
 #: ../lib/GaletteAuto/Repository/Vehicles.php:278
 msgid "Delete vehicles cards"
@@ -586,7 +580,7 @@ msgstr "Avtomobili"
 
 #: ../lib/GaletteAuto/PluginGaletteAuto.php:111
 msgid "Preferences"
-msgstr ""
+msgstr "Nastavitve"
 
 #: ../lib/GaletteAuto/PluginGaletteAuto.php:151
 #: ../lib/GaletteAuto/PluginGaletteAuto.php:179
@@ -696,10 +690,8 @@ msgstr "ni bilo najdenega zapisa"
 
 #: ../templates/default/public_vehicles_list.html.twig:14
 #: ../templates/default/public_vehicles_list.html.twig:70
-#, fuzzy
-#| msgid "Registration"
 msgid "Description"
-msgstr "Registracija"
+msgstr "Opis"
 
 #: ../templates/default/public_vehicles_list.html.twig:60
 #: ../templates/default/vehicles.html.twig:132
@@ -714,12 +706,12 @@ msgstr "Zgodovina stanja avtomobila"
 #: ../templates/default/public_vehicles_list.html.twig:75
 #, php-format
 msgid "%1$s cc"
-msgstr ""
+msgstr "%1$s kb"
 
 #: ../templates/default/public_vehicles_list.html.twig:78
 #, php-format
 msgid "%1$s hp"
-msgstr ""
+msgstr "%1$s KM"
 
 #: ../templates/default/object_show.html.twig:24
 #, php-format
@@ -737,23 +729,23 @@ msgstr "brez vnosov v zgodovino"
 
 #: ../templates/default/preferences.html.twig:12
 msgid "Required fields"
-msgstr ""
+msgstr "Obvezna polja"
 
 #: ../templates/default/preferences.html.twig:13
 msgid ""
 "Model, brand, dates, color, state, body, transmission and finition are "
 "always required."
 msgstr ""
+"Model, znamka, datumi, barva, stanje, karoserija, menjalnik in izvedenka so "
+"vedno obvezni podatki."
 
 #: ../templates/default/history_modal.js.twig:13
 msgid "Car's history"
 msgstr "Zgodovina avtomobila"
 
 #: ../templates/default/history_modal.js.twig:23
-#, fuzzy
-#| msgid "An error occurred trying to remove body :/"
 msgid "An error occurred displaying history :("
-msgstr "Pri poskusu odstranitve telesa je prišlo do napake :/"
+msgstr "Pri prikazu zgodovine je prišlo do napake :("
 
 #: ../templates/default/vehicles.html.twig:24
 #: ../templates/default/vehicles.html.twig:52
