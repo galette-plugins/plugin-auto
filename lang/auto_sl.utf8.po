@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: translations@galette.eu\n"
 "POT-Creation-Date: 2026-09-27 18:13+0200\n"
-"PO-Revision-Date: 2026-09-28 08:56+0000\n"
+"PO-Revision-Date: 2026-09-29 05:39+0000\n"
 "Last-Translator: Jože Felicijan <joze@felicijan.com>\n"
 "Language-Team: Slovenian <https://hosted.weblate.org/projects/galette/auto-"
 "plugin/sl/>\n"
@@ -711,7 +711,7 @@ msgstr "%1$s kb"
 #: ../templates/default/public_vehicles_list.html.twig:78
 #, php-format
 msgid "%1$s hp"
-msgstr "%1$s KM"
+msgstr "%1$s Km"
 
 #: ../templates/default/object_show.html.twig:24
 #, php-format
