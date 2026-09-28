@@ -10,15 +10,15 @@
 # Johan Cwiklinski <johan@x-tnd.be>, 2007, 2008, 2009.
 # Johan "Papa" Cwiklinski, 2010.
 # Johan Cwiklinski <johan AT x-tnd DOT be>, 2011, 2012, 2014.
-# Johan Cwiklinski <trasher@x-tnd.be>, 2020, 2021, 2022, 2023, 2024.
+# Johan Cwiklinski <trasher@x-tnd.be>, 2020, 2021, 2022, 2023, 2024, 2026.
 # Damien <mouette03@yahoo.fr>, 2026.
 msgid ""
 msgstr ""
 "Project-Id-Version: fr_FR@euro\n"
 "Report-Msgid-Bugs-To: translations@galette.eu\n"
 "POT-Creation-Date: 2026-09-27 18:13+0200\n"
-"PO-Revision-Date: 2026-09-28 04:01+0000\n"
-"Last-Translator: Damien <mouette03@yahoo.fr>\n"
+"PO-Revision-Date: 2026-09-28 04:34+0000\n"
+"Last-Translator: Johan Cwiklinski <trasher@x-tnd.be>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/galette/auto-"
 "plugin/fr/>\n"
 "Language: fr_FR\n"
@@ -29,16 +29,12 @@ msgstr ""
 "X-Generator: Weblate 2026.10.dev0\n"
 
 #: ../lib/GaletteAuto/Controllers/PreferencesController.php:48
-#, fuzzy
-#| msgid "Reference:"
 msgid "Cars preferences"
-msgstr "RÃ©fÃ©rence&nbsp;:"
+msgstr "Préférences de Cars"
 
 #: ../lib/GaletteAuto/Controllers/PreferencesController.php:76
-#, fuzzy
-#| msgid "Default preferences were successfully stored."
 msgid "Preferences have been successfully stored!"
-msgstr "Les prÃ©fÃ©rences par dÃ©faut ont Ã©tÃ© sauvegardÃ©es avec succÃ¨s."
+msgstr "Les préférences ont été sauvegardées avec succès !"
 
 #: ../lib/GaletteAuto/Controllers/Controller.php:74
 msgid "You do not have enough privileges."
@@ -348,10 +344,8 @@ msgid "- you must attach an owner to this car"
 msgstr "- vous devez rattacher un propriétaire à cette voiture"
 
 #: ../lib/GaletteAuto/Auto.php:442
-#, fuzzy
-#| msgid "- you must attach an owner to this car"
 msgid "- you cannot attach this car to this member"
-msgstr "- vous devez rattacher un propriétaire à cette voiture"
+msgstr "- vous ne pouvez pas attacher cette voiture à cet adhérent"
 
 #: ../lib/GaletteAuto/Auto.php:455
 msgid "An error occurred while trying to delete car's photo"
@@ -574,10 +568,8 @@ msgid "Car updated"
 msgstr "Véhicule mis à jour"
 
 #: ../lib/GaletteAuto/Repository/Vehicles.php:263
-#, fuzzy
-#| msgid "No vehicle selected"
 msgid "Vehicle picture deleted"
-msgstr "Aucun véhicule sélectionné"
+msgstr "Photo du véhicule supprimée"
 
 #: ../lib/GaletteAuto/Repository/Vehicles.php:278
 msgid "Delete vehicles cards"
@@ -588,10 +580,8 @@ msgid "Cars"
 msgstr "Voitures"
 
 #: ../lib/GaletteAuto/PluginGaletteAuto.php:111
-#, fuzzy
-#| msgid "Reference:"
 msgid "Preferences"
-msgstr "RÃ©fÃ©rence&nbsp;:"
+msgstr "Préférences"
 
 #: ../lib/GaletteAuto/PluginGaletteAuto.php:151
 #: ../lib/GaletteAuto/PluginGaletteAuto.php:179
@@ -713,14 +703,14 @@ msgid "Car state history"
 msgstr "Historique de l'état de la voiture"
 
 #: ../templates/default/public_vehicles_list.html.twig:75
-#, fuzzy, php-format
+#, php-format
 msgid "%1$s cc"
 msgstr "%1$s cc"
 
 #: ../templates/default/public_vehicles_list.html.twig:78
-#, fuzzy, php-format
+#, php-format
 msgid "%1$s hp"
-msgstr "%1$s hp"
+msgstr "%1$s chevaux"
 
 #: ../templates/default/object_show.html.twig:24
 #, php-format
@@ -754,11 +744,8 @@ msgid "Car's history"
 msgstr "Historique de la voiture"
 
 #: ../templates/default/history_modal.js.twig:23
-#, fuzzy
-#| msgid "An error occurred displaying members interface :("
 msgid "An error occurred displaying history :("
-msgstr ""
-"Une erreur est survenue lors de l'affichage de l'interface des membres :("
+msgstr "Une erreur est survenue lors de l'affichage de l'historique :("
 
 #: ../templates/default/vehicles.html.twig:24
 #: ../templates/default/vehicles.html.twig:52
