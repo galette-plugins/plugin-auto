@@ -1,7 +1,8 @@
-* Unreleased
+* 2026-09-30 - 2.3.0
 - Galette 1.3 compatible
 - Access to vehicles, their pictures and history is checked against their owner
 - Public page lists every vehicle, with its picture; its visibility is set with other public pages, and defaults to "Inherit"
+- Upgrade note: the public vehicles page inherits the default visibility of public pages; if that default lets everyone in, vehicles and their pictures become public on upgrade, check the setting
 - Owner name is shown on public page only for members who appear in the public members list
 - Required fields are set from an administration page; values of config/local_auto_required.inc.php are imported once, the file is no longer read and can be removed
 - Removing a member removes their vehicles, pictures and history
