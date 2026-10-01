@@ -13,7 +13,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: translations@galette.eu\n"
-"POT-Creation-Date: 2026-09-30 08:39+0200\n"
+"POT-Creation-Date: 2026-10-01 12:32+0200\n"
 "PO-Revision-Date: 2026-06-21 03:01+0000\n"
 "Last-Translator: Poly <robloxlucak@gmail.com>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/galette/auto-"
@@ -227,8 +227,10 @@ msgstr "Modell"
 #: ../lib/GaletteAuto/Auto.php:114 ../templates/default/history.html.twig:21
 #: ../templates/default/history.html.twig:48
 #: ../templates/default/vehicles.html.twig:193
-msgid "Registration"
-msgstr ""
+#, fuzzy
+#| msgid "first registration date"
+msgid "Registration number"
+msgstr "Datum der Erstzulassung"
 
 #: ../lib/GaletteAuto/Auto.php:115 ../templates/default/vehicles.html.twig:67
 msgid "First registration date"
@@ -823,9 +825,6 @@ msgstr ""
 
 #~ msgid "model"
 #~ msgstr "Modell"
-
-#~ msgid "first registration date"
-#~ msgstr "Datum der Erstzulassung"
 
 #, fuzzy
 #~ msgid "first circulation date"
