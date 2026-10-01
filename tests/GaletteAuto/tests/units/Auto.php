@@ -87,7 +87,7 @@ class Auto extends GaletteTestCase
         $this->assertFalse($auto->check($data, $access, $prefs));
         $this->assertSame(
             [
-                '- Mandatory field <a href="#registration">registration</a> empty.',
+                '- Mandatory field <a href="#registration">registration number</a> empty.',
                 '- Mandatory field <a href="#name">name</a> empty.',
                 '- Mandatory field <a href="#first_registration_date">first registration date</a> empty.',
                 '- Mandatory field <a href="#first_circulation_date">first circulation date</a> empty.',
@@ -114,7 +114,7 @@ class Auto extends GaletteTestCase
         $this->assertFalse($auto->check($data, $access, $prefs));
         $this->assertSame(
             [
-                '- Mandatory field <a href="#registration">registration</a> empty.',
+                '- Mandatory field <a href="#registration">registration number</a> empty.',
                 '- Mandatory field <a href="#name">name</a> empty.',
                 '- Mandatory field <a href="#first_registration_date">first registration date</a> empty.',
                 '- Mandatory field <a href="#first_circulation_date">first circulation date</a> empty.',
