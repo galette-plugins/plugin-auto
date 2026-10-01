@@ -111,7 +111,7 @@ class Auto
         $this->propnames = [
             'name'                      => mb_strtolower(_T("Name", "auto")),
             'model'                     => mb_strtolower(_T("Model", "auto")),
-            'registration'              => mb_strtolower(_T("Registration", "auto")),
+            'registration'              => mb_strtolower(_T("Registration number", "auto")),
             'first_registration_date'   => mb_strtolower(_T("First registration date", "auto")),
             'first_circulation_date'    => mb_strtolower(_T("First circulation date", "auto")),
             'mileage'                   => mb_strtolower(_T("Mileage", "auto")),
