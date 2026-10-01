@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: translations@galette.eu\n"
-"POT-Creation-Date: 2026-09-30 08:39+0200\n"
+"POT-Creation-Date: 2026-10-01 12:32+0200\n"
 "PO-Revision-Date: 2020-10-25 10:26+0000\n"
 "Last-Translator: Allan Nordhøy <epost@anotheragency.no>\n"
 "Language-Team: Norwegian Bokmål <https://hosted.weblate.org/projects/galette/"
@@ -212,7 +212,7 @@ msgstr ""
 #: ../lib/GaletteAuto/Auto.php:114 ../templates/default/history.html.twig:21
 #: ../templates/default/history.html.twig:48
 #: ../templates/default/vehicles.html.twig:193
-msgid "Registration"
+msgid "Registration number"
 msgstr ""
 
 #: ../lib/GaletteAuto/Auto.php:115 ../templates/default/vehicles.html.twig:67

@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: translations@galette.eu\n"
-"POT-Creation-Date: 2026-09-30 08:39+0200\n"
+"POT-Creation-Date: 2026-10-01 12:32+0200\n"
 "PO-Revision-Date: 2021-11-21 13:11+0000\n"
 "Last-Translator: Johan Cwiklinski <trasher@x-tnd.be>\n"
 "Language-Team: Breton <https://hosted.weblate.org/projects/galette/auto-"
@@ -219,7 +219,7 @@ msgstr ""
 #: ../lib/GaletteAuto/Auto.php:114 ../templates/default/history.html.twig:21
 #: ../templates/default/history.html.twig:48
 #: ../templates/default/vehicles.html.twig:193
-msgid "Registration"
+msgid "Registration number"
 msgstr ""
 
 #: ../lib/GaletteAuto/Auto.php:115 ../templates/default/vehicles.html.twig:67
