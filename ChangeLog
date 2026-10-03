@@ -1,4 +1,4 @@
-* 2026-09-30 - 2.3.0
+* 2026-10-03 - 2.3.0
 - Galette 1.3 compatible
 - Access to vehicles, their pictures and history is checked against their owner
 - Public page lists every vehicle, with its picture; its visibility is set with other public pages, and defaults to "Inherit"
