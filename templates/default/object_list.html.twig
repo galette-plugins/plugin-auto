@@ -1,34 +1,23 @@
 {#
-/**
- * Copyright © 2003-2024 The Galette Team
- *
- * This file is part of Galette (https://galette.eu).
- *
- * Galette is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Galette is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with Galette. If not, see <http://www.gnu.org/licenses/>.
- */
-#}
-{% extends 'elements/list.html.twig' %}
+ # This file is part of Galette Auto plugin (https://galette.eu).
+ # SPDX-FileCopyrightText: Copyright © 2009-2026 The Galette Team
+ # SPDX-License-Identifier: GPL-3.0-or-later
+ #}
 
-{% set name = obj.name %}
-{% set pk = obj.pk %}
-{% set field = obj.field %}
+{% extends 'elements/list.html.twig' %}
+{% import "macros.twig" as macros %}
+
+{% set field = obj.getField() %}
 
 {% set nb = list|length %}
 
+{% set columns = [
+    {'label': field_name}
+] %}
+
 {% block infoline %}
     {% set infoline = {
-        'label': obj.displayCount(),
+        'label': count_label,
         'route': {
             'name': 'propertyFilter',
             'args': {'property': field}
@@ -47,39 +36,23 @@
     </a>
 {% endblock %}
 
-{% block header %}
-    {% set columns = [
-        {'label': field_name}
-    ] %}
-    {{ parent() }}
-{% endblock %}
-
 {% block body %}
     {% for o in list %}
-        {% set edit_link = url_for("propertyEdit", {"property": obj.getRouteName(), "id": o[pk]}) %}
+        {% set edit_link = url_for("propertyEdit", {"property": obj.getRouteName(), "id": o.getId()}) %}
     <tr>
         <td data-col-label="{{ field_name }}">
             <a
-                href="{% if show is defined and show == true %}{{ url_for("propertyShow", {"property": obj.getRouteName(), "id": o[pk]}) }}{% else %}{{ edit_link }}{% endif %}"
+                href="{% if obj.hasDetails() %}{{ url_for("propertyShow", {"property": obj.getRouteName(), "id": o.getId()}) }}{% else %}{{ edit_link }}{% endif %}"
             >
-                {{ o[field] }}
+                {{ o.getValue() }}
             </a>
         </td>
         <td class="center actions_row collapsing">
-            <a href="{{ edit_link }}" class="tooltip action">
-                <i class="ui edit icon"></i>
-                <span class="visually-hidden">{{ _T("Edit %property", "auto")|replace({"%property": o[field]}) }}</span>
-            </a>
-            <a
-                class="delete tooltip"
-                href="{{ url_for("removeProperty", {"property": obj.getRouteName(), "id": o[pk]}) }}"
-            >
-                <i class="ui red trash icon"></i>
-                <span class="visually-hidden">{{ _T("%property: remove from database", "auto")|replace({"%property": o[field]}) }}</span>
-            </a>
+            {{ macros.drawListAction(_T("Edit %property", "auto")|replace({"%property": o.getValue()}), {'name': 'propertyEdit', 'args': {'property': obj.getRouteName(), 'id': o.getId()}}, 'edit') }}
+            {{ macros.drawListAction(_T("%property: remove from database", "auto")|replace({"%property": o.getValue()}), {'name': 'removeProperty', 'args': {'property': obj.getRouteName(), 'id': o.getId()}}, 'red trash', 'delete') }}
         </td>
     </tr>
     {% else %}
-        <tr><td colspan="3" class="emptylist">{{ _T("no record found", "auto") }}</td></tr>
+        <tr><td colspan="{{ columns_count }}" class="emptylist">{{ _T("no record found", "auto") }}</td></tr>
     {% endfor %}
 {% endblock %}

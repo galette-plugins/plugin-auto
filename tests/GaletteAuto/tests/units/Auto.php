@@ -1,27 +1,16 @@
 <?php
 
 /**
- * Copyright © 2003-2025 The Galette Team
- *
- * This file is part of Galette (https://galette.eu).
- *
- * Galette is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Galette is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with Galette. If not, see <http://www.gnu.org/licenses/>.
+ * This file is part of Galette Auto plugin (https://galette.eu).
+ * SPDX-FileCopyrightText: Copyright © 2009-2026 The Galette Team
+ * SPDX-License-Identifier: GPL-3.0-or-later
  */
+
+declare(strict_types=1);
 
 namespace GaletteAuto\tests\units;
 
-use Galette\GaletteTestCase;
+use Galette\Tests\GaletteTestCase;
 
 /**
  * Model tests
@@ -31,84 +20,53 @@ use Galette\GaletteTestCase;
 class Auto extends GaletteTestCase
 {
     protected int $seed = 20240212212207;
+    protected bool $load_plugins = true;
 
     protected \Galette\Core\Plugins $plugins;
 
     /**
      * Set up tests
-     *
-     * @return void
      */
     public function setUp(): void
     {
         parent::setUp();
         $this->plugins = $this->container->get(\Galette\Core\Plugins::class);
-        $this->initStatus();
-    }
-
-    /**
-     * Cleanup after each test method
-     *
-     * @return void
-     */
-    public function tearDown(): void
-    {
-        $tables = [
-            \GaletteAuto\History::TABLE,
-            \GaletteAuto\Auto::TABLE,
-            \GaletteAuto\Model::TABLE,
-            \GaletteAuto\Brand::TABLE,
-            \GaletteAuto\Color::TABLE,
-            \GaletteAuto\Body::TABLE,
-            \GaletteAuto\Finition::TABLE,
-            \GaletteAuto\State::TABLE,
-            \GaletteAuto\Transmission::TABLE,
-        ];
-
-        foreach ($tables as $table) {
-            $delete = $this->zdb->delete(AUTO_PREFIX . $table);
-            $this->zdb->execute($delete);
-        }
-
-        parent::tearDown();
     }
 
     /**
      * Test add and update
-     *
-     * @return void
      */
     public function testCrud(): void
     {
         $body = new \GaletteAuto\Body($this->zdb);
-        $body->value = 'Berline';
-        $this->assertTrue($body->store(true));
-        $body_id = $body->id;
+        $body->setValue('Berline');
+        $body->store(true);
+        $body_id = $body->getId();
 
         $color = new \GaletteAuto\Color($this->zdb);
-        $color->value = 'Grey';
-        $this->assertTrue($color->store(true));
-        $color_id = $color->id;
+        $color->setValue('Grey');
+        $color->store(true);
+        $color_id = $color->getId();
 
         $finition = new \GaletteAuto\Finition($this->zdb);
-        $finition->value = 'Standard';
-        $this->assertTrue($finition->store(true));
-        $finition_id = $finition->id;
+        $finition->setValue('Standard');
+        $finition->store(true);
+        $finition_id = $finition->getId();
 
         $state = new \GaletteAuto\State($this->zdb);
-        $state->value = 'Correct';
-        $this->assertTrue($state->store(true));
-        $state_id = $state->id;
+        $state->setValue('Correct');
+        $state->store(true);
+        $state_id = $state->getId();
 
         $transmission = new \GaletteAuto\Transmission($this->zdb);
-        $transmission->value = 'Manual';
-        $this->assertTrue($transmission->store(true));
-        $transmission_id = $transmission->id;
+        $transmission->setValue('Manual');
+        $transmission->store(true);
+        $transmission_id = $transmission->getId();
 
         $brand = new \GaletteAuto\Brand($this->zdb);
-        $brand->value = 'Peugeot';
-        $this->assertTrue($brand->store(true));
-        $brand_id = $brand->id;
+        $brand->setValue('Peugeot');
+        $brand->store(true);
+        $brand_id = $brand->getId();
 
         $model = new \GaletteAuto\Model($this->zdb);
         $data = [
@@ -116,16 +74,20 @@ class Auto extends GaletteTestCase
             'brand' => $brand_id,
         ];
         $this->assertTrue($model->check($data));
-        $this->assertTrue($model->store(true));
-        $model_id = $model->id;
+        $model->store(true);
+        $model_id = $model->getId();
 
+        $this->logSuperAdmin();
+        $access = new \GaletteAuto\VehicleAccess($this->zdb, $this->login, $this->preferences);
+        $prefs = new \GaletteAuto\AutoPreferences($this->preferences);
+        $vehicles = new \GaletteAuto\Repository\Vehicles($this->plugins, $this->zdb, $this->login, $this->history);
         $auto = new \GaletteAuto\Auto($this->plugins, $this->zdb);
 
         $data = [];
-        $this->assertFalse($auto->check($data));
+        $this->assertFalse($auto->check($data, $access, $prefs));
         $this->assertSame(
             [
-                '- Mandatory field <a href="#registration">registration</a> empty.',
+                '- Mandatory field <a href="#registration">registration number</a> empty.',
                 '- Mandatory field <a href="#name">name</a> empty.',
                 '- Mandatory field <a href="#first_registration_date">first registration date</a> empty.',
                 '- Mandatory field <a href="#first_circulation_date">first circulation date</a> empty.',
@@ -149,10 +111,10 @@ class Auto extends GaletteTestCase
             'state' => $state_id,
             'transmission' => $transmission_id,
         ];
-        $this->assertFalse($auto->check($data));
+        $this->assertFalse($auto->check($data, $access, $prefs));
         $this->assertSame(
             [
-                '- Mandatory field <a href="#registration">registration</a> empty.',
+                '- Mandatory field <a href="#registration">registration number</a> empty.',
                 '- Mandatory field <a href="#name">name</a> empty.',
                 '- Mandatory field <a href="#first_registration_date">first registration date</a> empty.',
                 '- Mandatory field <a href="#first_circulation_date">first circulation date</a> empty.',
@@ -179,18 +141,16 @@ class Auto extends GaletteTestCase
             'transmission' => $transmission_id,
             'owner_id' => $adh->id,
         ];
-        $check = $auto->check($data);
+        $check = $auto->check($data, $access, $prefs);
         $this->assertSame([], $auto->getErrors());
         $this->assertTrue($check);
 
-        $stored = $auto->store(true);
-        $this->assertEquals([], $auto->getErrors());
-        $this->assertTrue($stored);
-        $auto_id = $auto->id;
+        $vehicles->store($auto);
+        $auto_id = $auto->getId();
 
         //check history
         $history = new \GaletteAuto\History($this->zdb);
-        $this->assertTrue($history->load($auto->id));
+        $this->assertTrue($history->load($auto->getId()));
         $this->assertCount(1, $history->getEntries());
 
         $entry = $history->getEntries()[0];
@@ -202,15 +162,15 @@ class Auto extends GaletteTestCase
                 'car_registration',
                 'id_color',
                 'id_state',
-                'formatted_date',
-                'owner',
                 'color',
-                'state'
+                'state',
+                'formatted_date',
+                'owner'
             ],
             array_keys($entry)
         );
 
-        $this->assertSame($auto->id, (int)$entry['id_car']);
+        $this->assertSame($auto->getId(), (int)$entry['id_car']);
         $this->assertSame($adh->id, (int)$entry['id_adh']);
         $this->assertSame('GA-123-TE', $entry['car_registration']);
         $this->assertSame('Grey', $entry['color']);
@@ -222,9 +182,9 @@ class Auto extends GaletteTestCase
 
         $adh2 = $this->getMemberTwo();
         $color2 = new \GaletteAuto\Color($this->zdb);
-        $color2->value = 'Yellow';
-        $this->assertTrue($color2->store(true));
-        $color2_id = $color2->id;
+        $color2->setValue('Yellow');
+        $color2->store(true);
+        $color2_id = $color2->getId();
 
         $data = [
             'registration' => 'GA-123-TE',
@@ -241,21 +201,21 @@ class Auto extends GaletteTestCase
             'owner_id' => $adh2->id,
             'change_owner' => true,
         ];
-        $check = $auto->check($data);
+        $check = $auto->check($data, $access, $prefs);
         $this->assertSame([], $auto->getErrors());
         $this->assertTrue($check);
 
-        $stored = $auto->store();
-        $this->assertEquals([], $auto->getErrors());
-        $this->assertTrue($stored);
+        //history is sorted on a date with seconds: entries of the same second have no order
+        sleep(1);
+        $vehicles->store($auto);
 
         //check history
         $history = new \GaletteAuto\History($this->zdb);
-        $this->assertTrue($history->load($auto->id));
+        $this->assertTrue($history->load($auto->getId()));
         $this->assertCount(2, $history->getEntries());
 
         $entry = $history->getEntries()[1];
-        $this->assertSame($auto->id, (int)$entry['id_car']);
+        $this->assertSame($auto->getId(), (int)$entry['id_car']);
         $this->assertSame($adh2->id, (int)$entry['id_adh']);
         $this->assertSame('GA-123-TE', $entry['car_registration']);
         $this->assertSame('Yellow', $entry['color']);
@@ -277,36 +237,35 @@ class Auto extends GaletteTestCase
             'transmission' => $transmission_id,
             'owner_id' => $adh->id,
         ];
-        $check = $auto->check($data);
+        $check = $auto->check($data, $access, $prefs);
         $this->assertSame([], $auto->getErrors());
         $this->assertTrue($check);
 
-        $stored = $auto->store(true);
-        $this->assertEquals([], $auto->getErrors());
-        $this->assertTrue($stored);
-        $auto2_id = $auto->id;
+        $vehicles->store($auto);
+        $auto2_id = $auto->getId();
 
         $this->assertTrue($history->load($auto2_id));
         $this->assertCount(1, $history->getEntries());
 
-        $this->logSuperAdmin();
-        $autos = new \GaletteAuto\Autos($this->plugins, $this->zdb);
-        $this->assertCount(2, $autos->getList());
+        //sorted by name
+        $this->assertSame(
+            ['My car', 'Titine'],
+            array_map(fn($car) => $car->getName(), $vehicles->getList())
+        );
+        $this->assertSame(2, $vehicles->getCount());
 
-        $this->assertTrue($autos->removeVehicles([$auto_id]));
-        $this->assertCount(1, $autos->getList());
+        $vehicles->remove([$auto_id]);
+        $this->assertCount(1, $vehicles->getList());
         $this->expectNoLogEntry();
         $this->assertFalse($auto->load($auto_id));
         $this->expectLogEntry(
-            \Analog::ERROR,
-            '[GaletteAuto\Auto] Cannot load car from id `' . $auto_id . '` | Vehicle not found'
+            \Analog\Analog::ERROR,
+            '[GaletteAuto\Auto] Cannot load vehicle #' . $auto_id . ' | Vehicle not found'
         );
     }
 
     /**
      * Test fuels
-     *
-     * @return void
      */
     public function testListFuels(): void
     {
@@ -316,8 +275,6 @@ class Auto extends GaletteTestCase
 
     /**
      * Test load error
-     *
-     * @return void
      */
     public function testLoadError(): void
     {
@@ -325,8 +282,8 @@ class Auto extends GaletteTestCase
         $this->expectNoLogEntry();
         $this->assertFalse($auto->load(999));
         $this->expectLogEntry(
-            \Analog::ERROR,
-            '[GaletteAuto\Auto] Cannot load car from id `999` | Vehicle not found'
+            \Analog\Analog::ERROR,
+            '[GaletteAuto\Auto] Cannot load vehicle #999 | Vehicle not found'
         );
     }
 }

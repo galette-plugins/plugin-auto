@@ -1,53 +1,49 @@
 {#
-/**
- * Copyright © 2003-2024 The Galette Team
- *
- * This file is part of Galette (https://galette.eu).
- *
- * Galette is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Galette is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with Galette. If not, see <http://www.gnu.org/licenses/>.
- */
-#}
+ # This file is part of Galette Auto plugin (https://galette.eu).
+ # SPDX-FileCopyrightText: Copyright © 2009-2026 The Galette Team
+ # SPDX-License-Identifier: GPL-3.0-or-later
+ #}
+
 {% extends 'page.html.twig' %}
+
+{% set can_change_owner = login.isAdmin() or login.isStaff() or login.isGroupManager() %}
 
 {% block content %}
     {% if mode == 'new' %}
         {% set action = url_for("doVehicleAdd") %}
     {% else %}
-        {% set action = url_for("doVehicleEdit", {"id": car.id}) %}
+        {% set action = url_for("doVehicleEdit", {"id": car.getId()}) %}
     {% endif %}
-    <form class="ui form" action="{{ action }}" method="post" id="modifform" enctype="multipart/form-data">
+    <form
+        class="ui form"
+        action="{{ action }}"
+        method="post"
+        id="modifform"
+        enctype="multipart/form-data"
+        data-models-url="{{ url_for("ajaxModels") }}"
+        data-models-placeholder="{{ _T("Choose a model", "auto") }}"
+    >
         <div class="ui styled fluid accordion field">
             <div class="active title">
-                <i class="icon dropdown"></i>
+                <i class="icon dropdown" aria-hidden="true"></i>
                 {{ _T("Car's base informations", "auto") }}
             </div>
             <div class="active content">
                 {% include "components/forms/text.html.twig" with {
                     id: 'name',
-                    value: car.name,
+                    value: car.getName(),
                     label: _T("Name", "auto"),
                     required: required.name is defined
                 } %}
 
                 {% set brand_list_values = {(-1): _T("Choose a brand", "auto")} %}
                 {% for brand in brands %}
-                    {% set brand_list_values = brand_list_values + {(brand.id_brand): brand.brand} %}
+                    {% set brand_list_values = brand_list_values + {(brand.getId()): brand.getValue()} %}
                 {% endfor %}
 
                 {% include "components/forms/select.html.twig" with {
                     id: 'brand',
-                    value: car.model.brand.id,
+                    value: car.getModel().brand.getId(),
                     values: brand_list_values,
                     label: _T("Brand", "auto"),
                     required: required.brand is defined
@@ -60,7 +56,7 @@
 
                 {% include "components/forms/select.html.twig" with {
                     id: 'model',
-                    value: car.model.id,
+                    value: car.getModel().getId(),
                     values: model_list_values,
                     label: _T("Model", "auto"),
                     required: required.model is defined
@@ -68,28 +64,28 @@
 
                 {% include "components/forms/date.html.twig" with {
                     id: 'first_registration_date',
-                    value: car.first_registration_date,
+                    value: car.getFirstRegistrationDate() ? car.getFirstRegistrationDate()|date(_T("Y-m-d")) : '',
                     label: _T("First registration date", "auto"),
                     title: _T("First registration date", "auto")
                 } %}
 
                 {% include "components/forms/date.html.twig" with {
                     id: 'first_circulation_date',
-                    value: car.first_circulation_date,
+                    value: car.getFirstCirculationDate() ? car.getFirstCirculationDate()|date(_T("Y-m-d")) : '',
                     label: _T("First circulation date", "auto"),
                     title: _T("First circulation date", "auto")
                 } %}
 
                 {% include "components/forms/number.html.twig" with {
                     id: 'mileage',
-                    value: car.mileage,
+                    value: car.getMileage(),
                     label: _T("Mileage", "auto"),
                     required: required.mileage is defined
                 } %}
 
                 {% include "components/forms/number.html.twig" with {
                     id: 'seats',
-                    value: car.seats,
+                    value: car.getSeats(),
                     label: _T("Seats", "auto"),
                     required: required.seats is defined
                 } %}
@@ -99,11 +95,11 @@
 
         <div class="ui styled fluid accordion field">
             <div class="active title">
-                <i class="icon dropdown"></i>
+                <i class="icon dropdown" aria-hidden="true"></i>
                 {{ _T("Car's photo", "auto") }}
             </div>
             <div class="active content">
-                <img src="{% if car.id %}{{ url_for("vehiclePhoto", {"id": car.id}) }}{% else %}{{ url_for("vehiclePhoto") }}{% endif %}" class="picture" width="{{ car.picture.getOptimalWidth() }}" height="{{ car.picture.getOptimalHeight() }}" alt="{{ _T("Car's photo", "auto") }}"/><br/>
+                <img src="{% if car.getId() %}{{ url_for("vehiclePhoto", {"id": car.getId()}) }}{% else %}{{ url_for("vehiclePhoto") }}{% endif %}" class="picture" width="{{ car.picture.getOptimalWidth() }}" height="{{ car.picture.getOptimalHeight() }}" alt="{{ _T("Car's photo", "auto") }}"/><br/>
                 {% if car.hasPicture() %}
                     {% include "components/forms/checkbox.html.twig" with {
                         id: 'del_photo',
@@ -115,7 +111,7 @@
                 <div class="ui file action input">
                     <input id="photo_file" type="file" name="photo"/>
                     <label for="photo_file" class="ui button">
-                        <i class="blue upload icon"></i>
+                        <i class="blue upload icon" aria-hidden="true"></i>
                         {% if car.hasPicture() %}{{ _T("Choose another file") }}{% else %}{{ _T("Choose a file") }}{% endif %}
                     </label>
                 </div>
@@ -124,59 +120,56 @@
 
         <div class="ui styled fluid accordion field">
             <div class="active title">
-                <i class="icon dropdown"></i>
+                <i class="icon dropdown" aria-hidden="true"></i>
                 {{ _T("Current car's state informations", "auto") }}
             </div>
             <div class="active content">
-                <div class="field required">
-                {% if car.id %}
-                    <label>{{ _T("Current owner", "auto") }}</label>
-                    <p>
-                        <span>
-                            {{ car.owner.sfullname }}
-                            {% if login.isAdmin() or login.isStaff() %}
-                                {# Does car's history should be visible by the actual owner? #}
-                                <a href="{{ url_for("vehicleHistory", {"id": car.id}) }}" title="{{ _T("Show full car state history", "auto") }}" id="state_history">
-                                    <i class="ui history icon"></i>
-                                    <span class="visually-hidden">{{ _T("Car state history", "auto") }}</span>
-                                </a>
-
-                                <div id="change_owner-checkbox" class="ui toggle checkbox">
-                                    <input type="checkbox" name="change_owner" id="change_owner" value="1"/>
-                                    <label for="attach"><i class="linkify icon"></i> {{ _T("Change car's owner", "auto") }}</label>
-                                </div>
-                            {% endif %}
-                        </span>
-                    </p>
+                {% if car.getId() %}
+                    <div class="field">
+                        <label>{{ _T("Current owner", "auto") }}</label>
+                        <p>
+                            {{ car.getOwner().sfullname }}
+                            <button type="button" class="ui mini basic icon button vehicle-history" data-url="{{ url_for("vehicleHistory", {"id": car.getId()}) }}" title="{{ _T("Show full car state history", "auto") }}">
+                                <i class="ui history icon" aria-hidden="true"></i>
+                                <span class="visually-hidden">{{ _T("Car state history", "auto") }}</span>
+                            </button>
+                        </p>
+                        {% if can_change_owner %}
+                            <div id="change_owner-checkbox" class="ui toggle checkbox">
+                                <input type="checkbox" name="change_owner" id="change_owner" value="1"/>
+                                <label for="change_owner"><i class="linkify icon" aria-hidden="true"></i> {{ _T("Change car's owner", "auto") }}</label>
+                            </div>
+                        {% endif %}
+                    </div>
                 {% else %}
-                    <input type="hidden" name="change_owner" id="change_owner" value="1"/>
+                    <input type="hidden" name="change_owner" value="1"/>
                 {% endif %}
 
-                {% if login.isAdmin() or login.isStaff() %}
-                    {% set cclass = 'field' %}
-                    {% if car.id %}{% set cclass = cclass ~ ' displaynone' %}{% endif %}
+                {% if can_change_owner %}
                     {% include 'components/forms/member_dropdown.html.twig' with {
                         'required': true,
                         'component_id': 'owner_id_elt',
                         'id': 'owner_id',
                         'label': _T("Owner", "auto"),
-                        'value': car.owner.id,
-                        'component_class': cclass
+                        'value': car.getOwnerId(),
+                        'component_class': car.getId() ? 'field displaynone' : 'field'
                     } %}
-                </div>
-                {% else %}
-                    <input type="hidden" name="owner" value="{{ car.owner.id }}"/>
-                    {{ members.list[car.owner.id] }}
+                {% elseif not car.getId() %}
+                    {# simple members only own their vehicles #}
+                    <div class="field">
+                        <label>{{ _T("Owner", "auto") }}</label>
+                        <p>{{ login.loggedInAs(true) }}</p>
+                    </div>
                 {% endif %}
 
                 {% set color_list_values = {(-1): _T("Choose a color", "auto")} %}
                 {% for color in colors %}
-                    {% set color_list_values = color_list_values + {(color.id_color): color.color} %}
+                    {% set color_list_values = color_list_values + {(color.getId()): color.getValue()} %}
                 {% endfor %}
 
                 {% include "components/forms/select.html.twig" with {
                     id: 'color',
-                    value: car.color.id,
+                    value: car.getColor().getId(),
                     values: color_list_values,
                     label: _T("Color", "auto"),
                     required: required.color is defined
@@ -184,12 +177,12 @@
 
                 {% set state_list_values = {(-1): _T("Choose a state", "auto")} %}
                 {% for state in states %}
-                    {% set state_list_values = state_list_values + {(state.id_state): state.state} %}
+                    {% set state_list_values = state_list_values + {(state.getId()): state.getValue()} %}
                 {% endfor %}
 
                 {% include "components/forms/select.html.twig" with {
                     id: 'state',
-                    value: car.state.id,
+                    value: car.getState().getId(),
                     values: state_list_values,
                     label: _T("State", "auto"),
                     required: required.state is defined
@@ -197,8 +190,8 @@
 
                 {% include "components/forms/text.html.twig" with {
                     id: 'registration',
-                    value: car.registration,
-                    label: _T("Registration", "auto"),
+                    value: car.getRegistration(),
+                    label: _T("Registration number", "auto"),
                     required: required.registration is defined
                 } %}
 
@@ -207,18 +200,18 @@
 
         <div class="ui styled fluid accordion field">
             <div class="active title">
-                <i class="icon dropdown"></i>
+                <i class="icon dropdown" aria-hidden="true"></i>
                 {{ _T("Car's technical informations", "auto") }}
             </div>
             <div class="active content">
                 {% set body_list_values = {(-1): _T("Choose a body", "auto")} %}
                 {% for body in bodies %}
-                    {% set body_list_values = body_list_values + {(body.id_body): body.body} %}
+                    {% set body_list_values = body_list_values + {(body.getId()): body.getValue()} %}
                 {% endfor %}
 
                 {% include "components/forms/select.html.twig" with {
                     id: 'body',
-                    value: car.body.id,
+                    value: car.getBody().getId(),
                     values: body_list_values,
                     label: _T("Body", "auto"),
                     required: required.body is defined
@@ -226,12 +219,12 @@
 
                 {% set transmission_list_values = {(-1): _T("Choose a transmission", "auto")} %}
                 {% for transmission in transmissions %}
-                    {% set transmission_list_values = transmission_list_values + {(transmission.id_transmission): transmission.transmission} %}
+                    {% set transmission_list_values = transmission_list_values + {(transmission.getId()): transmission.getValue()} %}
                 {% endfor %}
 
                 {% include "components/forms/select.html.twig" with {
                     id: 'transmission',
-                    value: car.transmission.id,
+                    value: car.getTransmission().getId(),
                     values: transmission_list_values,
                     label: _T("Transmission", "auto"),
                     required: required.transmission is defined
@@ -239,12 +232,12 @@
 
                 {% set finition_list_values = {(-1): _T("Choose a finition", "auto")} %}
                 {% for finition in finitions %}
-                    {% set finition_list_values = finition_list_values + {(finition.id_finition): finition.finition} %}
+                    {% set finition_list_values = finition_list_values + {(finition.getId()): finition.getValue()} %}
                 {% endfor %}
 
                 {% include "components/forms/select.html.twig" with {
                     id: 'finition',
-                    value: car.finition.id,
+                    value: car.getFinition().getId(),
                     values: finition_list_values,
                     label: _T("Finition", "auto"),
                     required: required.finition is defined
@@ -252,21 +245,21 @@
 
                 {% include "components/forms/text.html.twig" with {
                     id: 'chassis_number',
-                    value: car.chassis_number,
+                    value: car.getChassisNumber(),
                     label: _T("Chassis number", "auto"),
                     required: required.chassis_number is defined
                 } %}
 
                 {% include "components/forms/number.html.twig" with {
                     id: 'horsepower',
-                    value: car.horsepower,
+                    value: car.getHorsepower(),
                     label: _T("Horsepower", "auto"),
                     required: required.horsepower is defined
                 } %}
 
                 {% include "components/forms/number.html.twig" with {
                     id: 'engine_size',
-                    value: car.engine_size,
+                    value: car.getEngineSize(),
                     label: _T("Engine size", "auto"),
                     required: required.engine_size is defined
                 } %}
@@ -278,7 +271,7 @@
 
                 {% include "components/forms/select.html.twig" with {
                     id: 'fuel',
-                    value: car.fuel,
+                    value: car.getFuel(),
                     values: fuel_list_values,
                     label: _T("Fuel", "auto"),
                     required: required.fuel is defined
@@ -288,13 +281,13 @@
 
         <div class="ui styled fluid accordion field">
             <div class="active title">
-                <i class="icon dropdown"></i>
+                <i class="icon dropdown" aria-hidden="true"></i>
                 {{ _T("Comment", "auto") }}
             </div>
             <div class="active content">
                 {% include "components/forms/textarea.html.twig" with {
                     id: 'comment',
-                    value: car.comment,
+                    value: car.getComment(),
                     label: _T("Comment", "auto"),
                     required: required.comment is defined
                 } %}
@@ -303,71 +296,21 @@
 
         <div class="ui basic center aligned fitted segment">
             <button type="submit" name="valid" class="action ui labeled icon primary button">
-                <i class="save icon"></i> {{ _T("Save") }}
+                <i class="save icon" aria-hidden="true"></i> {{ _T("Save") }}
             </button>
             <input type="hidden" name="{{ mode }}" value="1"/>
-            <input type="hidden" name="id_car" value="{{ car.id }}"/>
-            {% include "components/forms/csrf.html.twig" %}
+            <input type="hidden" name="id_car" value="{{ car.getId() }}"/>
         </div>
     </form>
 {% endblock %}
 
 {% block javascripts %}
-        <script type="text/javascript">
-            {% include "elements/js/choose_adh.js.twig" with {"js_chosen_id": "#owner_id"} %}
-
-            $(function() {
-                $('#brand').dropdown('setting', 'onChange', function(id_brand) {
-                        // Get the new list for selected brand, and append it to models on the page
-                        $.post(
-                            '{{ url_for("ajaxModels") }}',
-                            {
-                                brand: id_brand
-                            },
-                            function(data){
-                                var _models = new Array();
-                                _models.push({value: '-1', name: "{{ _T("Choose a model", "auto")|e('js') }}"});
-                                $(data).each(function(i){
-                                    var _data = data[i];
-                                    _models.push({name: _data.model, value: _data.id_model});
-                                });
-                                $('#model').dropdown('change values', _models);
-                                $('#model').dropdown('set selected', -1);
-                            },
-                            'json'
-                        );
-                    }
-                );
-    {% if login.isAdmin() or login.isStaff() %}
-                {# Popup for owner change #}
-                $('#change_owner-checkbox').checkbox({
-                    onChecked: function() {
-                        $('#owner_id_elt').removeClass('displaynone');
-                    },
-                    onUnchecked: function() {
-                        $('#owner_id_elt').addClass('displaynone');
-                    }
-                });
-
-        {% if mode != 'new' %}
-                $('#state_history').click(function() {
-                    $.ajax({
-                        url: this.href,
-                        success: function(res){
-                            _history_dialog(res);
-                        }
-                    });
-                    return false;
-                });
-
-                var _history_dialog = function(res) {
-                    $('body').modal({
-                        title: '{{ _T("Car's history", "auto")|e('js') }}',
-                        content: res
-                    }).modal('show');
-                }
-        {% endif %}
+    <script type="text/javascript">
+    {% if can_change_owner %}
+        {% include "elements/js/choose_adh.js.twig" with {"js_chosen_id": "#owner_id"} %}
     {% endif %}
-            });
-        </script>
+    {% if car.getId() %}
+        {% include "@PluginGaletteAuto/history_modal.js.twig" %}
+    {% endif %}
+    </script>
 {% endblock %}

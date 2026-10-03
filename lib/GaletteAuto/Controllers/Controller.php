@@ -1,34 +1,30 @@
 <?php
 
 /**
- * Copyright © 2003-2025 The Galette Team
- *
- * This file is part of Galette (https://galette.eu).
- *
- * Galette is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Galette is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with Galette. If not, see <http://www.gnu.org/licenses/>.
+ * This file is part of Galette Auto plugin (https://galette.eu).
+ * SPDX-FileCopyrightText: Copyright © 2009-2026 The Galette Team
+ * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
 declare(strict_types=1);
 
 namespace GaletteAuto\Controllers;
 
+use Analog\Analog;
 use Galette\Repository\Members;
+use GaletteAuto\AbstractObject;
 use GaletteAuto\Auto;
-use GaletteAuto\Autos;
+use GaletteAuto\AutoPreferences;
+use GaletteAuto\Body;
+use GaletteAuto\Brand;
+use GaletteAuto\Color;
+use GaletteAuto\Finition;
 use GaletteAuto\History;
 use GaletteAuto\Model;
 use GaletteAuto\Picture;
+use GaletteAuto\State;
+use GaletteAuto\Transmission;
+use GaletteAuto\VehicleAccess;
 use Laminas\Db\ResultSet\ResultSet;
 use Slim\Psr7\Request;
 use Slim\Psr7\Response;
@@ -37,6 +33,8 @@ use Galette\Entity\Adherent;
 use GaletteAuto\Filters\ModelsList;
 use GaletteAuto\Filters\AutosList;
 use GaletteAuto\Repository\Models;
+use GaletteAuto\Repository\Properties;
+use GaletteAuto\Repository\Vehicles;
 use DI\Attribute\Inject;
 
 /**
@@ -52,66 +50,128 @@ class Controller extends AbstractPluginController
     #[Inject("Plugin Galette Auto")]
     protected array $module_info;
 
-    private bool $mine = false;
-    private bool $public = false;
-
-    private int $id_adh;
+    /**
+     * Get vehicles access rules
+     */
+    protected function getAccess(): VehicleAccess
+    {
+        return new VehicleAccess($this->zdb, $this->login, $this->preferences);
+    }
 
     /**
-     * Check ACLs for specific member
+     * Refuse access to a vehicle or to vehicles of a member
      *
-     * @param Response          $response Response
-     * @param int               $id_adh   Members id to check right for
-     * @param string|false|null $redirect Path to redirect to (myVehiclesList per default)
-     *
-     * @return bool|Response
+     * @param string $log Log message
      */
-    protected function checkAclsFor(Response $response, int $id_adh, string|false|null $redirect = null): bool|Response
+    protected function accessDenied(Response $response, string $log): Response
     {
-        //maybe should this be a middleware... but I do not know how to pass redirect :/
-        if (
-            $this->login->id != $id_adh
-            && !$this->login->isAdmin()
-            && !$this->login->isStaff()
-        ) {
-            $deps = [
-                'picture'   => false,
-                'dues'      => false
-            ];
-            $member = new Adherent($this->zdb, $id_adh, $deps);
-            if (!$this->login->isGroupManager(array_keys($member->groups))) {
-                //no right to see requested member.
-                if ($redirect === false) {
-                    return false;
-                }
+        Analog::log(
+            $log . ' (user #' . $this->login->id . ')',
+            Analog::WARNING
+        );
+        return $this->redirectWithErrors(
+            $response,
+            [_T("You do not have enough privileges.", "auto")],
+            $this->routeparser->urlFor('myVehiclesList')
+        );
+    }
 
-                $this->flash->addMessage(
-                    'error_detected',
-                    _T("You do not have enough privileges.", "auto")
-                );
+    /**
+     * Get plugin preferences
+     */
+    protected function getAutoPreferences(): AutoPreferences
+    {
+        return new AutoPreferences($this->preferences);
+    }
 
-                if ($redirect === null) {
-                    $redirect = $this->routeparser->urlFor('myVehiclesList');
-                }
-                return $response
-                    ->withStatus(403)
-                    ->withHeader('Location', $redirect);
+    /**
+     * Get vehicles repository
+     */
+    protected function getVehicles(): Vehicles
+    {
+        return new Vehicles($this->plugins, $this->zdb, $this->login, $this->history);
+    }
+
+    /**
+     * Get the whole list of a property
+     *
+     * @param class-string<AbstractObject> $class Property class name
+     *
+     * @return array<int, AbstractObject>
+     */
+    protected function getProperties(string $class): array
+    {
+        return (new Properties($this->zdb, $this->preferences, $this->login, $class))->getList();
+    }
+
+    /**
+     * Can current user manage all the vehicles?
+     *
+     * @param array<int> $ids Vehicles IDs
+     */
+    protected function canManageVehicles(array $ids): bool
+    {
+        if (count($ids) === 0) {
+            return false;
+        }
+
+        $owners = $this->getVehicles()->getOwners($ids);
+
+        if (count($owners) !== count(array_unique($ids))) {
+            //some vehicles do not exist
+            return false;
+        }
+
+        $access = $this->getAccess();
+        foreach (array_unique($owners) as $id_adh) {
+            if (!$access->canManageMember($id_adh)) {
+                return false;
             }
         }
         return true;
     }
 
     /**
+     * Can current user see a vehicle?
+     *
+     * @param int $id Vehicle ID
+     */
+    protected function canViewVehicle(int $id): bool
+    {
+        $select = $this->zdb->select(AUTO_PREFIX . Auto::TABLE);
+        $select->columns([Adherent::PK])->where([Auto::PK => $id]);
+        $row = $this->zdb->execute($select)->current();
+        if ($row === null) {
+            return false;
+        }
+        return $this->getAccess()->canViewVehicles()
+            || $this->getAccess()->canManageMember((int)$row[Adherent::PK]);
+    }
+
+    /**
+     * Get the vehicles list to go back to after an action on a vehicle
+     *
+     * @param int $id_adh Vehicle owner ID
+     */
+    protected function getListRoute(int $id_adh): string
+    {
+        if ($this->login->id == $id_adh || !$this->getAccess()->isManager()) {
+            return $this->routeparser->urlFor('myVehiclesList');
+        }
+        return $this->routeparser->urlFor('vehiclesList');
+    }
+
+    /**
      * Vehicle photo
      *
-     * @param Request  $request  PSR Request
-     * @param Response $response PSR Response
-     * @param ?int     $id       Vehicle id
-     *
-     * @return Response
+     * @param ?int $id Vehicle id
      */
     public function vehiclePhoto(Request $request, Response $response, ?int $id = null): Response
     {
+        if ($id !== null && !$this->canViewVehicle($id)) {
+            //not allowed: serve default picture
+            $id = null;
+        }
         $picture = new Picture($this->plugins, $id);
 
         $response = $response->withHeader('Content-Type', $picture->getMime())
@@ -130,74 +190,81 @@ class Controller extends AbstractPluginController
     /**
      * Public vehicles list
      *
-     * @param Request     $request  Request
-     * @param Response    $response Response
-     * @param string|null $option   Either 'page' or 'order'
-     * @param int|null    $value    Option value
-     *
-     * @return Response
+     * @param string|null $option Either 'page' or 'order'
+     * @param int|null    $value  Option value
      */
     public function publicVehiclesList(Request $request, Response $response, ?string $option = null, ?int $value = null): Response
     {
-        $this->public = true;
-        return $this->vehiclesList($request, $response, $option, $value);
+        return $this->listVehicles($request, $response, $option, $value, public: true);
     }
 
     /**
      * List my vehicles
      *
-     * @param Request     $request  Request
-     * @param Response    $response Response
-     * @param string|null $option   Either 'page' or 'order'
-     * @param int|null    $value    Option value
-     *
-     * @return Response
+     * @param string|null $option Either 'page' or 'order'
+     * @param int|null    $value  Option value
      */
     public function myVehiclesList(Request $request, Response $response, ?string $option = null, ?int $value = null): Response
     {
-        $this->id_adh = $this->login->id;
-        $this->mine = true;
-        return $this->vehiclesList($request, $response, $option, $value);
+        return $this->listVehicles($request, $response, $option, $value, (int)$this->login->id, mine: true);
     }
 
     /**
      * List vehicles for a member
      *
-     * @param Request     $request  Request
-     * @param Response    $response Response
-     * @param int         $id       Member ID
-     * @param string|null $option   Either 'page' or 'order'
-     * @param int|null    $value    Option value
-     *
-     * @return Response
+     * @param int         $id     Member ID
+     * @param string|null $option Either 'page' or 'order'
+     * @param int|null    $value  Option value
      */
     public function memberVehiclesList(Request $request, Response $response, int $id, ?string $option = null, ?int $value = null): Response
     {
-        $this->id_adh = $id;
-        return $this->vehiclesList($request, $response, $option, $value);
+        return $this->listVehicles($request, $response, $option, $value, $id);
     }
 
     /**
      * List vehicles
      *
-     * @param Request     $request  Request
-     * @param Response    $response Response
-     * @param string|null $option   Either 'page' or 'order'
-     * @param int|null    $value    Option value
-     *
-     * @return Response
+     * @param string|null $option Either 'page' or 'order'
+     * @param int|null    $value  Option value
      */
     public function vehiclesList(Request $request, Response $response, ?string $option = null, ?int $value = null): Response
     {
+        return $this->listVehicles($request, $response, $option, $value);
+    }
+
+    /**
+     * List vehicles, of every visible member or of one of them
+     *
+     * @param string|null $option Either 'page' or 'order'
+     * @param int|null    $value  Option value
+     * @param int|null    $id_adh Member ID, null for all visible members
+     * @param bool        $mine   Current user's vehicles
+     * @param bool        $public Public list
+     */
+    protected function listVehicles(
+        Request $request,
+        Response $response,
+        ?string $option = null,
+        ?int $value = null,
+        ?int $id_adh = null,
+        bool $mine = false,
+        bool $public = false
+    ): Response {
         $get = $request->getQueryParams();
-        $id_adh = null;
-        if (!empty($this->id_adh)) {
-            $id_adh = (int)$this->id_adh;
-            $this->checkAclsFor($response, $id_adh);
+        if (empty($id_adh)) {
+            //superadmin has no vehicles of its own
+            $id_adh = null;
+        } else {
+            if (!$this->getAccess()->canManageMember($id_adh)) {
+                return $this->accessDenied($response, 'Trying to list vehicles of member #' . $id_adh);
+            }
         }
 
-        $auto = new Autos($this->plugins, $this->zdb);
-        $afilters = $this->session->vehicles_filters ?? new AutosList();
+        $vehicles = $this->getVehicles();
+        //the public page paginates on its own: a manager going there must not
+        //land on the page, or the number of rows, of the management list
+        $session_key = $public ? 'public_vehicles_filters' : 'vehicles_filters';
+        $afilters = $this->session->$session_key ?? new AutosList();
 
         // Simple filters
         if ($option !== null) {
@@ -206,7 +273,10 @@ class Controller extends AbstractPluginController
                     $afilters->current_page = (int)$value;
                     break;
                 case 'order':
-                    $afilters->orderby = $value;
+                    //owners names may be hidden on the public list
+                    if (!$public || $value !== AutosList::ORDERBY_OWNER) {
+                        $afilters->orderby = $value;
+                    }
                     break;
             }
         }
@@ -216,7 +286,7 @@ class Controller extends AbstractPluginController
         }
 
         $title = _T("Cars list", "auto");
-        if ($this->mine === true) {
+        if ($mine === true) {
             $title = _T("My cars", "auto");
         } elseif ($id_adh !== null) {
             $title = _T("Member's cars", "auto");
@@ -225,19 +295,30 @@ class Controller extends AbstractPluginController
         $params = [
             'page_title'    => $title,
             'title'         => _T("Vehicles list", "auto"),
-            'show_mine'     => $this->mine,
-            'require_dialog' => true
+            'show_mine'     => $mine,
+            'require_dialog' => true,
+            'filters'       => $afilters
         ];
 
-        if ($id_adh === null) {
-            $params['autos'] = $auto->getList(true, $this->mine, null, $afilters, null, $this->public);
-        } else {
+        if ($id_adh !== null) {
             $params['id_adh'] = $id_adh;
-            $params['autos'] = $auto->getMemberList($id_adh, $afilters);
         }
-        $params['count_vehicles'] = $auto->getCount();
+        $params['autos'] = $vehicles->getList($afilters, $id_adh, $mine, $public);
+        $params['count_vehicles'] = $vehicles->getCount();
 
-        $this->session->vehicles_filters = $afilters;
+        if ($public) {
+            $access = $this->getAccess();
+            $params['public_owners'] = [];
+            //history is shown to whoever may see it from the vehicle form
+            $params['history_allowed'] = [];
+            foreach ($params['autos'] as $vehicle) {
+                $params['public_owners'][$vehicle->getId()] = $access->isOwnerPublic($vehicle->getOwner());
+                $params['history_allowed'][$vehicle->getId()] = $this->login->isLogged()
+                    && $access->canManageMember((int)$vehicle->getOwnerId());
+            }
+        }
+
+        $this->session->$session_key = $afilters;
 
         //assign pagination variables to the template and add pagination links
         $afilters->setViewPagination($this->routeparser, $this->view);
@@ -245,7 +326,7 @@ class Controller extends AbstractPluginController
         // display page
         $this->view->render(
             $response,
-            $this->getTemplate($this->public ? 'public_vehicles_list' : 'vehicles_list'),
+            $this->getTemplate($public ? 'public_vehicles_list' : 'vehicles_list'),
             $params
         );
         return $response;
@@ -253,11 +334,6 @@ class Controller extends AbstractPluginController
 
     /**
      * Show add vehicle route
-     *
-     * @param Request  $request  Request
-     * @param Response $response Response
-     *
-     * @return Response
      */
     public function showAddVehicle(Request $request, Response $response): Response
     {
@@ -267,11 +343,7 @@ class Controller extends AbstractPluginController
     /**
      * Show edit vehicle route
      *
-     * @param Request  $request  Request
-     * @param Response $response Response
-     * @param int      $id       Vehicle id
-     *
-     * @return Response
+     * @param int $id Vehicle id
      */
     public function showEditVehicle(Request $request, Response $response, int $id): Response
     {
@@ -281,12 +353,8 @@ class Controller extends AbstractPluginController
     /**
      * Show add/edit route
      *
-     * @param Request  $request  Request
-     * @param Response $response Response
-     * @param string   $action   Either 'add' or 'edit'
-     * @param int|null $id       Vehicle id
-     *
-     * @return Response
+     * @param string   $action Either 'add' or 'edit'
+     * @param int|null $id     Vehicle id
      */
     public function showAddEditVehicle(Request $request, Response $response, string $action, ?int $id = null): Response
     {
@@ -294,28 +362,30 @@ class Controller extends AbstractPluginController
 
         $auto = new Auto($this->plugins, $this->zdb);
         if (!$is_new) {
-            $auto->load($id);
-            $this->checkAclsFor($response, $auto->owner->id);
+            if (!$auto->load((int)$id) || !$this->getAccess()->canManageMember($auto->getOwnerId())) {
+                return $this->accessDenied($response, 'Trying to edit vehicle #' . $id);
+            }
         } else {
             $get = $request->getQueryParams();
             if (
                 isset($get['id_adh'])
-                && ($this->login->isAdmin() || $this->login->isStaff())
+                && $this->getAccess()->isManager()
+                && $this->getAccess()->canManageMember((int)$get['id_adh'])
             ) {
-                $auto->owner_id = (int)$get['id_adh'];
+                $auto->setOwner((int)$get['id_adh']);
             } else {
                 $auto->appropriateCar($this->login);
             }
         }
 
         if ($this->session->auto !== null) {
-            $auto->check($this->session->auto);
+            $auto->check($this->session->auto, $this->getAccess(), $this->getAutoPreferences());
             $this->session->auto = null;
         }
 
         $title = ($is_new)
             ? _T("New vehicle", "auto")
-            : str_replace('%s', $auto->name, _T("Change vehicle '%s'", "auto"));
+            : str_replace('%s', $auto->getName(), _T("Change vehicle '%s'", "auto"));
 
         $mfilters = new ModelsList();
         $models = new Models(
@@ -331,23 +401,23 @@ class Controller extends AbstractPluginController
             'require_calendar'  => true,
             'require_dialog'    => true,
             'car'               => $auto,
-            'models'            => $models->getList($auto->model->brand->id),
-            'brands'            => $auto->model->brand->getList(),
-            'colors'            => $auto->color->getList(),
-            'bodies'            => $auto->body->getList(),
-            'transmissions'     => $auto->transmission->getList(),
-            'finitions'         => $auto->finition->getList(),
-            'states'            => $auto->state->getList(),
+            'models'            => $models->getList($auto->getModel()->getBrand()->getId()),
+            'brands'            => $this->getProperties(Brand::class),
+            'colors'            => $this->getProperties(Color::class),
+            'bodies'            => $this->getProperties(Body::class),
+            'transmissions'     => $this->getProperties(Transmission::class),
+            'finitions'         => $this->getProperties(Finition::class),
+            'states'            => $this->getProperties(State::class),
             'fuels'             => $auto->listFuels(),
             'time'              => time(),
-            'required'          => $auto->getRequired()
+            'required'          => $this->getAutoPreferences()->getRequired()
         ];
 
         // members
         $m = new Members();
         $oid = null;
-        if ($auto->owner->id > 0) {
-            $oid = $auto->owner->id;
+        if ($auto->getOwnerId() > 0) {
+            $oid = $auto->getOwnerId();
         }
         $members = $m->getDropdownMembers(
             $this->zdb,
@@ -376,11 +446,6 @@ class Controller extends AbstractPluginController
 
     /**
      * Do add vehicle route
-     *
-     * @param Request  $request  Request
-     * @param Response $response Response
-     *
-     * @return Response
      */
     public function doAddVehicle(Request $request, Response $response): Response
     {
@@ -390,11 +455,7 @@ class Controller extends AbstractPluginController
     /**
      * Do edit vehicle route
      *
-     * @param Request  $request  Request
-     * @param Response $response Response
-     * @param int      $id       Vehicle id
-     *
-     * @return Response
+     * @param int $id Vehicle id
      */
     public function doEditVehicle(Request $request, Response $response, int $id): Response
     {
@@ -404,12 +465,8 @@ class Controller extends AbstractPluginController
     /**
      * Do add/edit route
      *
-     * @param Request  $request  Request
-     * @param Response $response Response
-     * @param string   $action   Either 'add' or 'edit'
-     * @param int|null $id       Vehicle id
-     *
-     * @return Response
+     * @param string   $action Either 'add' or 'edit'
+     * @param int|null $id     Vehicle id
      */
     public function doAddEditVehicle(Request $request, Response $response, string $action = 'edit', ?int $id = null): Response
     {
@@ -422,16 +479,14 @@ class Controller extends AbstractPluginController
         $warning_detected = [];
         $success_detected = [];
 
-        if (isset($post['id_adh'])) {
-            $this->checkAclsFor($response, (int)$post['id_adh']);
-        }
-
         $auto = new Auto($this->plugins, $this->zdb);
         if (!$is_new) {
-            $auto->load((int)$post[Auto::PK]);
+            if (!$auto->load((int)$id) || !$this->getAccess()->canManageMember($auto->getOwnerId())) {
+                return $this->accessDenied($response, 'Trying to store vehicle #' . $id);
+            }
         }
 
-        $res = $auto->check($post);
+        $res = $auto->check($post, $this->getAccess(), $this->getAutoPreferences());
         if ($res !== true) {
             $error_detected = $auto->getErrors();
         }
@@ -439,14 +494,17 @@ class Controller extends AbstractPluginController
         $route = $this->routeparser->urlFor('vehiclesList');
         //if no errors were thrown, we can store the car
         if (count($error_detected) == 0) {
-            if (!$auto->store($is_new)) {
+            try {
+                $this->getVehicles()->store($auto);
+                $stored = true;
+            } catch (\Throwable $e) {
+                $stored = false;
+            }
+            if (!$stored) {
                 $error_detected[] = _T("- An error has occurred while saving vehicle in the database.", "auto");
             } else {
                 $success_detected[] = _T("Vehicle has been saved!", "auto");
-                $id_adh = $auto->owner->id;
-                if (!$this->checkAclsFor($response, $id_adh, false) || $this->login->id == $id_adh) {
-                    $route = $this->routeparser->urlFor('myVehiclesList');
-                }
+                $route = $this->getListRoute($auto->getOwnerId());
                 if (!$auto->handleFiles($request->getUploadedFiles())) {
                     $warning_detected = $auto->getErrors();
                 }
@@ -456,7 +514,7 @@ class Controller extends AbstractPluginController
         if (count($error_detected) > 0) {
             //store entity in session
             $this->session->auto = $post;
-            if ($action === 'add') {
+            if ($is_new) {
                 $route = $this->routeparser->urlFor('vehicleAdd');
             } else {
                 $route = $this->routeparser->urlFor('vehicleEdit', ['id' => (string)$id]);
@@ -496,24 +554,20 @@ class Controller extends AbstractPluginController
     /**
      * Show vehicle history
      *
-     * @param Request  $request  Request
-     * @param Response $response Response
-     * @param int      $id       Vehicle id
-     *
-     * @return Response
+     * @param int $id Vehicle id
      */
     public function vehicleHistory(Request $request, Response $response, int $id): Response
     {
-        $apk = Auto::PK;
         $history = new History($this->zdb, $id);
         $auto = new Auto($this->plugins, $this->zdb);
-        $auto->load($history->$apk);
-        $this->checkAclsFor($response, $auto->owner->id);
+        if (!$auto->load((int)$history->getCarId()) || !$this->getAccess()->canManageMember($auto->getOwnerId())) {
+            return $this->accessDenied($response, 'Trying to show history of vehicle #' . $id);
+        }
 
         $params = [
             'entries'       => $history->getEntries(),
-            'page_title'    => str_replace('%d', (string)$history->$apk, _T("History of car #%d", "auto")),
-            'mode'          => $request->getHeaderLine('X-Requested-With') === 'XMLHttpRequest' ? 'ajax' : ''
+            'page_title'    => str_replace('%d', (string)$history->getCarId(), _T("History of car #%d", "auto")),
+            'mode'          => $this->isAjax($request) ? 'ajax' : ''
         ];
 
         // display page
@@ -527,11 +581,6 @@ class Controller extends AbstractPluginController
 
     /**
      * List models from ajax call
-     *
-     * @param Request  $request  Request
-     * @param Response $response Response
-     *
-     * @return Response
      */
     public function ajaxModels(Request $request, Response $response): Response
     {
@@ -556,23 +605,15 @@ class Controller extends AbstractPluginController
     /**
      * Remove vehicle confirmation page
      *
-     * @param Request  $request  Request
-     * @param Response $response Response
-     * @param int      $id       Vehicle ID
-     *
-     * @return Response
+     * @param int $id Vehicle ID
      */
     public function removeVehicle(Request $request, Response $response, int $id): Response
     {
         $auto = new Auto($this->plugins, $this->zdb);
-        $auto->load($id);
-        $id_adh = $auto->owner->id;
-        $this->checkAclsFor($response, $id_adh);
-
-        $route = $this->routeparser->urlFor('vehiclesList');
-        if (!$this->checkAclsFor($response, $id_adh, false) || $this->login->id == $id_adh) {
-            $route = $this->routeparser->urlFor('myVehiclesList');
+        if (!$auto->load($id) || !$this->getAccess()->canManageMember($auto->getOwnerId())) {
+            return $this->accessDenied($response, 'Trying to remove vehicle #' . $id);
         }
+        $route = $this->getListRoute($auto->getOwnerId());
 
         $data = [
             'id'            => $id,
@@ -585,12 +626,12 @@ class Controller extends AbstractPluginController
             'modals/confirm_removal.html.twig',
             [
                 'type'          => _T("Vehicle", "auto"),
-                'mode'          => $request->getHeaderLine('X-Requested-With') === 'XMLHttpRequest' ? 'ajax' : '',
+                'mode'          => $this->isAjax($request) ? 'ajax' : '',
                 'page_title'    => sprintf(
                     _T('Remove vehicle %1$s', 'auto'),
-                    $auto->name
+                    $auto->getName()
                 ),
-                'form_url'      => $this->routeparser->urlFor('doRemoveVehicle', ['id' => (string)$auto->id]),
+                'form_url'      => $this->routeparser->urlFor('doRemoveVehicle', ['id' => (string)$auto->getId()]),
                 'cancel_uri'    => $route,
                 'data'          => $data
             ]
@@ -599,27 +640,53 @@ class Controller extends AbstractPluginController
     }
 
     /**
+     * Batch actions on vehicles list
+     */
+    public function batch(Request $request, Response $response): Response
+    {
+        $post = $request->getParsedBody();
+        $list_route = $this->routeparser->urlFor(
+            $this->getAccess()->isManager() ? 'vehiclesList' : 'myVehiclesList'
+        );
+
+        if (empty($post['entries_sel'])) {
+            return $this->redirectWithErrors(
+                $response,
+                [_T("No vehicle was selected, please check at least one name.", "auto")],
+                $list_route
+            );
+        }
+
+        $this->session->filter_vehicles = array_map('intval', (array)$post['entries_sel']);
+        if (isset($post['delete'])) {
+            return $response
+                ->withStatus(301)
+                ->withHeader('Location', $this->routeparser->urlFor('removeVehicles'));
+        }
+
+        Analog::log(
+            'Unknown batch action on vehicles list: ' . implode(', ', array_keys($post)),
+            Analog::WARNING
+        );
+        return $response
+            ->withStatus(301)
+            ->withHeader('Location', $list_route);
+    }
+
+    /**
      * Remove vehicles confirmation page
-     *
-     * @param Request  $request  Request
-     * @param Response $response Response
-     *
-     * @return Response
      */
     public function removeVehicles(Request $request, Response $response): Response
     {
         $post = $request->getParsedBody();
         $route = $this->routeparser->urlFor('vehiclesList');
-        $ids = $this->session->filter_vehicles ?? $post['entries_sel'];
+        $ids = $post['entries_sel'] ?? $this->session->filter_vehicles ?? [];
+        $ids = array_map('intval', (array)$ids);
 
-        $auto = new Auto($this->plugins, $this->zdb);
-        $auto->load((int)$ids[0]);
-        $id_adh = $auto->owner->id;
-        $this->checkAclsFor($response, $id_adh);
-
-        $id_adh = $auto->owner->id;
-
-        if (!$this->checkAclsFor($response, $id_adh, false) || $this->login->id == $id_adh) {
+        if (!$this->canManageVehicles($ids)) {
+            return $this->accessDenied($response, 'Trying to remove vehicles #' . implode(', #', $ids));
+        }
+        if (!$this->getAccess()->isManager()) {
             $route = $this->routeparser->urlFor('myVehiclesList');
         }
 
@@ -634,7 +701,7 @@ class Controller extends AbstractPluginController
             'modals/confirm_removal.html.twig',
             [
                 'type'          => _T("Vehicle", "auto"),
-                'mode'          => $request->getHeaderLine('X-Requested-With') === 'XMLHttpRequest' ? 'ajax' : '',
+                'mode'          => $this->isAjax($request) ? 'ajax' : '',
                 'page_title'    => _T('Remove vehicles', 'auto'),
                 'message'       => str_replace(
                     '%count',
@@ -651,11 +718,6 @@ class Controller extends AbstractPluginController
 
     /**
      * Do remove vehicles
-     *
-     * @param Request  $request  Request
-     * @param Response $response Response
-     *
-     * @return Response
      */
     public function doRemoveVehicle(Request $request, Response $response): Response
     {
@@ -672,14 +734,18 @@ class Controller extends AbstractPluginController
                 _T("Removal has not been confirmed!")
             );
         } else {
-            if (!is_array($post['id'])) {
-                $ids = (array)$post['id'];
-            } else {
-                $ids = $post['id'];
+            $ids = array_map('intval', (array)($post['id'] ?? []));
+            if (!$this->canManageVehicles($ids)) {
+                return $this->accessDenied($response, 'Trying to remove vehicles #' . implode(', #', $ids));
             }
 
-            $autos = new Autos($this->plugins, $this->zdb);
-            $del = $autos->removeVehicles($ids);
+            try {
+                $this->getVehicles()->remove($ids);
+                $del = true;
+            } catch (\Throwable $e) {
+                $del = false;
+            }
+            unset($this->session->filter_vehicles);
 
             if ($del !== true) {
                 $error_detected = _T("An error occurred trying to remove vehicles :/", "auto");
@@ -720,11 +786,6 @@ class Controller extends AbstractPluginController
 
     /**
      * Filtering
-     *
-     * @param Request  $request  PSR Request
-     * @param Response $response PSR Response
-     *
-     * @return Response
      */
     public function filter(Request $request, Response $response): Response
     {
@@ -740,13 +801,15 @@ class Controller extends AbstractPluginController
             }
         }
 
-        $this->session->vehicles_filter = $filters;
+        $this->session->vehicles_filters = $filters;
 
         return $response
             ->withStatus(301)
             ->withHeader(
                 'Location',
-                $this->routeparser->urlFor('vehiclesList')
+                $this->routeparser->urlFor(
+                    $this->getAccess()->isManager() ? 'vehiclesList' : 'myVehiclesList'
+                )
             );
     }
 }

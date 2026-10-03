@@ -1,22 +1,9 @@
 <?php
 
 /**
- * Copyright © 2003-2025 The Galette Team
- *
- * This file is part of Galette (https://galette.eu).
- *
- * Galette is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Galette is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with Galette. If not, see <http://www.gnu.org/licenses/>.
+ * This file is part of Galette Auto plugin (https://galette.eu).
+ * SPDX-FileCopyrightText: Copyright © 2009-2026 The Galette Team
+ * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
 declare(strict_types=1);
@@ -24,7 +11,6 @@ declare(strict_types=1);
 namespace GaletteAuto\Filters;
 
 use Galette\Core\Pagination;
-use Laminas\Db\Sql\Select;
 
 /**
  * Autos list filters and paginator
@@ -34,36 +20,23 @@ use Laminas\Db\Sql\Select;
 
 class AutosList extends Pagination
 {
+    public const int ORDERBY_NAME = 0;
+    public const int ORDERBY_OWNER = 1;
+    public const int ORDERBY_BRAND = 2;
+    public const int ORDERBY_MODEL = 3;
+
     /**
      * Returns the field we want to default set order to
-     *
-     * @return string field name
      */
-    protected function getDefaultOrder(): string
+    protected function getDefaultOrder(): int
     {
-        return 'car_name';
+        return self::ORDERBY_NAME;
     }
-
-    /**
-     * Add SQL limit
-     *
-     * @param Select $select Original select
-     *
-     * @return self
-     */
-    public function setLimit(Select $select): self
-    {
-        $this->setLimits($select);
-        return $this;
-    }
-
 
     /**
      * Build href
      *
      * @param int $page Page
-     *
-     * @return string
      */
     protected function getHref(int $page): string
     {

@@ -1,27 +1,16 @@
 <?php
 
 /**
- * Copyright © 2003-2025 The Galette Team
- *
- * This file is part of Galette (https://galette.eu).
- *
- * Galette is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Galette is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with Galette. If not, see <http://www.gnu.org/licenses/>.
+ * This file is part of Galette Auto plugin (https://galette.eu).
+ * SPDX-FileCopyrightText: Copyright © 2009-2026 The Galette Team
+ * SPDX-License-Identifier: GPL-3.0-or-later
  */
+
+declare(strict_types=1);
 
 namespace GaletteAuto\tests\units;
 
-use Galette\GaletteTestCase;
+use Galette\Tests\GaletteTestCase;
 
 /**
  * Finition tests
@@ -33,83 +22,76 @@ class Finition extends GaletteTestCase
     protected int $seed = 20240130141727;
 
     /**
-     * Cleanup after each test method
-     *
-     * @return void
-     */
-    public function tearDown(): void
-    {
-        $delete = $this->zdb->delete(AUTO_PREFIX . \GaletteAuto\Finition::TABLE);
-        $this->zdb->execute($delete);
-        parent::tearDown();
-    }
-
-    /**
      * Test empty
-     *
-     * @return void
      */
     public function testEmpty(): void
     {
         $finition = new \GaletteAuto\Finition($this->zdb);
+        $finitions = new \GaletteAuto\Repository\Properties(
+            $this->zdb,
+            $this->preferences,
+            $this->login,
+            \GaletteAuto\Finition::class
+        );
         $this->assertSame('Finition', $finition->getFieldLabel());
 
-        $this->assertCount(0, $finition->getList());
-        $this->assertSame('0 finition', $finition->displayCount());
+        $this->assertCount(0, $finitions->getList());
+        $this->assertSame('0 finitions', $finition->getCountLabel($finitions->getCount()));
     }
 
     /**
      * Test add and update
-     *
-     * @return void
      */
     public function testCrud(): void
     {
         $finition = new \GaletteAuto\Finition($this->zdb);
+        $finitions = new \GaletteAuto\Repository\Properties(
+            $this->zdb,
+            $this->preferences,
+            $this->login,
+            \GaletteAuto\Finition::class
+        );
         //ensure the table is empty
-        $this->assertCount(0, $finition->getList());
+        $this->assertCount(0, $finitions->getList());
 
         //Add new finition
-        $finition->value = 'Feline';
-        $this->assertTrue($finition->store(true));
-        $first_id = $finition->id;
+        $finition->setValue('Feline');
+        $finition->store(true);
+        $first_id = $finition->getId();
 
-        $this->assertCount(1, $finition->getList());
-        $listed_finition = $finition->getList()[0];
-        $this->assertInstanceOf(\ArrayObject::class, $listed_finition);
-        $this->assertGreaterThan(0, $listed_finition->id_finition);
-        $this->assertSame('Feline', $listed_finition->finition);
-        $this->assertSame('1 finition', $finition->displayCount());
+        $this->assertCount(1, $finitions->getList());
+        $listed_finition = $finitions->getList()[0];
+        $this->assertInstanceOf(\GaletteAuto\Finition::class, $listed_finition);
+        $this->assertGreaterThan(0, $listed_finition->getId());
+        $this->assertSame('Feline', $listed_finition->getValue());
+        $this->assertSame('1 finition', $finition->getCountLabel($finitions->getCount()));
 
         //add another one
         $finition = new \GaletteAuto\Finition($this->zdb);
-        $finition->value = 'R';
-        $this->assertTrue($finition->store(true));
-        $id = $finition->id;
+        $finition->setValue('R');
+        $finition->store(true);
+        $id = $finition->getId();
 
-        $this->assertCount(2, $finition->getList());
-        $this->assertSame('2 finitions', $finition->displayCount());
+        $this->assertCount(2, $finitions->getList());
+        $this->assertSame('2 finitions', $finition->getCountLabel($finitions->getCount()));
 
         $finition = new \GaletteAuto\Finition($this->zdb);
         $this->assertTrue($finition->load($id));
-        $finition->value = 'RS';
-        $this->assertTrue($finition->store());
+        $finition->setValue('RS');
+        $finition->store();
 
-        $this->assertCount(2, $finition->getList());
-        $this->assertSame('2 finitions', $finition->displayCount());
+        $this->assertCount(2, $finitions->getList());
+        $this->assertSame('2 finitions', $finition->getCountLabel($finitions->getCount()));
 
-        $finition = new \GaletteAuto\Finition($this->zdb);
-        $this->assertTrue($finition->delete([$first_id]));
-        $list = $finition->getList();
+        $finitions->remove([$first_id]);
+        $list = $finitions->getList();
         $this->assertCount(1, $list);
         $last_finition = $list[0];
-        $this->assertSame($id, (int)$last_finition->id_finition);
+        $this->assertSame($id, $last_finition->getId());
     }
 
     /**
      * Test load error
-     *
-     * @return void
      */
     public function testLoadError(): void
     {
@@ -117,18 +99,16 @@ class Finition extends GaletteTestCase
         $this->expectNoLogEntry();
         $this->assertFalse($finition->load(999));
         $this->expectLogEntry(
-            \Analog::ERROR,
-            '[GaletteAuto\Finition] Cannot load finitions from id `999`'
+            \Analog\Analog::ERROR,
+            '[GaletteAuto\Finition] Cannot load finition #999 | Record not found'
         );
     }
 
     /**
      * Test getClassName
-     *
-     * @return void
      */
     public function testGetClassName(): void
     {
-        $this->assertSame('\\' . \GaletteAuto\Finition::class, \GaletteAuto\Finition::getClassForPropName('finition'));
+        $this->assertSame(\GaletteAuto\Finition::class, \GaletteAuto\AbstractObject::getClassForPropName('finition'));
     }
 }

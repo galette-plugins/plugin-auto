@@ -1,22 +1,9 @@
 <?php
 
 /**
- * Copyright © 2003-2025 The Galette Team
- *
- * This file is part of Galette (https://galette.eu).
- *
- * Galette is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Galette is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with Galette. If not, see <http://www.gnu.org/licenses/>.
+ * This file is part of Galette Auto plugin (https://galette.eu).
+ * SPDX-FileCopyrightText: Copyright © 2009-2026 The Galette Team
+ * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
 declare(strict_types=1);
@@ -32,34 +19,34 @@ use Galette\Entity\Adherent;
  * Automobile History class for galette Auto plugin
  *
  * @author Johan Cwiklinski <johan@x-tnd.be>
- *
- * @property int $id_car
- * @property array $fields
- * @property array $entries
  */
 class History
 {
-    public const TABLE = 'history';
+    public const string TABLE = 'history';
+
+    /**
+     * Tracked fields; any change on one of them adds an entry
+     *
+     * @var array<string>
+     */
+    private const array FIELDS = [
+        Auto::PK,
+        Adherent::PK,
+        'history_date',
+        'car_registration',
+        Color::PK,
+        State::PK
+    ];
 
     private Db $zdb;
-
-    //fields list and type
-    private array $fields = [
-        Auto::PK            => 'integer',
-        Adherent::PK        => 'integer',
-        'history_date'      => 'datetime',
-        'car_registration'  => 'text',
-        Color::PK           => 'integer',
-        State::PK           => 'integer'
-    ];
 
     /**
      * history entries
      *
      * @var array<int, array<string,mixed>> $entries
      */
-    private array $entries;
-    private int $id_car;
+    private array $entries = [];
+    private ?int $id_car = null;
 
     /**
      * Default constructor
@@ -79,28 +66,33 @@ class History
      * Loads history for specified car
      *
      * @param int $id car's id we want history for
-     *
-     * @return bool
      */
     public function load(int $id): bool
     {
         $this->id_car = $id;
 
         try {
-            $select = $this->zdb->select(AUTO_PREFIX . self::TABLE);
-            $select->where(
+            $select = $this->zdb->select(AUTO_PREFIX . self::TABLE, 'h');
+            $select->join(
+                ['c' => PREFIX_DB . AUTO_PREFIX . Color::TABLE],
+                'h.' . Color::PK . ' = c.' . Color::PK,
+                [Color::FIELD]
+            )->join(
+                ['s' => PREFIX_DB . AUTO_PREFIX . State::TABLE],
+                'h.' . State::PK . ' = s.' . State::PK,
+                [State::FIELD]
+            )->where(
                 [
-                    Auto::PK => $id
+                    'h.' . Auto::PK => $id
                 ]
-            )->order('history_date ASC');
+            )->order('h.history_date ASC');
 
             $results = $this->zdb->execute($select);
             $this->formatEntries($results->toArray());
             return true;
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             Analog::log(
-                '[' . get_class($this) . '] Cannot get car\'s history (id was '
-                . $this->id_car . ') | ' . $e->getMessage(),
+                '[' . static::class . '] Cannot load history of vehicle #' . $this->id_car . ' | ' . $e->getMessage(),
                 Analog::ERROR
             );
             return false;
@@ -110,7 +102,7 @@ class History
     /**
      * Get the most recent history entry
      *
-     * @return ArrayObject|false row
+     * @return ArrayObject<string, mixed>|false row
      */
     public function getLatest(): ArrayObject|false
     {
@@ -128,11 +120,10 @@ class History
             } else {
                 return false;
             }
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             Analog::log(
-                '[' . get_class($this)
-                . '] Cannot get car\'s latest history entry | '
-                . $e->getMessage(),
+                '[' . static::class . '] Cannot load latest history entry of vehicle #' . $this->id_car
+                . ' | ' . $e->getMessage(),
                 Analog::ERROR
             );
             return false;
@@ -143,27 +134,24 @@ class History
      * Format entries dates, also loads Member
      *
      * @param array<int, array<string,mixed>> $entries list of entries to format
-     *
-     * @return void
      */
     private function formatEntries(array $entries): void
     {
         $this->entries = [];
+        $owners = [];
         foreach ($entries as $entry) {
             //put a formatted date to show
             $date = new \DateTime($entry['history_date']);
             $entry['formatted_date'] = $date->format(__('Y-m-d'));
 
-            //associate member to current history entry
-            $entry['owner'] = new Adherent($this->zdb, (int)$entry['id_adh']);
-
-            //associate color
-            $color = new Color($this->zdb, (int)$entry['id_color']);
-            $entry['color'] = $color->value;
-
-            //associate state
-            $state = new State($this->zdb, (int)$entry['id_state']);
-            $entry['state'] = $state->value;
+            //associate member to current history entry, once per member
+            $id_adh = (int)$entry[Adherent::PK];
+            if (!isset($owners[$id_adh])) {
+                $owner = new Adherent($this->zdb);
+                $owner->disableAllDeps()->load($id_adh);
+                $owners[$id_adh] = $owner;
+            }
+            $entry['owner'] = $owners[$id_adh];
 
             $this->entries[] = $entry;
         }
@@ -172,46 +160,24 @@ class History
     /**
      * Register a new history entry.
      *
-     * @param array $props list of properties to update
-     *
-     * @return void
+     * @param array<string,mixed> $props list of properties to update
      */
     public function register(array $props): void
     {
-        Analog::log(
-            '[' . get_class($this) . '] Trying to register a new history entry.',
-            Analog::DEBUG
-        );
-
         try {
-            $fields = $this->fields;
-            ksort($fields);
-            ksort($props);
-
-            $values = [];
-            foreach ($props as $key => $prop) {
-                $values[$key] = $prop;
-            }
-
             $insert = $this->zdb->insert(AUTO_PREFIX . self::TABLE);
-            $insert->values($values);
+            $insert->values(array_intersect_key($props, array_flip(self::FIELDS)));
             $add = $this->zdb->execute($insert);
 
-            if ($add->count() > 0) {
-                Analog::log(
-                    '[' . get_class($this)
-                    . '] new AutoHistory entry set successfully.',
-                    Analog::DEBUG
-                );
-            } else {
-                throw new \Exception(
+            if ($add->count() === 0) {
+                throw new \RuntimeException(
                     'An error occurred registering car new history entry :('
                 );
             }
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             Analog::log(
-                '[' . get_class($this) . '] Cannot register new history entry | '
-                . $e->getMessage(),
+                '[' . static::class . '] Cannot add history entry of vehicle #' . ($props[Auto::PK] ?? '')
+                . ' | ' . $e->getMessage(),
                 Analog::ERROR
             );
             throw $e;
@@ -219,28 +185,21 @@ class History
     }
 
     /**
-     * Global getter method
-     *
-     * @param string $name name of the property we want to retrieve
-     *
-     * @return mixed the called property
+     * Get car ID
      */
-    public function __get(string $name): mixed
+    public function getCarId(): ?int
     {
-        switch ($name) {
-            case Auto::PK:
-                return $this->$name;
-            case 'fields':
-                return array_keys($this->fields);
-        }
+        return $this->id_car;
+    }
 
-        throw new \RuntimeException(
-            sprintf(
-                'Unable to get property "%s::%s"!',
-                __CLASS__,
-                $name
-            )
-        );
+    /**
+     * Get tracked fields
+     *
+     * @return array<string>
+     */
+    public function getFields(): array
+    {
+        return self::FIELDS;
     }
 
     /**

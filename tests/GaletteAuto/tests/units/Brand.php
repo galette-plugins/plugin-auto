@@ -1,27 +1,16 @@
 <?php
 
 /**
- * Copyright © 2003-2025 The Galette Team
- *
- * This file is part of Galette (https://galette.eu).
- *
- * Galette is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Galette is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with Galette. If not, see <http://www.gnu.org/licenses/>.
+ * This file is part of Galette Auto plugin (https://galette.eu).
+ * SPDX-FileCopyrightText: Copyright © 2009-2026 The Galette Team
+ * SPDX-License-Identifier: GPL-3.0-or-later
  */
+
+declare(strict_types=1);
 
 namespace GaletteAuto\tests\units;
 
-use Galette\GaletteTestCase;
+use Galette\Tests\GaletteTestCase;
 
 /**
  * Brand tests
@@ -33,83 +22,76 @@ class Brand extends GaletteTestCase
     protected int $seed = 20240130141727;
 
     /**
-     * Cleanup after each test method
-     *
-     * @return void
-     */
-    public function tearDown(): void
-    {
-        $delete = $this->zdb->delete(AUTO_PREFIX . \GaletteAuto\Brand::TABLE);
-        $this->zdb->execute($delete);
-        parent::tearDown();
-    }
-
-    /**
      * Test empty
-     *
-     * @return void
      */
     public function testEmpty(): void
     {
         $brand = new \GaletteAuto\Brand($this->zdb);
+        $brands = new \GaletteAuto\Repository\Properties(
+            $this->zdb,
+            $this->preferences,
+            $this->login,
+            \GaletteAuto\Brand::class
+        );
         $this->assertSame('Brand', $brand->getFieldLabel());
 
-        $this->assertCount(0, $brand->getList());
-        $this->assertSame('0 brand', $brand->displayCount());
+        $this->assertCount(0, $brands->getList());
+        $this->assertSame('0 brands', $brand->getCountLabel($brands->getCount()));
     }
 
     /**
      * Test add and update
-     *
-     * @return void
      */
     public function testCrud(): void
     {
         $brand = new \GaletteAuto\Brand($this->zdb);
+        $brands = new \GaletteAuto\Repository\Properties(
+            $this->zdb,
+            $this->preferences,
+            $this->login,
+            \GaletteAuto\Brand::class
+        );
         //ensure the table is empty
-        $this->assertCount(0, $brand->getList());
+        $this->assertCount(0, $brands->getList());
 
         //Add new brand
-        $brand->value = 'Audi';
-        $this->assertTrue($brand->store(true));
-        $first_id = $brand->id;
+        $brand->setValue('Audi');
+        $brand->store(true);
+        $first_id = $brand->getId();
 
-        $this->assertCount(1, $brand->getList());
-        $listed_brand = $brand->getList()[0];
-        $this->assertInstanceOf(\ArrayObject::class, $listed_brand);
-        $this->assertGreaterThan(0, $listed_brand->id_brand);
-        $this->assertSame('Audi', $listed_brand->brand);
-        $this->assertSame('1 brand', $brand->displayCount());
+        $this->assertCount(1, $brands->getList());
+        $listed_brand = $brands->getList()[0];
+        $this->assertInstanceOf(\GaletteAuto\Brand::class, $listed_brand);
+        $this->assertGreaterThan(0, $listed_brand->getId());
+        $this->assertSame('Audi', $listed_brand->getValue());
+        $this->assertSame('1 brand', $brand->getCountLabel($brands->getCount()));
 
         //add another one
         $brand = new \GaletteAuto\Brand($this->zdb);
-        $brand->value = 'Mercede';
-        $this->assertTrue($brand->store(true));
-        $id = $brand->id;
+        $brand->setValue('Mercede');
+        $brand->store(true);
+        $id = $brand->getId();
 
-        $this->assertCount(2, $brand->getList());
-        $this->assertSame('2 brands', $brand->displayCount());
+        $this->assertCount(2, $brands->getList());
+        $this->assertSame('2 brands', $brand->getCountLabel($brands->getCount()));
 
         $brand = new \GaletteAuto\Brand($this->zdb);
         $this->assertTrue($brand->load($id));
-        $brand->value = 'Mercedes';
-        $this->assertTrue($brand->store());
+        $brand->setValue('Mercedes');
+        $brand->store();
 
-        $this->assertCount(2, $brand->getList());
-        $this->assertSame('2 brands', $brand->displayCount());
+        $this->assertCount(2, $brands->getList());
+        $this->assertSame('2 brands', $brand->getCountLabel($brands->getCount()));
 
-        $brand = new \GaletteAuto\Brand($this->zdb);
-        $this->assertTrue($brand->delete([$first_id]));
-        $list = $brand->getList();
+        $brands->remove([$first_id]);
+        $list = $brands->getList();
         $this->assertCount(1, $list);
         $last_brand = $list[0];
-        $this->assertSame($id, (int)$last_brand->id_brand);
+        $this->assertSame($id, $last_brand->getId());
     }
 
     /**
      * Test load error
-     *
-     * @return void
      */
     public function testLoadError(): void
     {
@@ -117,18 +99,16 @@ class Brand extends GaletteTestCase
         $this->expectNoLogEntry();
         $this->assertFalse($brand->load(999));
         $this->expectLogEntry(
-            \Analog::ERROR,
-            '[GaletteAuto\Brand] Cannot load brands from id `999`'
+            \Analog\Analog::ERROR,
+            '[GaletteAuto\Brand] Cannot load brand #999 | Record not found'
         );
     }
 
     /**
      * Test getClassName
-     *
-     * @return void
      */
     public function testGetClassName(): void
     {
-        $this->assertSame('\\' . \GaletteAuto\Brand::class, \GaletteAuto\Brand::getClassForPropName('brand'));
+        $this->assertSame(\GaletteAuto\Brand::class, \GaletteAuto\AbstractObject::getClassForPropName('brand'));
     }
 }

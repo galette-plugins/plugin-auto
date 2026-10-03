@@ -1,30 +1,16 @@
 {#
-/**
- * Copyright © 2003-2024 The Galette Team
- *
- * This file is part of Galette (https://galette.eu).
- *
- * Galette is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Galette is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with Galette. If not, see <http://www.gnu.org/licenses/>.
- */
-#}
+ # This file is part of Galette Auto plugin (https://galette.eu).
+ # SPDX-FileCopyrightText: Copyright © 2009-2026 The Galette Team
+ # SPDX-License-Identifier: GPL-3.0-or-later
+ #}
+
 {% extends 'page.html.twig' %}
 
 {% block content %}
     <form class="ui form" action="{% if mode == "new" %}{{ url_for("doModelAdd") }}{% else %}{{ url_for("doModelEdit", {"id": model.id}) }}{% endif %}" method="post" id="modifform">
         <div class="ui styled fluid accordion field">
             <div class="active title">
-                <i class="icon dropdown"></i>
+                <i class="icon dropdown" aria-hidden="true"></i>
                 {{ page_title }}
             </div>
             <div class="active content">
@@ -38,13 +24,13 @@
 
                 {% set brand_list_values = {(-1): _T("Choose a brand", "auto")} %}
                 {% for brand in brands %}
-                    {% set brand_list_values = brand_list_values + {(brand.id_brand): brand.brand} %}
+                    {% set brand_list_values = brand_list_values + {(brand.getId()): brand.getValue()} %}
                 {% endfor %}
 
                 {% if brands|length > 0 %}
                     {% include "components/forms/select.html.twig" with {
                         id: 'brand',
-                        value: model.brand.id,
+                        value: model.brand.getId(),
                         values: brand_list_values,
                         label: _T("Brand", "auto"),
                         required: true
@@ -59,13 +45,12 @@
 
         <div class="ui basic center aligned fitted segment">
             <button type="submit" name="valid" class="action ui labeled icon primary button">
-                <i class="save icon"></i> {{ _T("Save") }}
+                <i class="save icon" aria-hidden="true"></i> {{ _T("Save") }}
             </button>
             <input type="hidden" name="{{ mode }}" value="1"/>
             {% if mode != "new" %}
                 <input type="hidden" name="{{ constant('GaletteAuto\\Model::PK') }}" value="{{ model.id }}"/>
             {% endif %}
-            {% include "components/forms/csrf.html.twig" %}
         </div>
     </form>
 {% endblock %}

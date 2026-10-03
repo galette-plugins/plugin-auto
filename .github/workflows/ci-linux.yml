@@ -5,9 +5,6 @@ on:
     branches:
       - master
       - develop
-      - 'feature/*'
-      - 'hotfix/*'
-      - 'release/*'
     tags:
       - '*'
   pull_request:
@@ -18,27 +15,52 @@ concurrency:
   group: "${{ github.workflow }}-${{ github.ref }}"
   cancel-in-progress: true
 
+permissions:
+  contents: read
+
 jobs:
+  setup-phpunit-matrix:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.gen.outputs.matrix }}
+    steps:
+      - uses: actions/checkout@v7
+      - id: gen
+        uses: galette/.github/actions/matrix-generator@main
+        with:
+          all-jobs: ${{ github.event_name != 'pull_request' && github.repository == 'galette-plugins/plugin-auto' && (github.event_name == 'workflow_dispatch' || github.ref == 'refs/heads/master' || github.ref == 'refs/heads/develop' || startsWith(github.ref, 'refs/tags')) }}
+
+  setup-lint-matrix:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.gen.outputs.matrix }}
+    steps:
+      - uses: actions/checkout@v7
+      - id: gen
+        uses: galette/.github/actions/matrix-generator@main
+        with:
+          target: lint
+          all-jobs: ${{ github.event_name != 'pull_request' && github.repository == 'galette-plugins/plugin-auto' && (github.event_name == 'workflow_dispatch' || github.ref == 'refs/heads/master' || github.ref == 'refs/heads/develop' || startsWith(github.ref, 'refs/tags')) }}
+
   lint:
     runs-on: ubuntu-latest
-    name: "Lint on PHP ${{ matrix.php-versions }}"
+    needs: setup-lint-matrix
+    name: "Lint on PHP ${{ matrix.php-version }}"
 
     strategy:
-      matrix:
-        php-versions: [ '8.2', '8.5' ]
-        coverage: [none]
+      matrix: ${{ fromJSON(needs.setup-lint-matrix.outputs.matrix) }}
       fail-fast: false
 
     steps:
       - name: PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: ${{ matrix.php-versions }}
+          php-version: ${{ matrix.php-version }}
           tools: composer
           coverage: ${{ matrix.coverage }}
 
       - name: Checkout Galette core
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           repository: galette/galette
           path: galette-core
@@ -46,7 +68,7 @@ jobs:
           ref: develop
 
       - name: Checkout plugin
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           path: galette-core/galette/plugins/plugin-auto
 
@@ -56,7 +78,7 @@ jobs:
           echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
 
       - name: Cache dependencies
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: ${{ steps.composer-cache.outputs.dir }}
           key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.json') }}
@@ -64,16 +86,16 @@ jobs:
 
       - name: Install dependencies
         run: |
-          cd galette-core/galette
+          cd galette-core
           composer install --ignore-platform-reqs
 
       - name: CS
         run: |
           cd galette-core/galette/plugins/plugin-auto
-          ../../vendor/bin/phpcs lib/ ./*.php
+          ../../vendor/bin/phpcs lib/ tests/ ./*.php
 
       - name: CS Fixer
-        if: matrix.php-versions == '8.2'
+        if: matrix.php-is-min
         run: |
           cd galette-core/galette/plugins/plugin-auto
           ../../vendor/bin/php-cs-fixer check --show-progress=dots --verbose --diff
@@ -90,35 +112,21 @@ jobs:
 
       - name: Headers checks
         run: |
-          cd galette-core/galette/plugins/plugin-auto
-          ../../vendor/bin/docheader --docheader=../../../.docheader check lib ./*.php
+          cd galette-core
+          ./bin/console galette:headers:check \
+            --project-name="Galette Auto plugin" \
+            --start-year="2009" \
+            --directory="galette/plugins/plugin-auto"
 
   unit-tests:
     runs-on: ubuntu-latest
+    needs: setup-phpunit-matrix
 
     strategy:
-      matrix:
-        include:
-          #always tests higher stable php version with lower db version
-          #enable coverage on higher stable php version with higher postrgesql version
-          #lower php version
-          - { php-version: "8.2", db-image: "mysql:5.7", coverage: none, always: false }
-          - { php-version: "8.2", db-image: "mysql:8.1", coverage: none, always: false }
-          - { php-version: "8.2", db-image: "mariadb:10.4", coverage: none, always: false }
-          - { php-version: "8.2", db-image: "mariadb:11", coverage: none, always: false }
-          - { php-version: "8.2", db-image: "postgres:11", coverage: none, always: false }
-          - { php-version: "8.2", db-image: "postgres:16", coverage: none, always: false }
-          #higher stable php version
-          - { php-version: "8.5", db-image: "mysql:5.7", coverage: none, always: true }
-          - { php-version: "8.5", db-image: "mysql:8.1", coverage: none, always: false }
-          - { php-version: "8.5", db-image: "mariadb:10.4", coverage: none, always: true }
-          - { php-version: "8.5", db-image: "mariadb:11", coverage: none, always: false }
-          - { php-version: "8.5", db-image: "postgres:11", coverage: none, always: true }
-          - { php-version: "8.5", db-image: "postgres:16", coverage: none, always: true }
+      matrix: ${{ fromJSON(needs.setup-phpunit-matrix.outputs.matrix) }}
       fail-fast: false
 
     env:
-      skip: ${{ matrix.always == false && (github.event_name == 'pull_request' || github.repository != 'galette/plugin-auto' || !(github.event_name == 'workflow_dispatch' || github.ref == 'refs/heads/master' || github.ref == 'refs/heads/develop' || startsWith(github.ref, 'refs/tags'))) }}
       DB: ${{ matrix.db-image }}
 
     services:
@@ -146,21 +154,19 @@ jobs:
           --health-timeout=5s
           --health-retries=10
 
-    name: PHP ${{ matrix.php-version }} ${{ matrix.db-image }} ${{ (matrix.always == false && (github.event_name == 'pull_request' || github.repository != 'galette/plugin-auto' || !(github.event_name == 'workflow_dispatch' || github.ref == 'refs/heads/master' || github.ref == 'refs/heads/develop' || startsWith(github.ref, 'refs/tags')))) && ' (skipped)' || matrix.coverage == 'xdebug' && ' (with coverage)' || ''}}
+    name: PHP ${{ matrix.php-version }} ${{ matrix.db-image }} ${{ (matrix.always == false && (github.event_name == 'pull_request' || github.repository != 'galette-plugins/plugin-auto' || !(github.event_name == 'workflow_dispatch' || github.ref == 'refs/heads/master' || github.ref == 'refs/heads/develop' || startsWith(github.ref, 'refs/tags')))) && ' (skipped)' || matrix.coverage == 'xdebug' && ' (with coverage)' || ''}}
 
     steps:
       - name: PHP
-        if: env.skip != 'true'
         uses: shivammathur/setup-php@v2
         with:
-          php-version: ${{ matrix.php-versions }}
+          php-version: ${{ matrix.php-version }}
           tools: composer, pecl
           coverage: ${{ matrix.coverage }}
           extensions: apcu
           ini-values: apc.enable_cli=1
 
       - name: "Show versions"
-        if: env.skip != 'true'
         run: |
           php --version
           composer --version
@@ -168,36 +174,20 @@ jobs:
           echo "npm $(npm --version)"
           docker exec ${{ job.services.db.id }} bash -c "if [[ -n \$(command -v psql) ]]; then psql --version; else if [[ -n \$(command -v mysql) ]]; then mysql --version; else mariadb --version; fi fi"
 
-      - name: Checkout Galette core
-        if: env.skip != 'true'
-        uses: actions/checkout@v4
+      - name: Build Galette
+        uses: galette/.github/actions/build-galette@main
         with:
-          repository: galette/galette
-          path: galette-core
-          fetch-depth: 1
-          ref: develop
+          php-version: ${{ matrix.php-version }}
 
       - name: Checkout plugin
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           path: galette-core/galette/plugins/plugin-auto
 
-      - name: "Restore dependencies cache"
-        if: env.skip != 'true'
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.composer/cache/
-            ~/.npm/_cacache/
-          key: "${{ runner.os }}-galette-${{ matrix.php-version }}-${{ hashFiles('galette/composer.lock', 'package-lock.json') }}"
-          restore-keys: |
-            ${{ runner.os }}-galette-${{ matrix.php-version }}-
-
-      - name: Install dependencies
-        if: env.skip != 'true'
+      - name: Compile translations
         run: |
           cd galette-core
-          bin/install_deps
+          bin/console galette:compile-locales plugin-auto
 
       - name: Init for PostgreSQL
         env:
@@ -207,7 +197,7 @@ jobs:
           cd galette-core
           bin/console galette:install -v --dbtype=pgsql --dbhost=localhost --dbname=galette_tests --dbuser=galette_tests --dbpass=g@l3tte --admin=admin --password=admin --no-interaction -w
           bin/console galette:plugins:install-db --all
-        if: env.skip != 'true' && startsWith(matrix.db-image, 'postgres')
+        if: startsWith(matrix.db-image, 'postgres')
 
       - name: Init for MariaDB
         run: |
@@ -215,10 +205,108 @@ jobs:
           mysql -e 'create database IF NOT EXISTS galette_tests;' -u galette_tests --password=g@l3tte -h 127.0.0.1 -P 3306
           bin/console galette:install -v --dbtype=mysql --dbhost=127.0.0.1 --dbname=galette_tests --dbuser=galette_tests --dbpass=g@l3tte --admin=admin --password=admin --no-interaction -w
           bin/console galette:plugins:install-db --all
-        if: env.skip != 'true' && (startsWith(matrix.db-image, 'mysql') || startsWith(matrix.db-image, 'mariadb'))
+        if: startsWith(matrix.db-image, 'mysql') || startsWith(matrix.db-image, 'mariadb')
 
       - name: Unit tests
-        if: env.skip != 'true'
+        run: |
+          cd galette-core/galette/plugins/plugin-auto
+          ../../vendor/bin/phpunit --test-suffix=.php --bootstrap tests/TestsBootstrap.php --no-coverage --process-isolation tests/GaletteAuto/
+
+  upgrade:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        db-image: ['mysql:8.4', 'mariadb:11', 'postgres:17']
+      fail-fast: false
+
+    env:
+      DB: ${{ matrix.db-image }}
+
+    services:
+      # Label used to access the service container
+      db:
+        # Docker Hub image
+        image: ${{ matrix.db-image }}
+        # Provide env variables for both mysql and pgsql
+        env:
+          POSTGRES_USER: galette_tests
+          POSTGRES_PASSWORD: g@l3tte
+          POSTGRES_DB: galette_tests
+          MYSQL_USER: galette_tests
+          MYSQL_PASSWORD: g@l3tte
+          MYSQL_ROOT_PASSWORD: g@l3tte
+          MYSQL_DATABASE: galette_tests
+        # Open network ports for both mysql and pgsql
+        ports:
+          - 3306:3306
+          - 5432:5432
+        # Set health checks to wait until postgres has started
+        options: >-
+          --health-cmd="bash -c 'if [[ -n $(command -v pg_isready) ]]; then pg_isready; else if [[ -n $(command -v mysqladmin) ]]; then mysqladmin ping; else mariadb-admin ping; fi fi'"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=10
+
+    name: Upgrade from previous release on ${{ matrix.db-image }}
+
+    steps:
+      - name: PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          tools: composer, pecl
+          coverage: none
+          extensions: apcu
+          ini-values: apc.enable_cli=1
+
+      - name: Build Galette
+        uses: galette/.github/actions/build-galette@main
+        with:
+          php-version: '8.4'
+
+      - name: Checkout plugin
+        uses: actions/checkout@v7
+        with:
+          path: galette-core/galette/plugins/plugin-auto
+          fetch-depth: 0
+
+      - name: Compile translations
+        run: |
+          cd galette-core
+          bin/console galette:compile-locales plugin-auto
+
+      - name: Find previous release
+        run: |
+          cd galette-core/galette/plugins/plugin-auto
+          echo "PREVIOUS_RELEASE=$(git tag --list '[0-9]*' --sort=-v:refname --no-contains HEAD | head -n1)" >> $GITHUB_ENV
+
+      - name: Install previous release for PostgreSQL
+        env:
+          PGPASSWORD: g@l3tte
+        run: |
+          cd galette-core
+          bin/console galette:install -v --dbtype=pgsql --dbhost=localhost --dbname=galette_tests --dbuser=galette_tests --dbpass=g@l3tte --admin=admin --password=admin --no-interaction -w
+          git -C galette/plugins/plugin-auto show "$PREVIOUS_RELEASE:scripts/pgsql.sql" \
+            | psql -v ON_ERROR_STOP=1 -h localhost -U galette_tests galette_tests
+        if: startsWith(matrix.db-image, 'postgres')
+
+      - name: Install previous release for MariaDB
+        run: |
+          cd galette-core
+          mysql -e 'create database IF NOT EXISTS galette_tests;' -u galette_tests --password=g@l3tte -h 127.0.0.1 -P 3306
+          bin/console galette:install -v --dbtype=mysql --dbhost=127.0.0.1 --dbname=galette_tests --dbuser=galette_tests --dbpass=g@l3tte --admin=admin --password=admin --no-interaction -w
+          git -C galette/plugins/plugin-auto show "$PREVIOUS_RELEASE:scripts/mysql.sql" \
+            | mysql -u galette_tests --password=g@l3tte -h 127.0.0.1 -P 3306 galette_tests
+        if: startsWith(matrix.db-image, 'mysql') || startsWith(matrix.db-image, 'mariadb')
+
+      - name: Upgrade
+        run: |
+          cd galette-core
+          bin/console galette:plugins:install-db --no-interaction plugin-auto | tee upgrade.log
+          grep -q 'Database for plugin "plugin-auto" upgraded' upgrade.log
+
+      - name: Unit tests
         run: |
           cd galette-core/galette/plugins/plugin-auto
           ../../vendor/bin/phpunit --test-suffix=.php --bootstrap tests/TestsBootstrap.php --no-coverage --process-isolation tests/GaletteAuto/

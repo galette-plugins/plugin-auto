@@ -1,22 +1,9 @@
 <?php
 
 /**
- * Copyright © 2003-2025 The Galette Team
- *
- * This file is part of Galette (https://galette.eu).
- *
- * Galette is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Galette is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with Galette. If not, see <http://www.gnu.org/licenses/>.
+ * This file is part of Galette Auto plugin (https://galette.eu).
+ * SPDX-FileCopyrightText: Copyright © 2009-2026 The Galette Team
+ * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
 declare(strict_types=1);
@@ -29,6 +16,8 @@ use GaletteAuto\Brand;
 use GaletteAuto\Filters\ModelsList;
 use GaletteAuto\Model;
 use GaletteAuto\Repository\Models;
+use GaletteAuto\Repository\Properties;
+use Slim\Exception\HttpNotFoundException;
 use Slim\Psr7\Request;
 use Slim\Psr7\Response;
 
@@ -53,8 +42,6 @@ class ModelsController extends AbstractPluginController
      *
      * @param Request  $request  PSR Request
      * @param Response $response PSR Response
-     *
-     * @return Response
      */
     public function add(Request $request, Response $response): Response
     {
@@ -66,8 +53,6 @@ class ModelsController extends AbstractPluginController
      *
      * @param Request  $request  PSR Request
      * @param Response $response PSR Response
-     *
-     * @return Response
      */
     public function doAdd(Request $request, Response $response): Response
     {
@@ -84,8 +69,6 @@ class ModelsController extends AbstractPluginController
      * @param Response        $response PSR Response
      * @param ?string         $option   One of 'page' or 'order'
      * @param string|int|null $value    Value of the option
-     *
-     * @return Response
      */
     public function list(Request $request, Response $response, ?string $option = null, string|int|null $value = null): Response
     {
@@ -147,8 +130,6 @@ class ModelsController extends AbstractPluginController
      *
      * @param Request  $request  PSR Request
      * @param Response $response PSR Response
-     *
-     * @return Response
      */
     public function filter(Request $request, Response $response): Response
     {
@@ -180,37 +161,29 @@ class ModelsController extends AbstractPluginController
      * @param Response $response PSR Response
      * @param int|null $id       Model id
      * @param string   $action   Action
-     *
-     * @return Response
      */
     public function edit(Request $request, Response $response, ?int $id = null, string $action = 'edit'): Response
     {
         $model = new Model($this->zdb);
 
-        if ($this->session->auto_model !== null) {
-            $model->check($this->session->auto_model);
-            unset($this->session->auto_model);
-        }
-
-        $model_id = null;
-        if ($id !== null) {
-            $model_id = $id;
-        }
-
         if ($action === 'edit') {
             // initialize model structure with database values
-            $model->load($model_id);
-            if (!$model->id) {
-                //not possible to load, exit
-                throw new \RuntimeException('Model does not exists!');
+            if (!$model->load((int)$id)) {
+                throw new HttpNotFoundException($request);
             }
+        }
+
+        //values from a failed submission
+        if (isset($this->session->auto_model)) {
+            $model->check($this->session->auto_model);
+            unset($this->session->auto_model);
         }
 
         // template variable declaration
         if ($action === 'edit') {
             $title = sprintf(
                 _T("Change model '%s'", "auto"),
-                $model->model
+                $model->getModel()
             );
         } else {
             $title = _T("New model", "auto");
@@ -220,12 +193,12 @@ class ModelsController extends AbstractPluginController
             }
         }
 
-        $brand = new Brand($this->zdb);
+        $brands = new Properties($this->zdb, $this->preferences, $this->login, Brand::class);
         $params = [
             'page_title'        => $title,
             'mode'              => ($action === 'add' ? 'new' : 'modif'),
             'model'             => $model,
-            'brands'            => $brand->getList(),
+            'brands'            => $brands->getList(),
         ];
 
         // display page
@@ -244,8 +217,6 @@ class ModelsController extends AbstractPluginController
      * @param Response $response PSR Response
      * @param null|int $id       Model id for edit
      * @param string   $action   Either add or edit
-     *
-     * @return Response
      */
     public function doEdit(Request $request, Response $response, ?int $id = null, string $action = 'edit'): Response
     {
@@ -255,8 +226,8 @@ class ModelsController extends AbstractPluginController
         $model = new Model($this->zdb);
         $error_detected = [];
 
-        if (!$is_new) {
-            $model->load($post[Model::PK]);
+        if (!$is_new && !$model->load((int)$id)) {
+            throw new HttpNotFoundException($request);
         }
 
         if (!$model->check($post)) {
@@ -264,17 +235,17 @@ class ModelsController extends AbstractPluginController
         }
 
         if (count($error_detected) === 0) {
-            $res = $model->store($is_new);
-            if (!$res) {
-                $error_detected[]
-                    = _T("- An error occurred while saving record. Please try again.", "auto");
-            } else {
+            try {
+                $model->store($is_new);
                 $msg = $is_new ? _T("New model has been added!", "auto")
                     : _T("Model has been saved!", "auto");
                 $this->flash->addMessage(
                     'success_detected',
                     $msg
                 );
+            } catch (\Throwable $e) {
+                $error_detected[]
+                    = _T("- An error occurred while saving record. Please try again.", "auto");
             }
         }
 
@@ -283,11 +254,10 @@ class ModelsController extends AbstractPluginController
             //store entity in session
             $this->session->auto_model = $post;
             if (!$is_new) {
-                $id = $post[Model::PK];
                 $route = $this->routeparser->urlFor(
                     'modelEdit',
                     [
-                        'id' => $id
+                        'id' => (string)$id
                     ]
                 );
             } else {
@@ -313,9 +283,7 @@ class ModelsController extends AbstractPluginController
     /**
      * Get redirection URI
      *
-     * @param array $args Route arguments
-     *
-     * @return string
+     * @param array<string,mixed> $args Route arguments
      */
     public function redirectUri(array $args): string
     {
@@ -325,9 +293,7 @@ class ModelsController extends AbstractPluginController
     /**
      * Get form URI
      *
-     * @param array $args Route arguments
-     *
-     * @return string
+     * @param array<string,mixed> $args Route arguments
      */
     public function formUri(array $args): string
     {
@@ -338,11 +304,25 @@ class ModelsController extends AbstractPluginController
     }
 
     /**
+     * Removal confirmation parameters, for existing models only
+     *
+     * @return array<string,mixed>
+     *
+     * @throws HttpNotFoundException
+     */
+    protected function getconfirmDeleteParams(Request $request): array
+    {
+        $args = $this->getArgs($request);
+        if (!isset($args['ids']) && !(new Model($this->zdb))->load((int)$args['id'])) {
+            throw new HttpNotFoundException($request);
+        }
+        return parent::getconfirmDeleteParams($request);
+    }
+
+    /**
      * Get confirmation removal page title
      *
-     * @param array $args Route arguments
-     *
-     * @return string
+     * @param array<string,mixed> $args Route arguments
      */
     public function confirmRemoveTitle(array $args): string
     {
@@ -359,7 +339,7 @@ class ModelsController extends AbstractPluginController
             return sprintf(
                 //TRANS: first parameter is the model name
                 _T('Remove model "%1$s"', 'auto'),
-                $model->model
+                $model->getModel()
             );
         }
     }
@@ -367,23 +347,22 @@ class ModelsController extends AbstractPluginController
     /**
      * Remove object
      *
-     * @param array $args Route arguments
-     * @param array $post POST values
-     *
-     * @return bool
+     * @param array<string,mixed> $args Route arguments
+     * @param array<string,mixed> $post POST values
      */
     protected function doDelete(array $args, array $post): bool
     {
-        $model = new Model($this->zdb);
-
-        if (!is_array($post['id'])) {
-            $ids = (array)$post['id'];
-        } else {
-            $ids = $post['id'];
-        }
+        $ids = array_map('intval', (array)$post['id']);
+        $models = new Models(
+            $this->zdb,
+            $this->preferences,
+            $this->login,
+            new ModelsList()
+        );
 
         try {
-            return $model->delete($ids);
+            $models->remove($ids);
+            return true;
         } catch (\Throwable $e) {
             if ($this->zdb->isForeignKeyException($e)) {
                 $this->flash->addMessage(

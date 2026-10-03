@@ -1,137 +1,118 @@
 <?php
 
 /**
- * Copyright © 2003-2025 The Galette Team
- *
- * This file is part of Galette (https://galette.eu).
- *
- * Galette is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Galette is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with Galette. If not, see <http://www.gnu.org/licenses/>.
+ * This file is part of Galette Auto plugin (https://galette.eu).
+ * SPDX-FileCopyrightText: Copyright © 2009-2026 The Galette Team
+ * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
 declare(strict_types=1);
 
 namespace GaletteAuto;
 
+use ArrayObject;
 use Analog\Analog;
-use Laminas\Db\Sql\Expression;
-use Laminas\Db\Sql\Select;
 use Slim\Routing\RouteParser;
 use Galette\Core\Db;
-use GaletteAuto\Filters\PropertiesList;
 
 /**
  * Automobile Object abstract class for galette Auto plugin
  *
  * @author Johan Cwiklinski <johan@x-tnd.be>
- *
- * @property int $id
- * @property string $value
  */
 abstract class AbstractObject
 {
-    private string $table;
-    private string $pk;
-    private string $field;
-    private string $name;
+    public const string TABLE = '';
+    public const string PK = '';
+    public const string FIELD = '';
+    /** Name of the list route */
+    public const string LIST_ROUTE = '';
+
+    /**
+     * Properties classes, by route property name
+     *
+     * @var array<string, class-string<AbstractObject>>
+     */
+    private const array CLASSES = [
+        Body::FIELD => Body::class,
+        Brand::FIELD => Brand::class,
+        Color::FIELD => Color::class,
+        Finition::FIELD => Finition::class,
+        State::FIELD => State::class,
+        Transmission::FIELD => Transmission::class,
+    ];
 
     protected Db $zdb;
-    protected ?int $id;
-    protected ?string $value;
-    protected ?PropertiesList $filters = null;
-
-    private int $count;
+    protected ?int $id = null;
+    protected ?string $value = null;
 
     /**
      * Default constructor
      *
-     * @param Db     $zdb   Database instance
-     * @param string $table table name
-     * @param string $pk    primary key field
-     * @param string $field main field name
-     * @param string $name  name
-     * @param ?int   $id    id to load. Defaults to null
+     * @param Db   $zdb Database instance
+     * @param ?int $id  id to load. Defaults to null
      */
-    public function __construct(Db $zdb, string $table, string $pk, string $field, string $name, ?int $id = null)
+    final public function __construct(Db $zdb, ?int $id = null)
     {
         $this->zdb = $zdb;
-        $this->table = AUTO_PREFIX . $table;
-        $this->pk = $pk;
-        $this->field = $field;
-        $this->name = $name;
         if (is_int($id)) {
             $this->load($id);
         }
     }
 
     /**
-     * Get the list
+     * Get a property instance from its route name
      *
-     * @return array
+     * @param Db     $zdb      Database instance
+     * @param string $property Route property name
      */
-    public function getList(): array
+    public static function fromPropertyName(Db $zdb, string $property): self
     {
-        try {
-            $select = $this->buildSelect();
-            $results = $this->zdb->execute($select);
-            $list = [];
-            foreach ($results as $row) {
-                $list[] = $row;
-            }
-            return $list;
-        } catch (\Exception $e) {
-            Analog::log(
-                '[' . get_class($this) . '] Cannot load ' . $this->name
-                . ' list | ' . $e->getMessage(),
-                Analog::ERROR
-            );
-            throw $e;
-        }
+        $class = self::getClassForPropName($property);
+        return new $class($zdb);
     }
 
     /**
      * Loads a record
      *
      * @param int $id id of the record
-     *
-     * @return bool
      */
     public function load(int $id): bool
     {
         try {
-            $select = $this->zdb->select($this->table);
+            $select = $this->zdb->select(AUTO_PREFIX . static::TABLE);
             $select->where(
                 [
-                    $this->pk => $id
+                    static::PK => $id
                 ]
             );
 
-            $results = $this->zdb->execute($select);
-            $result = $results->current();
-            $pk = $this->pk;
-            $this->id = (int)$result->$pk;
-            $field = $this->field;
-            $this->value = $result->$field;
+            $result = $this->zdb->execute($select)->current();
+            if (!$result instanceof ArrayObject) {
+                throw new \RuntimeException('Record not found');
+            }
+            $this->loadFromRow($result);
 
             return true;
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             Analog::log(
-                '[' . get_class($this) . '] Cannot load ' . $this->name
-                . ' from id `' . $id . '` | ' . $e->getMessage(),
+                '[' . static::class . '] Cannot load ' . static::FIELD . ' #' . $id . ' | ' . $e->getMessage(),
                 Analog::ERROR
             );
             return false;
         }
+    }
+
+    /**
+     * Populate from a resultset row, which may come from a join
+     *
+     * @param ArrayObject<string, mixed> $row Resultset row
+     */
+    public function loadFromRow(ArrayObject $row): self
+    {
+        $this->id = (int)$row[static::PK];
+        $this->value = (string)$row[static::FIELD];
+        return $this;
     }
 
     /**
@@ -139,311 +120,163 @@ abstract class AbstractObject
      *
      * @param bool $new New record or existing one
      *
-     * @return bool
+     * @throws \Throwable
      */
-    public function store(bool $new = false): bool
+    public function store(bool $new = false): void
     {
         try {
             $values = [
-                $this->field => $this->value
+                static::FIELD => $this->value
             ];
             if ($new) {
-                $insert = $this->zdb->insert($this->table);
+                $insert = $this->zdb->insert(AUTO_PREFIX . static::TABLE);
                 $insert->values($values);
                 $this->zdb->execute($insert);
                 /** @phpstan-ignore-next-line */
                 $this->id = (int)$this->zdb->driver->getLastGeneratedValue(
                     $this->zdb->isPostgres()
-                        ? PREFIX_DB . $this->table . '_id_seq'
+                        ? PREFIX_DB . AUTO_PREFIX . static::TABLE . '_id_seq'
                         : null
                 );
             } else {
-                $update = $this->zdb->update($this->table);
+                $update = $this->zdb->update(AUTO_PREFIX . static::TABLE);
                 $update->set($values)->where(
                     [
-                        $this->pk => $this->id
+                        static::PK => $this->id
                     ]
                 );
                 $this->zdb->execute($update);
             }
-            return true;
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             Analog::log(
-                '[' . get_class($this) . '] Cannot store ' . $this->name
-                . ' values `' . ($this->id ?? '') . '`, `' . $this->value . '` | '
-                . $e->getMessage(),
-                Analog::WARNING
-            );
-            return false;
-        }
-    }
-
-    /**
-     * Delete some records
-     *
-     * @param int[] $ids Array of records id to delete
-     *
-     * @return bool
-     */
-    public function delete(array $ids): bool
-    {
-        try {
-            $delete = $this->zdb->delete($this->table);
-            $delete->where->in($this->pk, $ids);
-            $this->zdb->execute($delete);
-            return true;
-        } catch (\Exception $e) {
-            Analog::log(
-                '[' . get_class($this) . '] Cannot delete ' . $this->name
-                . ' from ids `' . implode(' - ', $ids) . '` | ' . $e->getMessage(),
-                Analog::WARNING
+                '[' . static::class . '] Cannot ' . ($new ? 'add ' : 'update ') . static::FIELD
+                . ' #' . ($this->id ?? '') . ' | ' . $e->getMessage(),
+                Analog::ERROR
             );
             throw $e;
         }
     }
 
     /**
-     * Set filters
-     *
-     * @param PropertiesList $filters Filters
-     *
-     * @return self
-     */
-    public function setFilters(PropertiesList $filters): self
-    {
-        $this->filters = $filters;
-        return $this;
-    }
-
-    /**
      * Get field label
-     *
-     * @return string
      */
     abstract public function getFieldLabel(): string;
 
     /**
+     * Get list page title
+     */
+    abstract public function getListTitle(): string;
+
+    /**
+     * Get add button text
+     */
+    abstract public function getAddText(): string;
+
+    /**
+     * Get localized count
+     *
+     * @param int $count Count
+     */
+    abstract public function getCountLabel(int $count): string;
+
+    /**
+     * Get removal success message
+     *
+     * @param int $count Removed records count
+     */
+    abstract public function getRemovedMessage(int $count): string;
+
+    /**
+     * Get message when removal is refused because the record is in use
+     */
+    abstract public function getInUseMessage(): string;
+
+    /**
+     * Get removal error message
+     */
+    abstract public function getRemoveErrorMessage(): string;
+
+    /**
+     * Whether records have a details page
+     */
+    public function hasDetails(): bool
+    {
+        return false;
+    }
+
+    /**
      * Get property route name
-     *
-     * @return string
      */
-    abstract public function getRouteName(): string;
-
-    /**
-     * Global getter method
-     *
-     * @param string $name name of the property we want to retrieve
-     *
-     * @return mixed the called property
-     */
-    public function __get(string $name): mixed
+    public function getRouteName(): string
     {
-        if (property_exists($this, $name)) {
-            return $this->$name ?? null;
-        } else {
-            Analog::log(
-                '[' . get_class($this) . '] Unable to retrieve `' . $name . '`',
-                Analog::INFO
-            );
-            throw new \RuntimeException('Unable to retrieve `' . $name . '`');
-        }
+        return static::FIELD;
     }
 
     /**
-     * Global isset method
-     * Required for twig to access properties via __get
-     *
-     * @param string $name name of the property we want to retrieve
-     *
-     * @return bool
+     * Get record ID
      */
-    public function __isset(string $name): bool
+    public function getId(): ?int
     {
-        return property_exists($this, $name);
+        return $this->id;
     }
 
     /**
-     * Global setter method
-     *
-     * @param string $name  name of the property we want to assign a value to
-     * @param mixed  $value a relevant value for the property
-     *
-     * @return void
+     * Get record value
      */
-    public function __set(string $name, mixed $value): void
+    public function getValue(): ?string
     {
-        switch ($name) {
-            case 'value':
-                $this->value = $value;
-                break;
-        }
+        return $this->value;
+    }
+
+    /**
+     * Set record value
+     *
+     * @param string $value Value
+     */
+    public function setValue(string $value): self
+    {
+        $this->value = $value;
+        return $this;
+    }
+
+    /**
+     * Get primary key field name
+     */
+    public function getPk(): string
+    {
+        return static::PK;
+    }
+
+    /**
+     * Get value field name
+     */
+    public function getField(): string
+    {
+        return static::FIELD;
     }
 
     /**
      * Get list route
      *
      * @param RouteParser $routeparser Route parser instance
-     * @param string      $property    Property name
-     *
-     * @return string
      */
-    public static function getListRoute(RouteParser $routeparser, string $property): string
+    public static function getListRoute(RouteParser $routeparser): string
     {
-        $route = null;
-        switch ($property) {
-            case 'color':
-                $route = $routeparser->urlFor('colorsList');
-                break;
-            case 'state':
-                $route = $routeparser->urlFor('statesList');
-                break;
-            case 'finition':
-                $route = $routeparser->urlFor('finitionsList');
-                break;
-            case 'body':
-                $route = $routeparser->urlFor('bodiesList');
-                break;
-            case 'transmission':
-                $route = $routeparser->urlFor('transmissionsList');
-                break;
-            case 'brand':
-                $route = $routeparser->urlFor('brandsList');
-                break;
-            default:
-                throw new \RuntimeException('Unknown property ' . $property);
-        }
-        return $route;
+        return $routeparser->urlFor(static::LIST_ROUTE);
     }
 
     /**
-     * Get object name from route property
+     * Get object class name from route property
      *
      * @param string $property Route property
      *
-     * @return string
+     * @return class-string<AbstractObject>
      */
     public static function getClassForPropName(string $property): string
     {
-        $classname = '\GaletteAuto\\';
-        switch ($property) {
-            case 'brand':
-                $classname .= 'Brand';
-                break;
-            case 'color':
-                $classname .= 'Color';
-                break;
-            case 'state':
-                $classname .= 'State';
-                break;
-            case 'finition':
-                $classname .= 'Finition';
-                break;
-            case 'body':
-                $classname .= 'Body';
-                break;
-            case 'transmission':
-                $classname .= 'Transmission';
-                break;
-            default:
-                throw new \RuntimeException('Unknown property ' . $property);
+        if (!isset(self::CLASSES[$property])) {
+            throw new \RuntimeException('Unknown property ' . $property);
         }
-        return $classname;
+        return self::CLASSES[$property];
     }
-
-    /**
-     * Builds the SELECT statement
-     *
-     * @return Select SELECT statement
-     */
-    private function buildSelect(): Select
-    {
-        try {
-            $select = $this->zdb->select($this->table);
-            if (isset($this->filters)) {
-                $this->filters->setLimits($select);
-            }
-            $this->proceedCount($select);
-
-            return $select;
-        } catch (\Exception $e) {
-            Analog::log(
-                'Cannot build SELECT clause | ' . $e->getMessage(),
-                Analog::WARNING
-            );
-            throw $e;
-        }
-    }
-
-    /**
-     * Count objects from the query
-     *
-     * @param Select $select Original select
-     *
-     * @return void
-     */
-    private function proceedCount(Select $select): void
-    {
-        try {
-            $countSelect = clone $select;
-            $countSelect->reset($countSelect::COLUMNS);
-            $countSelect->reset($countSelect::JOINS);
-            $countSelect->reset($countSelect::ORDER);
-            $countSelect->reset($countSelect::LIMIT);
-            $countSelect->reset($countSelect::OFFSET);
-            $countSelect->columns(
-                [
-                    //@phpstan-ignore-next-line
-                    static::PK => new Expression('COUNT(' . static::PK . ')')
-                ]
-            );
-
-            $results = $this->zdb->execute($countSelect);
-            $result = $results->current();
-
-            //@phpstan-ignore-next-line
-            $k = static::PK;
-            $this->count = (int)$result->$k;
-
-            if ($this->count > 0 && isset($this->filters)) {
-                $this->filters->setCounter($this->count);
-            }
-        } catch (\Exception $e) {
-            Analog::log(
-                'Cannot count models | ' . $e->getMessage(),
-                Analog::WARNING
-            );
-            throw $e;
-        }
-    }
-
-    /**
-     * Get count for list
-     *
-     * @return int
-     */
-    public function getCount(): int
-    {
-        return $this->count;
-    }
-
-    /**
-     * Display localized count for object
-     *
-     * @return string
-     */
-    public function displayCount(): string
-    {
-        return str_replace(
-            '%count',
-            (string)$this->getCount(),
-            $this->getLocalizedCount()
-        );
-    }
-
-    /**
-     * Get localized count string for object list
-     *
-     * @return string
-     */
-    abstract protected function getLocalizedCount(): string;
 }

@@ -1,31 +1,28 @@
 <?php
 
 /**
- * Copyright © 2003-2025 The Galette Team
- *
- * This file is part of Galette (https://galette.eu).
- *
- * Galette is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Galette is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with Galette. If not, see <http://www.gnu.org/licenses/>.
+ * This file is part of Galette Auto plugin (https://galette.eu).
+ * SPDX-FileCopyrightText: Copyright © 2009-2026 The Galette Team
+ * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
 declare(strict_types=1);
 
 namespace GaletteAuto;
 
+use DI\Attribute\Inject;
+use Galette\Core\Db;
 use Galette\Core\Login;
+use Galette\Core\Plugins\DashboardProviderInterface;
+use Galette\Core\Plugins\InstallableInterface;
+use Galette\Core\Plugins\MemberActionProviderInterface;
+use Galette\Core\Plugins\MenuProviderInterface;
+use Galette\Core\Plugins\PreferencesProviderInterface;
+use Galette\Core\Plugins\PublicPagesProviderInterface;
 use Galette\Entity\Adherent;
 use Galette\Core\GalettePlugin;
+use Laminas\Db\Metadata\Object\ConstraintObject;
+use Laminas\Db\Metadata\Source\Factory;
 
 /**
  * Galette Auto plugin main class
@@ -33,17 +30,21 @@ use Galette\Core\GalettePlugin;
  * @author Johan Cwiklinski <johan@x-tnd.be>
  */
 
-class PluginGaletteAuto extends GalettePlugin
+class PluginGaletteAuto extends GalettePlugin implements MenuProviderInterface, DashboardProviderInterface, MemberActionProviderInterface, InstallableInterface, PublicPagesProviderInterface, PreferencesProviderInterface
 {
+    #[Inject]
+    private readonly Db $zdb; //@phpstan-ignore property.uninitializedReadonly,property.onlyRead (injected from DI)
+    #[Inject]
+    private readonly Login $login; //@phpstan-ignore property.uninitializedReadonly,property.onlyRead (injected from DI)
+
     /**
-     * Extra menus entries
+     * Get plugins menus
      *
-     * @return array|array[]
+     * @return array<string, string|array<string,mixed>>
      */
-    public static function getMenusContents(): array
+    public function getMenus(): array
     {
-        /** @var Login $login */
-        global $login;
+        $login = $this->login;
         $menus = [];
 
         if ($login->isLogged()) {
@@ -83,25 +84,32 @@ class PluginGaletteAuto extends GalettePlugin
                             'label' => _T("Brands list", "auto"),
                             'route' => ['name' => 'brandsList']
                         ],
-                        [
-                            'label' => _T("Models list", "auto"),
-                            'route' => [
-                                'name' => 'modelsList',
-                                'aliases' => ['modelAdd', 'modelEdit']
-                            ]
-                        ],
-
                     ]
                 );
             }
 
             if ($login->isAdmin() || $login->isStaff() || $login->isGroupManager()) {
+                //group managers can manage models, but not other properties
+                $menus['plugin_auto']['items'][] = [
+                    'label' => _T("Models list", "auto"),
+                    'route' => [
+                        'name' => 'modelsList',
+                        'aliases' => ['modelAdd', 'modelEdit']
+                    ]
+                ];
                 $menus['plugin_auto']['items'][] = [
                     'label' => _T("Cars list", "auto"),
                     'route' => [
                         'name' => 'vehiclesList',
                         'aliases' => ['vehicleAdd', 'vehicleEdit']
                     ]
+                ];
+            }
+
+            if ($login->isAdmin()) {
+                $menus['plugin_auto']['items'][] = [
+                    'label' => _T("Preferences", "auto"),
+                    'route' => ['name' => 'autoPreferences']
                 ];
             }
 
@@ -122,11 +130,21 @@ class PluginGaletteAuto extends GalettePlugin
     }
 
     /**
-     * Extra public menus entries
+     * Get the preferences the plugin declares
      *
-     * @return array|array[]
+     * @return array<string, array<string, mixed>>
      */
-    public static function getPublicMenusItemsList(): array
+    public function getPreferences(): array
+    {
+        return AutoPreferences::getSchema();
+    }
+
+    /**
+     * Get plugins public menus
+     *
+     * @return array<int, string|array<string,mixed>>
+     */
+    public function getPublicMenus(): array
     {
         return [
             [
@@ -140,14 +158,35 @@ class PluginGaletteAuto extends GalettePlugin
     }
 
     /**
-     * Get current logged-in user dashboards contents
+     * Get the public pages the plugin declares
      *
-     * @return array|array[]
+     * @return array<string, array{routes: list<string>, default?: int}>
      */
-    public static function getMyDashboardsContents(): array
+    public function getPublicPages(): array
     {
-        /** @var Login $login */
-        global $login;
+        return [
+            'vehicles' => ['routes' => ['publicVehiclesList']],
+        ];
+    }
+
+    /**
+     * Get the label of a declared public page
+     *
+     * @param string $id Page identifier
+     */
+    public function getPublicPageLabel(string $id): string
+    {
+        return _T("Vehicles", "auto");
+    }
+
+    /**
+     * Get current logged-in user plugins dashboards
+     *
+     * @return array<int, string|array<string,mixed>>
+     */
+    public function getMyDashboards(): array
+    {
+        $login = $this->login;
 
         if ($login->isSuperAdmin()) {
             return [];
@@ -165,11 +204,11 @@ class PluginGaletteAuto extends GalettePlugin
     }
 
     /**
-     * Get dashboards contents
+     * Get plugins dashboards
      *
-     * @return array|array[]
+     * @return array<int, string|array<string,mixed>>
      */
-    public static function getDashboardsContents(): array
+    public function getDashboards(): array
     {
         return [];
     }
@@ -181,7 +220,7 @@ class PluginGaletteAuto extends GalettePlugin
      *
      * @return array<int, string|array<string,mixed>>
      */
-    public static function getListActionsContents(Adherent $member): array
+    public function getListActions(Adherent $member): array
     {
         return [
             [
@@ -200,20 +239,54 @@ class PluginGaletteAuto extends GalettePlugin
      *
      * @param Adherent $member Member instance
      *
-     * @return array|array[]
+     * @return array<int, string|array<string,mixed>>
      */
-    public static function getDetailedActionsContents(Adherent $member): array
+    public function getDetailedActions(Adherent $member): array
     {
-        return static::getListActionsContents($member);
+        return $this->getListActions($member);
     }
 
     /**
      * Get batch actions contents
      *
-     * @return array|array[]
+     * @return array<int, string|array<string,mixed>>
      */
-    public static function getBatchActionsContents(): array
+    public function getBatchActions(): array
     {
         return [];
+    }
+
+    /**
+     * Is the plugin fully installed (including database, extra configuration, etc.)?
+     */
+    public function isInstalled(): bool
+    {
+        return
+            $this->zdb->tableExists(AUTO_PREFIX . Auto::TABLE)
+            && $this->zdb->tableExists(AUTO_PREFIX . Body::TABLE)
+            && $this->zdb->tableExists(AUTO_PREFIX . Brand::TABLE)
+            && $this->zdb->tableExists(AUTO_PREFIX . Color::TABLE)
+            && $this->zdb->tableExists(AUTO_PREFIX . Finition::TABLE)
+            && $this->zdb->tableExists(AUTO_PREFIX . Model::TABLE)
+            && $this->zdb->tableExists(AUTO_PREFIX . State::TABLE)
+            && $this->zdb->tableExists(AUTO_PREFIX . Transmission::TABLE)
+        ;
+    }
+
+    /**
+     * Version of tables installed before plugins versions were recorded
+     *
+     * Vehicles of a removed member are removed along since 1.1.
+     */
+    public function getLegacyDbVersion(): ?float
+    {
+        $metadata = Factory::createSourceFromAdapter($this->zdb->db);
+        /** @var ConstraintObject $constraint */
+        foreach ($metadata->getConstraints(PREFIX_DB . AUTO_PREFIX . Auto::TABLE) as $constraint) {
+            if ($constraint->isForeignKey() && $constraint->getColumns() === [Adherent::PK]) {
+                return $constraint->getDeleteRule() === 'CASCADE' ? null : 1.0;
+            }
+        }
+        return null;
     }
 }

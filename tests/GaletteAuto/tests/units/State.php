@@ -1,27 +1,16 @@
 <?php
 
 /**
- * Copyright © 2003-2025 The Galette Team
- *
- * This file is part of Galette (https://galette.eu).
- *
- * Galette is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Galette is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with Galette. If not, see <http://www.gnu.org/licenses/>.
+ * This file is part of Galette Auto plugin (https://galette.eu).
+ * SPDX-FileCopyrightText: Copyright © 2009-2026 The Galette Team
+ * SPDX-License-Identifier: GPL-3.0-or-later
  */
+
+declare(strict_types=1);
 
 namespace GaletteAuto\tests\units;
 
-use Galette\GaletteTestCase;
+use Galette\Tests\GaletteTestCase;
 
 /**
  * State tests
@@ -33,83 +22,76 @@ class State extends GaletteTestCase
     protected int $seed = 20240130141727;
 
     /**
-     * Cleanup after each test method
-     *
-     * @return void
-     */
-    public function tearDown(): void
-    {
-        $delete = $this->zdb->delete(AUTO_PREFIX . \GaletteAuto\State::TABLE);
-        $this->zdb->execute($delete);
-        parent::tearDown();
-    }
-
-    /**
      * Test empty
-     *
-     * @return void
      */
     public function testEmpty(): void
     {
         $state = new \GaletteAuto\State($this->zdb);
+        $states = new \GaletteAuto\Repository\Properties(
+            $this->zdb,
+            $this->preferences,
+            $this->login,
+            \GaletteAuto\State::class
+        );
         $this->assertSame('State', $state->getFieldLabel());
 
-        $this->assertCount(0, $state->getList());
-        $this->assertSame('0 state', $state->displayCount());
+        $this->assertCount(0, $states->getList());
+        $this->assertSame('0 states', $state->getCountLabel($states->getCount()));
     }
 
     /**
      * Test add and update
-     *
-     * @return void
      */
     public function testCrud(): void
     {
         $state = new \GaletteAuto\State($this->zdb);
+        $states = new \GaletteAuto\Repository\Properties(
+            $this->zdb,
+            $this->preferences,
+            $this->login,
+            \GaletteAuto\State::class
+        );
         //ensure the table is empty
-        $this->assertCount(0, $state->getList());
+        $this->assertCount(0, $states->getList());
 
         //Add new state
-        $state->value = 'Good';
-        $this->assertTrue($state->store(true));
-        $first_id = $state->id;
+        $state->setValue('Good');
+        $state->store(true);
+        $first_id = $state->getId();
 
-        $this->assertCount(1, $state->getList());
-        $listed_state = $state->getList()[0];
-        $this->assertInstanceOf(\ArrayObject::class, $listed_state);
-        $this->assertGreaterThan(0, $listed_state->id_state);
-        $this->assertSame('Good', $listed_state->state);
-        $this->assertSame('1 state', $state->displayCount());
+        $this->assertCount(1, $states->getList());
+        $listed_state = $states->getList()[0];
+        $this->assertInstanceOf(\GaletteAuto\State::class, $listed_state);
+        $this->assertGreaterThan(0, $listed_state->getId());
+        $this->assertSame('Good', $listed_state->getValue());
+        $this->assertSame('1 state', $state->getCountLabel($states->getCount()));
 
         //add another one
         $state = new \GaletteAuto\State($this->zdb);
-        $state->value = 'Wrec';
-        $this->assertTrue($state->store(true));
-        $id = $state->id;
+        $state->setValue('Wrec');
+        $state->store(true);
+        $id = $state->getId();
 
-        $this->assertCount(2, $state->getList());
-        $this->assertSame('2 states', $state->displayCount());
+        $this->assertCount(2, $states->getList());
+        $this->assertSame('2 states', $state->getCountLabel($states->getCount()));
 
         $state = new \GaletteAuto\State($this->zdb);
         $this->assertTrue($state->load($id));
-        $state->value = 'Wreck';
-        $this->assertTrue($state->store());
+        $state->setValue('Wreck');
+        $state->store();
 
-        $this->assertCount(2, $state->getList());
-        $this->assertSame('2 states', $state->displayCount());
+        $this->assertCount(2, $states->getList());
+        $this->assertSame('2 states', $state->getCountLabel($states->getCount()));
 
-        $state = new \GaletteAuto\State($this->zdb);
-        $this->assertTrue($state->delete([$first_id]));
-        $list = $state->getList();
+        $states->remove([$first_id]);
+        $list = $states->getList();
         $this->assertCount(1, $list);
         $last_state = $list[0];
-        $this->assertSame($id, (int)$last_state->id_state);
+        $this->assertSame($id, $last_state->getId());
     }
 
     /**
      * Test load error
-     *
-     * @return void
      */
     public function testLoadError(): void
     {
@@ -117,18 +99,16 @@ class State extends GaletteTestCase
         $this->expectNoLogEntry();
         $this->assertFalse($state->load(999));
         $this->expectLogEntry(
-            \Analog::ERROR,
-            '[GaletteAuto\State] Cannot load states from id `999`'
+            \Analog\Analog::ERROR,
+            '[GaletteAuto\State] Cannot load state #999 | Record not found'
         );
     }
 
     /**
      * Test getClassName
-     *
-     * @return void
      */
     public function testGetClassName(): void
     {
-        $this->assertSame('\\' . \GaletteAuto\State::class, \GaletteAuto\State::getClassForPropName('state'));
+        $this->assertSame(\GaletteAuto\State::class, \GaletteAuto\AbstractObject::getClassForPropName('state'));
     }
 }

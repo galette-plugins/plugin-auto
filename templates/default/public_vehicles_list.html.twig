@@ -1,30 +1,30 @@
 {#
-/**
- * Copyright © 2003-2024 The Galette Team
- *
- * This file is part of Galette (https://galette.eu).
- *
- * Galette is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Galette is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with Galette. If not, see <http://www.gnu.org/licenses/>.
- */
-#}
+ # This file is part of Galette Auto plugin (https://galette.eu).
+ # SPDX-FileCopyrightText: Copyright © 2009-2026 The Galette Team
+ # SPDX-License-Identifier: GPL-3.0-or-later
+ #}
+
 {% extends 'elements/list.html.twig' %}
 
 {% set nb = autos|length %}
 {% set is_public = not login.isLogged() %}
+{% set no_action = true %}
+
+{# owner is not sortable: names of members who are not public are hidden #}
+{% set columns = [
+    {'label': _T("Picture"), 'collapse': true},
+    {'label': _T("Name", "auto"), 'order': constant('GaletteAuto\\Filters\\AutosList::ORDERBY_NAME')},
+    {'label': _T("Owner", "auto")},
+    {'label': _T("Brand", "auto"), 'order': constant('GaletteAuto\\Filters\\AutosList::ORDERBY_BRAND')},
+    {'label': _T("Model", "auto"), 'order': constant('GaletteAuto\\Filters\\AutosList::ORDERBY_MODEL')},
+    {'label': _T("Description", "auto")},
+] %}
 
 {% set form = {
     'route': {
+        'name': 'publicVehiclesList'
+    },
+    'order': {
         'name': 'publicVehiclesList'
     }
 } %}
@@ -36,28 +36,64 @@
     {{ parent() }}
 {% endblock %}
 
-{% block header %}
-    {% set no_action = true %}
-    {% set columns = [
-        {'label': _T("Name", "auto")},
-        {'label': _T("Owner", "auto")},
-        {'label': _T("Brand", "auto")},
-        {'label': _T("Model", "auto")},
-    ] %}
-    {{ parent() }}
-{% endblock %}
-
 {% block body %}
     {% for auto in autos %}
-        {% set brand = auto.model.brand %}
+        {% set brand = auto.getModel().getBrand() %}
 
         <tr>
-            <td data-col-label="{{ _T("Name", "auto") }}">{{ auto.name }}</td>
-            <td data-col-label="{{ _T("Owner", "auto") }}">{{ auto.owner.sfullname }}</td>
-            <td data-col-label="{{ _T("Brand", "auto") }}">{{ brand.value }}</td>
-            <td data-col-label="{{ _T("Model", "auto") }}">{{ auto.model.model }}</td>
+            <td class="collapsing" data-col-label="{{ _T("Picture") }}">
+                {# a thumbnail: the picture scaled down to 80 pixels wide at most #}
+                {% set photo_width = auto.picture.getOptimalWidth() %}
+                {% set thumb_width = min(photo_width, 80) %}
+                <img
+                    src="{{ url_for("vehiclePhoto", {"id": auto.getId()}) }}"
+                    class="ui image"
+                    width="{{ thumb_width }}"
+                    height="{{ photo_width > 0 ? (auto.picture.getOptimalHeight() * thumb_width / photo_width)|round : thumb_width }}"
+                    loading="lazy"
+                    alt="{{ auto.getName() }}"
+                />
+            </td>
+            <td data-col-label="{{ _T("Name", "auto") }}">
+                {{ auto.getName() }}
+                {% if history_allowed[auto.getId()] %}
+                    <button type="button" class="ui mini basic icon button vehicle-history" data-url="{{ url_for("vehicleHistory", {"id": auto.getId()}) }}" title="{{ _T("Show full car state history", "auto") }}">
+                        <i class="ui history icon" aria-hidden="true"></i>
+                        <span class="visually-hidden">{{ _T("Car state history", "auto") }}</span>
+                    </button>
+                {% endif %}
+            </td>
+            {# members kept out of the members list are not named #}
+            <td data-col-label="{{ _T("Owner", "auto") }}">{{ public_owners[auto.getId()] ? auto.getOwner().sfullname : '—' }}</td>
+            <td data-col-label="{{ _T("Brand", "auto") }}">{{ brand.getValue() }}</td>
+            <td data-col-label="{{ _T("Model", "auto") }}">{{ auto.getModel().getModel() }}</td>
+            <td data-col-label="{{ _T("Description", "auto") }}">
+                {# what the car is, then how it is built #}
+                {% set identity = [auto.getFirstCirculationYear(), auto.getBody().getValue(), auto.getFinition().getValue()]|filter(v => v) %}
+                {% set specs = [] %}
+                {% if auto.getEngineSize() %}
+                    {% set specs = specs|merge([_T("%1$s cc", "auto")|replace({'%1$s': auto.getEngineSize()|format_number({}, 'decimal', 'default', i18n.getWebID())})]) %}
+                {% endif %}
+                {% if auto.getHorsepower() %}
+                    {% set specs = specs|merge([_T("%1$s hp", "auto")|replace({'%1$s': auto.getHorsepower()|format_number({}, 'decimal', 'default', i18n.getWebID())})]) %}
+                {% endif %}
+                {% set specs = specs|merge([auto.getFuelLabel(), auto.getTransmission().getValue(), auto.getColor().getValue()]|filter(v => v)) %}
+                {% if identity|length > 0 %}
+                    <strong>{{ identity|join(' · ') }}</strong>
+                {% endif %}
+                {% if specs|length > 0 %}
+                    <div class="ui small grey text">{{ specs|join(' · ') }}</div>
+                {% endif %}
+            </td>
         </tr>
     {% else %}
-        <tr><td colspan="6" class="emptylist">{{ _T("No car in the database", "auto") }}</td></tr>
+        <tr><td colspan="{{ columns_count }}" class="emptylist">{{ _T("No car in the database", "auto") }}</td></tr>
     {% endfor %}
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script type="text/javascript">
+        {% include "@PluginGaletteAuto/history_modal.js.twig" %}
+    </script>
 {% endblock %}

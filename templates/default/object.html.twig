@@ -1,41 +1,26 @@
 {#
-/**
- * Copyright © 2003-2024 The Galette Team
- *
- * This file is part of Galette (https://galette.eu).
- *
- * Galette is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Galette is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with Galette. If not, see <http://www.gnu.org/licenses/>.
- */
-#}
+ # This file is part of Galette Auto plugin (https://galette.eu).
+ # SPDX-FileCopyrightText: Copyright © 2009-2026 The Galette Team
+ # SPDX-License-Identifier: GPL-3.0-or-later
+ #}
+
 {% extends 'page.html.twig' %}
 
 {% block content %}
-    {% set name = obj.name %}
-    {% set pk = obj.pk %}
-    {% set field = obj.field %}
+    {% set pk = obj.getPk() %}
+    {% set field = obj.getField() %}
 
-    <form class="ui form" action="{% if mode == "new" %}{{ url_for("doPropertyAdd", {"property": set}) }}{% else %}{{ url_for("doPropertyEdit", {"property": set, "id": obj.id}) }}{% endif %}" method="post" id="modifform">
+    <form class="ui form" action="{% if mode == "new" %}{{ url_for("doPropertyAdd", {"property": set}) }}{% else %}{{ url_for("doPropertyEdit", {"property": set, "id": obj.getId()}) }}{% endif %}" method="post" id="modifform">
         <div class="ui styled fluid accordion field">
             <div class="active title">
-                <i class="icon dropdown"></i>
+                <i class="icon dropdown" aria-hidden="true"></i>
                 {{ page_title }}
             </div>
             <div class="active content">
                 {% include "components/forms/text.html.twig" with {
                     id: field,
                     name: field,
-                    value: obj.value,
+                    value: obj.getValue(),
                     label: obj.getFieldLabel(),
                     required: true,
                     autofocus: true
@@ -45,12 +30,11 @@
 
         <div class="ui basic center aligned fitted segment">
             <button type="submit" name="valid" class="action ui labeled icon primary button">
-                <i class="save icon"></i> {{ _T("Save") }}
+                <i class="save icon" aria-hidden="true"></i> {{ _T("Save") }}
             </button>
             <input type="hidden" name="set" value="{{ set }}"/>
             <input type="hidden" name="{{ mode }}" value="1"/>
-            <input type="hidden" name="{{ pk }}" value="{{ obj.id }}"/>
-            {% include "components/forms/csrf.html.twig" %}
+            <input type="hidden" name="{{ pk }}" value="{{ obj.getId() }}"/>
         </div>
     </form>
 {% endblock %}

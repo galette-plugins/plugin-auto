@@ -1,0 +1,34 @@
+{#
+ # This file is part of Galette Auto plugin (https://galette.eu).
+ # SPDX-FileCopyrightText: Copyright © 2009-2026 The Galette Team
+ # SPDX-License-Identifier: GPL-3.0-or-later
+ #}
+
+{# Open vehicle history in a modal from any `.vehicle-history` button #}
+    $(function() {
+        $('.vehicle-history').on('click', function() {
+            $.ajax({
+                url: $(this).data('url'),
+                success: function(res) {
+                    {% include "elements/js/modal.js.twig" with {
+                        modal_title_twig: _T("Car's history", "auto")|e("js"),
+                        modal_content: "res",
+                        modal_class: "large",
+                        modal_content_class: "scrolling",
+                        modal_deny_only: true,
+                        modal_cancel_text: _T("Close")|e("js")
+                    } %}
+                },
+                error: function() {
+                    {% include "elements/js/modal.js.twig" with {
+                        modal_title_twig: _T("An error occurred displaying history :(", "auto")|e("js"),
+                        modal_without_content: true,
+                        modal_class: "mini",
+                        modal_deny_only: true,
+                        modal_cancel_text: _T("Close")|e("js"),
+                        modal_classname: "redalert",
+                    } %}
+                }
+            });
+        });
+    });

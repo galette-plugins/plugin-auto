@@ -1,22 +1,9 @@
 <?php
 
 /**
- * Copyright © 2003-2025 The Galette Team
- *
- * This file is part of Galette (https://galette.eu).
- *
- * Galette is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Galette is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with Galette. If not, see <http://www.gnu.org/licenses/>.
+ * This file is part of Galette Auto plugin (https://galette.eu).
+ * SPDX-FileCopyrightText: Copyright © 2009-2026 The Galette Team
+ * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
 declare(strict_types=1);
@@ -29,143 +16,92 @@ use Galette\Core\Db;
 use Galette\Core\Login;
 use Galette\Core\Plugins;
 use Galette\Entity\Adherent;
-use Laminas\Db\Sql\Expression;
 use Psr\Http\Message\UploadedFileInterface;
 
 /**
- * Automobile Transmissions class for galette Auto plugin
+ * Vehicle entity for galette Auto plugin
  *
  * @author Johan Cwiklinski <johan@x-tnd.be>
- *
- * @property int $id
- * @property string $registration
- * @property string $name
- * @property string $first_registration_date
- * @property string $first_circulation_date
- * @property int $mileage
- * @property string $comment
- * @property string $chassis_number
- * @property int $seats
- * @property int $horsepower
- * @property int $engine_size
- * @property string $creation_date
- * @property int $fuel
- * @property Color $color
- * @property Body $body
- * @property State $state
- * @property Transmission $transmission
- * @property Finition $finition
- * @property Model $model
- * @property int $owner_id
- * @property Adherent $owner
- * @property Picture $picture
- * @property History $history
  */
 class Auto
 {
-    public const TABLE = 'cars';
-    public const PK = 'id_car';
+    public const string TABLE = 'cars';
+    public const string PK = 'id_car';
+
+    public const int FUEL_PETROL = 1;
+    public const int FUEL_DIESEL = 2;
+    public const int FUEL_GAS = 3;
+    public const int FUEL_ELECTRICITY = 4;
+    public const int FUEL_BIO = 5;
+    public const int FUEL_HYBRID = 6;
+
+    /**
+     * Fields that can be posted, in the order they are checked
+     *
+     * @var array<string>
+     */
+    private const array POSTED_FIELDS = [
+        'registration',
+        'name',
+        'first_registration_date',
+        'first_circulation_date',
+        'mileage',
+        'comment',
+        'chassis_number',
+        'seats',
+        'horsepower',
+        'engine_size',
+        'fuel',
+        'finition',
+        'color',
+        'model',
+        'transmission',
+        'body',
+        'state',
+        'owner_id'
+    ];
 
     private Plugins $plugins;
     private Db $zdb;
 
-    private array $fields = [
-        'id_car'                        => 'integer',
-        'car_name'                      => 'string',
-        'car_registration'              => 'string',
-        'car_first_registration_date'   => 'date',
-        'car_first_circulation_date'    => 'date',
-        'car_mileage'                   => 'integer',
-        'car_comment'                   => 'string',
-        'car_creation_date'             => 'date',
-        'car_chassis_number'            => 'string',
-        'car_seats'                     => 'integer',
-        'car_horsepower'                => 'integer',
-        'car_engine_size'               => 'integer',
-        'car_fuel'                      => 'integer',
-        Color::PK                       => 'integer',
-        Body::PK                        => 'integer',
-        State::PK                       => 'integer',
-        Transmission::PK                => 'integer',
-        Finition::PK                    => 'integer',
-        Model::PK                       => 'integer',
-        Adherent::PK                    => 'integer'
-    ];
-
-    private array $required = [
-        'name'                      => 1,
-        'model'                     => 1,
-        'first_registration_date'   => 1,
-        'first_circulation_date'    => 1,
-        'color'                     => 1,
-        'state'                     => 1,
-        'registration'              => 1,
-        'body'                      => 1,
-        'transmission'              => 1,
-        'finition'                  => 1,
-        'fuel'                      => 1
-    ];
-
-    private int $id;
-    private string $registration;
-    private string $name;
-    private string $first_registration_date;
-    private string $first_circulation_date;
-    private ?int $mileage;
-    private ?string $comment;
-    private ?string $chassis_number;
-    private ?int $seats;
-    private ?int $horsepower;
-    private ?int $engine_size;
-    private string $creation_date;
-    private int $fuel;
+    private ?int $id = null;
+    private ?string $registration = null;
+    private ?string $name = null;
+    private ?string $first_registration_date = null;
+    private ?string $first_circulation_date = null;
+    private ?int $mileage = null;
+    private ?string $comment = null;
+    private ?string $chassis_number = null;
+    private ?int $seats = null;
+    private ?int $horsepower = null;
+    private ?int $engine_size = null;
+    private ?string $creation_date = null;
+    private ?int $fuel = null;
 
     //External objects
-    private Picture $picture;
+    private ?Picture $picture = null;
     private Finition $finition;
     private Color $color;
     private Model $model;
     private Transmission $transmission;
     private Body $body;
-    private History $history;
+    private ?History $history = null;
     private State $state;
-    private int $owner_id;
-    private Adherent $owner;
-
-    public const FUEL_PETROL = 1;
-    public const FUEL_DIESEL = 2;
-    public const FUEL_GAS = 3;
-    public const FUEL_ELECTRICITY = 4;
-    public const FUEL_BIO = 5;
-    public const FUEL_HYBRID = 6;
+    private ?int $owner_id = null;
+    private ?Adherent $owner = null;
 
     /** @var array<string, string> */
     private array $propnames; //textual properties names
 
-    //do we have to fire a history entry?
-    private bool $fire_history = false;
-
-    //internal properties (not updatable outside the object)
-    private array $internals = [
-        'id',
-        'creation_date',
-        'history',
-        'picture',
-        'propnames',
-        'internals',
-        'fields',
-        'fire_history',
-        'plugins',
-        'zdb'
-    ];
+    /** @var array<int, string> */
     private array $errors = [];
 
     /**
      * Default constructor
      *
-     * @param Plugins      $plugins Plugins
-     * @param Db           $zdb     Database instance
-     * @param ?ArrayObject $args    A resultset row to load
+     * @param Plugins                     $plugins Plugins
+     * @param Db                          $zdb     Database instance
+     * @param ?ArrayObject<string, mixed> $args    A resultset row to load
      */
     public function __construct(Plugins $plugins, Db $zdb, ?ArrayObject $args = null)
     {
@@ -175,13 +111,15 @@ class Auto
         $this->propnames = [
             'name'                      => mb_strtolower(_T("Name", "auto")),
             'model'                     => mb_strtolower(_T("Model", "auto")),
-            'registration'              => mb_strtolower(_T("Registration", "auto")),
+            'registration'              => mb_strtolower(_T("Registration number", "auto")),
             'first_registration_date'   => mb_strtolower(_T("First registration date", "auto")),
             'first_circulation_date'    => mb_strtolower(_T("First circulation date", "auto")),
             'mileage'                   => mb_strtolower(_T("Mileage", "auto")),
             'seats'                     => mb_strtolower(_T("Seats", "auto")),
             'horsepower'                => mb_strtolower(_T("Horsepower", "auto")),
             'engine_size'               => mb_strtolower(_T("Engine size", "auto")),
+            'chassis_number'            => mb_strtolower(_T("Chassis number", "auto")),
+            'comment'                   => mb_strtolower(_T("Comment", "auto")),
             'color'                     => mb_strtolower(_T("Color", "auto")),
             'state'                     => mb_strtolower(_T("State", "auto")),
             'finition'                  => mb_strtolower(_T("Finition", "auto")),
@@ -193,14 +131,9 @@ class Auto
         $this->model = new Model($this->zdb);
         $this->color = new Color($this->zdb);
         $this->state = new State($this->zdb);
-
-        $this->owner = new Adherent($this->zdb);
-        $this->owner->disableAllDeps()->enableDep('parent');
         $this->transmission = new Transmission($this->zdb);
         $this->finition = new Finition($this->zdb);
-        $this->picture = new Picture($this->plugins);
         $this->body = new Body($this->zdb);
-        $this->history = new History($this->zdb);
         if ($args instanceof ArrayObject) {
             $this->loadFromRS($args);
         }
@@ -210,8 +143,6 @@ class Auto
      * Loads a car from its id
      *
      * @param int $id the identifiant for the car to load
-     *
-     * @return bool
      */
     public function load(int $id): bool
     {
@@ -232,8 +163,7 @@ class Auto
             return true;
         } catch (\Exception $e) {
             Analog::log(
-                '[' . get_class($this) . '] Cannot load car from id `' . $id
-                . '` | ' . $e->getMessage(),
+                '[' . static::class . '] Cannot load vehicle #' . $id . ' | ' . $e->getMessage(),
                 Analog::ERROR
             );
             return false;
@@ -243,55 +173,47 @@ class Auto
     /**
      * Populate object from a resultset row
      *
-     * @param ArrayObject $r a resultset row
-     *
-     * @return void
+     * @param ArrayObject<string, mixed> $r a resultset row
      */
     private function loadFromRS(ArrayObject $r): void
     {
-        $pk = self::PK;
-        $this->id = (int)$r->$pk;
-        $this->registration = $r->car_registration;
-        $this->name = $r->car_name;
-        $this->first_registration_date = $r->car_first_registration_date;
-        $this->first_circulation_date = $r->car_first_circulation_date;
-        $this->mileage = $r->car_mileage != null ? (int)$r->car_mileage : null;
-        $this->comment = $r->car_comment;
-        $this->chassis_number = $r->car_chassis_number;
-        $this->seats = $r->car_seats != null ? (int)$r->car_seats : null;
-        $this->horsepower = $r->car_horsepower != null ? (int)$r->car_horsepower : null;
-        $this->engine_size = $r->car_engine_size != null ? (int)$r->car_engine_size : null;
-        $this->creation_date = $r->car_creation_date;
-        $this->fuel = $r->car_fuel != null ? (int)$r->car_fuel : null;
-        //External objects
-        $this->picture = new Picture($this->plugins, $this->id);
-        $fpk = Finition::PK;
-        $this->finition->load((int)$r->$fpk);
-        $cpk = Color::PK;
-        $this->color->load((int)$r->$cpk);
-        $mpk = Model::PK;
-        $this->model->load((int)$r->$mpk);
-        $tpk = Transmission::PK;
-        $this->transmission->load((int)$r->$tpk);
-        $bpk = Body::PK;
-        $this->body->load((int)$r->$bpk);
-        $opk = Adherent::PK;
-        $this->owner_id = (int)$r->$opk;
-        $this->owner->load($this->owner_id);
-        $spk = State::PK;
-        $this->state->load((int)$r->$spk);
-        $this->history->load($this->id);
+        $this->id = (int)$r[self::PK];
+        $this->registration = (string)$r['car_registration'];
+        $this->name = (string)$r['car_name'];
+        $this->first_registration_date = (string)$r['car_first_registration_date'];
+        $this->first_circulation_date = (string)$r['car_first_circulation_date'];
+        $this->mileage = $r['car_mileage'] !== null ? (int)$r['car_mileage'] : null;
+        $this->comment = $r['car_comment'] !== null ? (string)$r['car_comment'] : null;
+        $this->chassis_number = $r['car_chassis_number'] !== null ? (string)$r['car_chassis_number'] : null;
+        $this->seats = $r['car_seats'] !== null ? (int)$r['car_seats'] : null;
+        $this->horsepower = $r['car_horsepower'] !== null ? (int)$r['car_horsepower'] : null;
+        $this->engine_size = $r['car_engine_size'] !== null ? (int)$r['car_engine_size'] : null;
+        $this->creation_date = (string)$r['car_creation_date'];
+        $this->fuel = $r['car_fuel'] !== null ? (int)$r['car_fuel'] : null;
+        //External objects, from the row when they have been joined
+        foreach (['finition', 'color', 'transmission', 'body', 'state'] as $property) {
+            $class = $this->$property::class;
+            if (isset($r[$class::FIELD])) {
+                $this->$property->loadFromRow($r);
+            } else {
+                $this->$property->load((int)$r[$class::PK]);
+            }
+        }
+        $this->model = isset($r[Model::FIELD])
+            ? new Model($this->zdb, $r)
+            : new Model($this->zdb, (int)$r[Model::PK]);
+        $this->setOwner((int)$r[Adherent::PK]);
     }
 
     /**
      * Return the list of available fuels
      *
-     * @return array
+     * @return array<int, string> List of fuels
      */
     public function listFuels(): array
     {
         //TODO: make this list configurable?
-        $f = [
+        return [
             self::FUEL_PETROL       => _T("Petrol", "auto"),
             self::FUEL_DIESEL       => _T("Diesel", "auto"),
             self::FUEL_GAS          => _T("Gas", "auto"),
@@ -299,217 +221,71 @@ class Auto
             self::FUEL_ELECTRICITY  => _T("Electricity", "auto"),
             self::FUEL_BIO          => _T("Bio", "auto")
         ];
-        return $f;
     }
 
     /**
-     * Stores the vehicle in the database
+     * Get values to store in database
      *
-     * @param bool $new true if it's a new record, false to update on
-     *                  that already exists. Defaults to false
-     *
-     * @return bool
+     * @return array<string, mixed>
      */
-    public function store(bool $new = false): bool
+    public function getStorableValues(): array
     {
-        global $hist;
-
-        if ($new) {
-            $this->creation_date = date('Y-m-d');
-        }
-
-        try {
-            $values = [];
-
-            foreach ($this->fields as $k => $v) {
-                switch ($k) {
-                    case self::PK:
-                        break;
-                    case Color::PK:
-                        $values[$k] = $this->color->id;
-                        break;
-                    case Body::PK:
-                        $values[$k] = $this->body->id;
-                        break;
-                    case State::PK:
-                        $values[$k] = $this->state->id;
-                        break;
-                    case Transmission::PK:
-                        $values[$k] = $this->transmission->id;
-                        break;
-                    case Finition::PK:
-                        $values[$k] = $this->finition->id;
-                        break;
-                    case Model::PK:
-                        $values[$k] = $this->model->id;
-                        break;
-                    case Adherent::PK:
-                        $values[$k] = $this->owner->id;
-                        break;
-                    default:
-                        $propName = substr($k, 4, strlen($k));
-                        switch ($v) {
-                            case 'string':
-                            case 'date':
-                                $values[$k] = $this->$propName ?? null;
-                                break;
-                            case 'integer':
-                                $values[$k] = (
-                                    (!empty($this->$propName))
-                                        ? $this->$propName
-                                        : new Expression('NULL')
-                                );
-                                break;
-                            default:
-                                $values[$k] = $this->$propName;
-                                break;
-                        }
-                        break;
-                }
-            }
-
-            if ($new === true) {
-                $insert = $this->zdb->insert(AUTO_PREFIX . self::TABLE);
-                $insert->values($values);
-                $add = $this->zdb->execute($insert);
-
-                if ($add->count() > 0) {
-                    /** @phpstan-ignore-next-line */
-                    $this->id = (int)$this->zdb->driver->getLastGeneratedValue(
-                        $this->zdb->isPostgres()
-                            ? PREFIX_DB . AUTO_PREFIX . self::TABLE . '_id_seq'
-                            : null
-                    );
-
-                    // logging
-                    $hist->add(
-                        _T("New car added", "auto"),
-                        strtoupper($this->name)
-                    );
-                    $this->history->load((int)$this->id);
-                } else {
-                    $hist->add(_T("Fail to add new car.", "auto"));
-                    throw new \Exception(
-                        'An error occurred inserting new car!'
-                    );
-                }
-            } else {
-                $update = $this->zdb->update(AUTO_PREFIX . self::TABLE);
-                $update->set($values)->where(
-                    [
-                        self::PK => $this->id
-                    ]
-                );
-                $edit = $this->zdb->execute($update);
-                //edit == 0 does not mean there were an error, but that there
-                //were nothing to change
-                if ($edit->count() > 0) {
-                    $hist->add(
-                        _T("Car updated", "auto"),
-                        strtoupper($this->name)
-                    );
-                }
-            }
-
-            //if all goes well, we check to add an entry into car's history
-            $h = $this->history->getLatest();
-            if (!$new && $h !== false) {
-                foreach ($h as $k => $v) {
-                    if ($k != 'history_date' && $this->$k != $v) {
-                        //if one has been modified, we flag to add an entry event
-                        $this->fire_history = true;
-                        break;
-                    }
-                }
-            } elseif ($new) {
-                //no history entry... yet! Let's create one.
-                $this->fire_history = true;
-            }
-
-            if ($this->fire_history) {
-                $h_props = [];
-                foreach ($this->history->fields as $prop) {
-                    if ($prop != 'history_date') {
-                        $h_props[$prop] = $this->$prop;
-                    } else {
-                        $h_props[$prop] = date('Y-m-d H:i:s');
-                    }
-                }
-                $this->history->register($h_props);
-                $this->fire_history = false;
-            }
-
-            return true;
-        } catch (\Exception $e) {
-            Analog::log(
-                '[' . get_class($this) . '] An error has occurred '
-                . (($new) ? 'inserting' : 'updating') . ' car | '
-                . $e->getMessage(),
-                Analog::ERROR
-            );
-            return false;
-        }
+        return [
+            'car_name'                      => $this->name,
+            'car_registration'              => $this->registration,
+            'car_first_registration_date'   => $this->first_registration_date,
+            'car_first_circulation_date'    => $this->first_circulation_date,
+            'car_mileage'                   => $this->mileage,
+            'car_comment'                   => $this->comment,
+            'car_creation_date'             => $this->creation_date,
+            'car_chassis_number'            => $this->chassis_number,
+            'car_seats'                     => $this->seats,
+            'car_horsepower'                => $this->horsepower,
+            'car_engine_size'               => $this->engine_size,
+            'car_fuel'                      => $this->fuel,
+            Color::PK                       => $this->color->getId(),
+            Body::PK                        => $this->body->getId(),
+            State::PK                       => $this->state->getId(),
+            Transmission::PK                => $this->transmission->getId(),
+            Finition::PK                    => $this->finition->getId(),
+            Model::PK                       => $this->model->getId(),
+            Adherent::PK                    => $this->owner_id
+        ];
     }
 
     /**
-     * List object's properties
+     * Get values tracked in history, as they are now
      *
-     * @param bool $restrict true to exclude $this->internals from returned
-     *                       result, false otherwise. Default to false
-     *
-     * @return array
+     * @return array<string, mixed>
      */
-    private function getAllProperties(bool $restrict = false): array
+    public function getHistoryValues(): array
     {
-        $result = [];
-        foreach (get_class_vars(static::class) as $key => $value) {
-            if (
-                !$restrict
-                || !in_array($key, $this->internals)
-            ) {
-                $result[] = $key;
-            }
-        }
-        return $result;
-    }
-
-    /**
-     * Get object's properties. List only properties that can be modified
-     *   externally (ie. not in $this->internals)
-     *
-     * @return array
-     */
-    public function getProperties(): array
-    {
-        $properties = $this->getAllProperties(true);
-        $to_unset = ['required', 'errors'];
-        foreach ($to_unset as $prop) {
-            unset($properties[array_search($prop, $properties)]);
-        }
-        return $properties;
+        return [
+            self::PK            => $this->id,
+            Adherent::PK        => $this->owner_id,
+            'history_date'      => date('Y-m-d H:i:s'),
+            'car_registration'  => $this->registration,
+            Color::PK           => $this->color->getId(),
+            State::PK           => $this->state->getId()
+        ];
     }
 
     /**
      * Does the current car has a picture?
-     *
-     * @return bool
      */
     public function hasPicture(): bool
     {
-        return $this->picture->hasPicture();
+        return $this->getPicture()->hasPicture();
     }
 
     /**
      * Set car's owner to current logged user
      *
      * @param Login $login Login instance
-     *
-     * @return void
      */
     public function appropriateCar(Login $login): void
     {
-        $this->owner_id = $login->id;
-        $this->owner->load($this->owner_id);
+        $this->setOwner((int)$login->id);
     }
 
     /**
@@ -529,149 +305,22 @@ class Auto
     }
 
     /**
-     * Global getter method
-     *
-     * @param string $name name of the property we want to retrieve
-     *
-     * @return mixed the called property
-     */
-    public function __get(string $name): mixed
-    {
-        $forbidden = [];
-        if (!in_array($name, $forbidden)) {
-            switch ($name) {
-                case self::PK:
-                    return $this->id;
-                case Adherent::PK:
-                    return $this->owner->id;
-                case Color::PK:
-                    return $this->color->id;
-                case State::PK:
-                    return $this->state->id;
-                case 'car_registration':
-                    return $this->registration;
-                case 'first_registration_date':
-                case 'first_circulation_date':
-                case 'creation_date':
-                    if (isset($this->$name)) {
-                        try {
-                            $d = new \DateTime($this->$name);
-                            return $d->format(_T("Y-m-d"));
-                        } catch (\Exception $e) {
-                            //oops, we've got a bad date :/
-                            Analog::log(
-                                'Bad date (' . $this->$name . ') | '
-                                . $e->getMessage(),
-                                Analog::WARNING
-                            );
-                            return $this->$name;
-                        }
-                    }
-                    return null;
-                case 'picture':
-                    return $this->picture;
-                default:
-                    return $this->$name ?? '';
-            }
-        }
-
-        throw new \RuntimeException(
-            sprintf(
-                'Unable to get property "%s::%s"!',
-                __CLASS__,
-                $name
-            )
-        );
-    }
-
-    /**
-     * Global setter method
-     *
-     * @param string $name  name of the property we want to assign a value to
-     * @param mixed  $value a relevant value for the property
-     *
-     * @return void
-     */
-    public function __set(string $name, mixed $value): void
-    {
-        if (!in_array($name, $this->internals)) {
-            switch ($name) {
-                case 'finition':
-                    $this->finition->load((int)$value);
-                    break;
-                case 'color':
-                    $this->color->load((int)$value);
-                    break;
-                case 'model':
-                    $this->model->load((int)$value);
-                    break;
-                case 'transmission':
-                    $this->transmission->load((int)$value);
-                    break;
-                case 'body':
-                    $this->body->load((int)$value);
-                    break;
-                case 'owner_id':
-                    $this->owner_id = (int)$value;
-                    $this->owner->load($this->owner_id);
-                    break;
-                case 'state':
-                    $this->state->load((int)$value);
-                    break;
-                default:
-                    $this->$name = $value;
-                    break;
-            }
-        } else {
-            Analog::log(
-                '[' . get_class($this) . '] Trying to set an internal property (`'
-                . $name . '`)',
-                Analog::INFO
-            );
-        }
-    }
-
-    /**
-     * Global isset method
-     * Required for twig to access properties via __get
-     *
-     * @param string $name name of the property we want to retrieve
-     *
-     * @return bool
-     */
-    public function __isset(string $name): bool
-    {
-        $knowns = [
-            self::PK,
-            Adherent::PK,
-            Color::PK,
-            State::PK
-        ];
-        if (in_array($name, $knowns)) {
-            return true;
-        }
-
-        return property_exists($this, $name);
-    }
-
-    /**
      * Check posted values validity
      *
-     * @param array $post All values to check, basically the $_POST array
-     *                    after sending the form
-     *
-     * @return bool
+     * @param array<string,mixed> $post        All values to check, basically the $_POST array
+     *                                         after sending the form
+     * @param VehicleAccess       $access      Access rules for current user
+     * @param AutoPreferences     $preferences Plugin preferences
      */
-    public function check(array $post): bool
+    public function check(array $post, VehicleAccess $access, AutoPreferences $preferences): bool
     {
         $this->errors = [];
 
         //check for required fields, and correct values
-        $required = $this->getRequired();
-        foreach ($this->getProperties() as $prop) {
+        foreach (self::POSTED_FIELDS as $prop) {
             $value = $post[$prop] ?? null;
 
-            if (($value == '' || $value == null) && in_array($prop, array_keys($required))) {
+            if (($value == '' || $value == null) && $preferences->isRequired($prop)) {
                 $this->errors[] = str_replace(
                     '%field',
                     '<a href="#' . $prop . '">' . $this->getPropName($prop) . '</a>',
@@ -683,8 +332,8 @@ class Auto
             switch ($prop) {
                 //string values with special check
                 case 'registration':
-                    if (mb_strlen($value) <= 10) {
-                        $this->$prop = $value;
+                    if (mb_strlen((string)$value) <= 10) {
+                        $this->registration = (string)$value;
                     } else {
                         $this->errors[] = str_replace(
                             [
@@ -695,7 +344,7 @@ class Auto
                             [
                                 '10',
                                 $this->getPropName($prop),
-                                (string)mb_strlen($value)
+                                (string)mb_strlen((string)$value)
                             ],
                             _T("- Maximum size for %field is %maxsize (current %cursize)!", "auto")
                         );
@@ -703,30 +352,33 @@ class Auto
                     break;
                     //string values, no check
                 case 'name':
+                    $this->name = (string)$value;
+                    break;
                 case 'comment':
+                    $this->comment = $value !== null && $value !== '' ? (string)$value : null;
+                    break;
                 case 'chassis_number':
-                    $this->$prop = $value;
+                    $this->chassis_number = $value !== null && $value !== '' ? (string)$value : null;
                     break;
                     //dates
                 case 'first_registration_date':
                 case 'first_circulation_date':
-                    try {
-                        $d = \DateTime::createFromFormat(__("Y-m-d"), $value);
-                        if ($d === false) {
-                            //try with non localized date
-                            $d = \DateTime::createFromFormat("Y-m-d", $value);
-                            if ($d === false) {
-                                throw new \Exception('Incorrect format');
-                            }
-                        }
-                        $this->$prop = $d->format('Y-m-d');
-                    } catch (\Throwable $e) {
+                    $d = \DateTime::createFromFormat(__("Y-m-d"), (string)$value);
+                    if ($d === false) {
+                        //try with non localized date
+                        $d = \DateTime::createFromFormat("Y-m-d", (string)$value);
+                    }
+                    if ($d === false) {
                         $this->errors[] = sprintf(
                             //TRANS: %1$s is the date format, %2$s is the field name
                             _T('- Wrong date format (%1$s) for %2$s!'),
                             __("Y-m-d"),
                             $this->getPropName($prop)
                         );
+                    } elseif ($prop === 'first_registration_date') {
+                        $this->first_registration_date = $d->format('Y-m-d');
+                    } else {
+                        $this->first_circulation_date = $d->format('Y-m-d');
                     }
                     break;
                     //numeric values
@@ -734,9 +386,12 @@ class Auto
                 case 'seats':
                 case 'horsepower':
                 case 'engine_size':
-                    if (is_numeric(str_replace(' ', '', $value ?? ''))) {
-                        $this->$prop = (int)$value;
-                    } elseif ($value != '') {
+                    $number = str_replace(' ', '', (string)$value);
+                    if ($number === '') {
+                        $this->$prop = null;
+                    } elseif (is_numeric($number)) {
+                        $this->$prop = (int)$number;
+                    } else {
                         $this->errors[] = str_replace(
                             '%s',
                             '<a href="#' . $prop . '">' . $this->getPropName($prop) . '</a>',
@@ -746,7 +401,9 @@ class Auto
                     break;
                     //constants
                 case 'fuel':
-                    if (in_array($value, array_keys($this->listFuels()))) {
+                    if ($value === null || $value === '') {
+                        $this->fuel = null;
+                    } elseif (in_array((int)$value, array_keys($this->listFuels()), true)) {
                         $this->fuel = (int)$value;
                     } else {
                         $this->errors[] = _T("- You must choose a fuel in the list", "auto");
@@ -759,46 +416,41 @@ class Auto
                 case 'transmission':
                 case 'body':
                 case 'state':
-                    if ($value > 0) {
-                        $this->$prop->load((int)$value);
-                    } else {
-                        $class = 'GaletteAuto\\' . ucwords($prop);
-                        $name = $class::FIELD;
+                    if ((int)$value <= 0 || !$this->$prop->load((int)$value)) {
                         $this->errors[] = str_replace(
                             '%s',
-                            '<a href="#' . $prop . '">' . $this->getPropName($name) . '</a>',
+                            '<a href="#' . $prop . '">' . $this->getPropName($prop) . '</a>',
                             _T("- You must choose a %s in the list", "auto")
                         );
                     }
                     break;
-                case 'owner':
-                    //owner is not a property that can be set.
-                    break;
                 case 'owner_id':
-                    if (isset($post['change_owner']) || !isset($this->id)) {
+                    if (isset($post['change_owner']) || $this->id === null) {
                         $value = (int)$value;
-                        if ($value > 0) {
-                            $this->owner_id = $value;
-                            $this->owner->load($value);
-                        } else {
+                        if (!$access->isManager()) {
+                            //simple members only own their vehicles
+                            $value = $access->getMemberId();
+                        }
+                        if ($value <= 0) {
                             $this->errors[] = _T("- you must attach an owner to this car", "auto");
+                        } elseif (!$access->canManageMember($value)) {
+                            Analog::log(
+                                'Trying to attach vehicle to member #' . $value
+                                . ' (user #' . $access->getMemberId() . ')',
+                                Analog::WARNING
+                            );
+                            $this->errors[] = _T("- you cannot attach this car to this member", "auto");
+                        } else {
+                            $this->setOwner($value);
                         }
                     }
-                    break;
-                default:
-                    /** TODO: what's the default? */
-                    Analog::log(
-                        'Trying to edit an Auto property that is not handled in the source code! (prop is: '
-                        . $prop . ')',
-                        Analog::ERROR
-                    );
                     break;
             }//switch
         }//foreach
 
         //delete photo
         if (isset($post['del_photo'])) {
-            if (!$this->picture->delete()) {
+            if (!$this->getPicture()->delete()) {
                 $this->errors[]
                     = _T("An error occurred while trying to delete car's photo", "auto");
             }
@@ -810,7 +462,7 @@ class Auto
     /**
      * Get errors
      *
-     * @return array
+     * @return array<string>
      */
     public function getErrors(): array
     {
@@ -818,27 +470,9 @@ class Auto
     }
 
     /**
-     * Get required fields
-     *
-     * @return array
-     */
-    public function getRequired(): array
-    {
-        $required = $this->required;
-
-        if (file_exists(GALETTE_CONFIG_PATH . 'local_auto_required.inc.php')) {
-            $required = require GALETTE_CONFIG_PATH . 'local_auto_required.inc.php';
-        }
-
-        return $required;
-    }
-
-    /**
      * Handle car picture upload
      *
      * @param array<UploadedFileInterface> $files Files sent
-     *
-     * @return bool
      */
     public function handleFiles(array $files): bool
     {
@@ -849,5 +483,272 @@ class Auto
         }
 
         return !count($this->errors);
+    }
+
+    /**
+     * Get vehicle ID
+     */
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
+    /**
+     * Get vehicle name
+     */
+    public function getName(): ?string
+    {
+        return $this->name;
+    }
+
+    /**
+     * Get registration
+     */
+    public function getRegistration(): ?string
+    {
+        return $this->registration;
+    }
+
+    /**
+     * Get first registration date, as Y-m-d
+     */
+    public function getFirstRegistrationDate(): ?string
+    {
+        return $this->first_registration_date;
+    }
+
+    /**
+     * Get first circulation date, as Y-m-d
+     */
+    public function getFirstCirculationDate(): ?string
+    {
+        return $this->first_circulation_date;
+    }
+
+    /**
+     * Get year of first circulation
+     */
+    public function getFirstCirculationYear(): ?int
+    {
+        if (empty($this->first_circulation_date)) {
+            return null;
+        }
+        return (int)substr($this->first_circulation_date, 0, 4);
+    }
+
+    /**
+     * Get creation date, as Y-m-d
+     */
+    public function getCreationDate(): ?string
+    {
+        return $this->creation_date;
+    }
+
+    /**
+     * Get mileage
+     */
+    public function getMileage(): ?int
+    {
+        return $this->mileage;
+    }
+
+    /**
+     * Get comment
+     */
+    public function getComment(): ?string
+    {
+        return $this->comment;
+    }
+
+    /**
+     * Get chassis number
+     */
+    public function getChassisNumber(): ?string
+    {
+        return $this->chassis_number;
+    }
+
+    /**
+     * Get number of seats
+     */
+    public function getSeats(): ?int
+    {
+        return $this->seats;
+    }
+
+    /**
+     * Get horsepower
+     */
+    public function getHorsepower(): ?int
+    {
+        return $this->horsepower;
+    }
+
+    /**
+     * Get engine size
+     */
+    public function getEngineSize(): ?int
+    {
+        return $this->engine_size;
+    }
+
+    /**
+     * Get fuel, one of the FUEL_* constants
+     */
+    public function getFuel(): ?int
+    {
+        return $this->fuel;
+    }
+
+    /**
+     * Get fuel label
+     */
+    public function getFuelLabel(): ?string
+    {
+        if ($this->fuel === null) {
+            return null;
+        }
+        return $this->listFuels()[$this->fuel] ?? null;
+    }
+
+    /**
+     * Get model
+     */
+    public function getModel(): Model
+    {
+        return $this->model;
+    }
+
+    /**
+     * Get color
+     */
+    public function getColor(): Color
+    {
+        return $this->color;
+    }
+
+    /**
+     * Get state
+     */
+    public function getState(): State
+    {
+        return $this->state;
+    }
+
+    /**
+     * Get transmission
+     */
+    public function getTransmission(): Transmission
+    {
+        return $this->transmission;
+    }
+
+    /**
+     * Get finition
+     */
+    public function getFinition(): Finition
+    {
+        return $this->finition;
+    }
+
+    /**
+     * Get body
+     */
+    public function getBody(): Body
+    {
+        return $this->body;
+    }
+
+    /**
+     * Get owner ID
+     */
+    public function getOwnerId(): ?int
+    {
+        return $this->owner_id;
+    }
+
+    /**
+     * Get owner, loaded on first call
+     */
+    public function getOwner(): Adherent
+    {
+        if ($this->owner === null) {
+            $this->owner = new Adherent($this->zdb);
+            $this->owner->disableAllDeps();
+            if ($this->owner_id !== null && $this->owner_id > 0) {
+                $this->owner->load($this->owner_id);
+            }
+        }
+        return $this->owner;
+    }
+
+    /**
+     * Set owner
+     *
+     * @param int $id_adh Member ID
+     */
+    public function setOwner(int $id_adh): self
+    {
+        $this->owner_id = $id_adh;
+        $this->owner = null;
+        return $this;
+    }
+
+    /**
+     * Set owner from an already loaded member
+     *
+     * @param Adherent $owner Owner
+     */
+    public function setOwnerMember(Adherent $owner): self
+    {
+        $this->owner_id = (int)$owner->id;
+        $this->owner = $owner;
+        return $this;
+    }
+
+    /**
+     * Set ID, once stored
+     *
+     * @param int $id Vehicle ID
+     */
+    public function setId(int $id): self
+    {
+        $this->id = $id;
+        $this->history = null;
+        $this->picture = null;
+        return $this;
+    }
+
+    /**
+     * Set creation date
+     *
+     * @param string $date Date, as Y-m-d
+     */
+    public function setCreationDate(string $date): self
+    {
+        $this->creation_date = $date;
+        return $this;
+    }
+
+    /**
+     * Get picture
+     */
+    public function getPicture(): Picture
+    {
+        if ($this->picture === null) {
+            $this->picture = new Picture($this->plugins, $this->id);
+        }
+        return $this->picture;
+    }
+
+    /**
+     * Get history
+     */
+    public function getHistory(): History
+    {
+        if ($this->history === null) {
+            $this->history = new History($this->zdb, $this->id);
+        }
+        return $this->history;
     }
 }

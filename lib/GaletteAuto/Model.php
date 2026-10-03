@@ -1,22 +1,9 @@
 <?php
 
 /**
- * Copyright © 2003-2025 The Galette Team
- *
- * This file is part of Galette (https://galette.eu).
- *
- * Galette is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Galette is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with Galette. If not, see <http://www.gnu.org/licenses/>.
+ * This file is part of Galette Auto plugin (https://galette.eu).
+ * SPDX-FileCopyrightText: Copyright © 2009-2026 The Galette Team
+ * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
 declare(strict_types=1);
@@ -32,30 +19,26 @@ use Laminas\Db\ResultSet\ResultSet;
  * Automobile Models class for galette Auto plugin
  *
  * @author Johan Cwiklinski <johan@x-tnd.be>
- *
- * @property int $id
- * @property string  $model
- * @property Brand   $brand
  */
 class Model
 {
-    public const TABLE = 'models';
-    public const PK = 'id_model';
-    public const FIELD = 'model';
+    public const string TABLE = 'models';
+    public const string PK = 'id_model';
+    public const string FIELD = 'model';
 
-    protected int $id;
-    protected string $model;
+    protected ?int $id = null;
+    protected ?string $model = null;
     protected Brand $brand;
 
     /** @var string[] */
-    private array $errors;
+    private array $errors = [];
     private Db $zdb;
 
     /**
      * Default constructor
      *
-     * @param Db                   $zdb  Database instance
-     * @param ArrayObject|int|null $args model's id to load or ResultSet. Defaults to null
+     * @param Db                                  $zdb  Database instance
+     * @param ArrayObject<string, mixed>|int|null $args model's id to load or ResultSet. Defaults to null
      */
     public function __construct(Db $zdb, ArrayObject|int|null $args = null)
     {
@@ -73,8 +56,6 @@ class Model
      * Load a model
      *
      * @param int $id Id for the model we want
-     *
-     * @return bool
      */
     public function load(int $id): bool
     {
@@ -93,10 +74,9 @@ class Model
             }
             $this->loadFromRS($result);
             return true;
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             Analog::log(
-                '[' . get_class($this) . '] Cannot load model from id `' . $id
-                . '` | ' . $e->getMessage(),
+                '[' . static::class . '] Cannot load model #' . $id . ' | ' . $e->getMessage(),
                 Analog::ERROR
             );
             return false;
@@ -106,16 +86,18 @@ class Model
     /**
      * Populate object from a resultset row
      *
-     * @param ArrayObject $r the resultset row
-     *
-     * @return void
+     * @param ArrayObject<string, mixed> $r the resultset row
      */
     private function loadFromRS(ArrayObject $r): void
     {
-        $this->id = (int)$r->id_model;
-        $this->model = $r->model;
-        $id_brand = Brand::PK;
-        $this->brand->load((int)$r->$id_brand);
+        $this->id = (int)$r[self::PK];
+        $this->model = (string)$r[self::FIELD];
+        if (isset($r[Brand::FIELD])) {
+            //brand has been joined
+            $this->brand->loadFromRow($r);
+        } else {
+            $this->brand->load((int)$r[Brand::PK]);
+        }
     }
 
     /**
@@ -123,14 +105,14 @@ class Model
      *
      * @param bool $new New record or existing one
      *
-     * @return bool
+     * @throws \Throwable
      */
-    public function store(bool $new = false): bool
+    public function store(bool $new = false): void
     {
         try {
             $values = [
                 'model'     => $this->model,
-                Brand::PK   => $this->brand->id
+                Brand::PK   => $this->brand->getId()
             ];
             if ($new) {
                 $insert = $this->zdb->insert(AUTO_PREFIX . self::TABLE);
@@ -151,74 +133,45 @@ class Model
                 );
                 $this->zdb->execute($update);
             }
-            return true;
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             Analog::log(
-                '[' . get_class($this) . '] Cannot store model'
-                . ' values `' . $this->id . '`, `' . implode('`, `', $values) . '` | '
-                . $e->getMessage(),
-                Analog::WARNING
-            );
-            return false;
-        }
-    }
-
-    /**
-     * Delete some models
-     *
-     * @param array $ids Array of models id to delete
-     *
-     * @return bool
-     */
-    public function delete(array $ids): bool
-    {
-        try {
-            $delete = $this->zdb->delete(AUTO_PREFIX . self::TABLE);
-            $delete->where->in(self::PK, $ids);
-            $this->zdb->execute($delete);
-            return true;
-        } catch (\Exception $e) {
-            Analog::log(
-                '[' . get_class($this) . '] Cannot delete models from ids `'
-                . implode(' - ', $ids) . '` | ' . $e->getMessage(),
-                Analog::WARNING
+                '[' . static::class . '] Cannot ' . ($new ? 'add' : 'update') . ' model #' . ($this->id ?? '')
+                . ' | ' . $e->getMessage(),
+                Analog::ERROR
             );
             throw $e;
         }
     }
 
     /**
-     * Global getter method
-     *
-     * @param string $name name of the property we want to retrieve
-     *
-     * @return mixed the called property
+     * Get model ID
      */
-    public function __get(string $name): mixed
+    public function getId(): ?int
     {
-        return $this->$name ?? null;
+        return $this->id;
     }
 
     /**
-     * Global isset method
-     * Required for twig to access properties via __get
-     *
-     * @param string $name name of the property we want to retrieve
-     *
-     * @return bool
+     * Get model name
      */
-    public function __isset(string $name): bool
+    public function getModel(): ?string
     {
-        return property_exists($this, $name);
+        return $this->model;
+    }
+
+    /**
+     * Get model brand
+     */
+    public function getBrand(): Brand
+    {
+        return $this->brand;
     }
 
     /**
      * Check posted values validity
      *
-     * @param array $post All values to check, basically the $_POST array
-     *                    after sending the form
-     *
-     * @return bool
+     * @param array<string,mixed> $post All values to check, basically the $_POST array
+     *                                  after sending the form
      */
     public function check(array $post): bool
     {
@@ -251,8 +204,6 @@ class Model
      * Set brand from ID
      *
      * @param int $id Brand ID
-     *
-     * @return self
      */
     public function setBrand(int $id): self
     {
