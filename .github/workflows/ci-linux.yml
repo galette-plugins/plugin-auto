@@ -279,7 +279,15 @@ jobs:
       - name: Find previous release
         run: |
           cd galette-core/galette/plugins/plugin-auto
-          echo "PREVIOUS_RELEASE=$(git tag --list '[0-9]*' --sort=-v:refname --no-contains HEAD | head -n1)" >> $GITHUB_ENV
+          PREVIOUS_RELEASE=$(git tag --list '[0-9]*' --sort=-v:refname --no-contains HEAD | head -n1)
+          echo "PREVIOUS_RELEASE=$PREVIOUS_RELEASE" >> $GITHUB_ENV
+          # no upgrade to check while database version is the same as in previous release
+          dbver() { grep -oE "dbver: *'?[0-9.]+" | grep -oE '[0-9.]+$'; }
+          previous=$(git show "$PREVIOUS_RELEASE:_define.php" | dbver || true)
+          current=$(dbver < _define.php)
+          if [ -z "$previous" ] || awk -v a="$previous" -v b="$current" 'BEGIN { exit !(a + 0 != b + 0) }'; then
+            echo "DB_CHANGED=1" >> $GITHUB_ENV
+          fi
 
       - name: Install previous release for PostgreSQL
         env:
@@ -301,6 +309,7 @@ jobs:
         if: startsWith(matrix.db-image, 'mysql') || startsWith(matrix.db-image, 'mariadb')
 
       - name: Upgrade
+        if: env.DB_CHANGED == '1'
         run: |
           cd galette-core
           bin/console galette:plugins:install-db --no-interaction plugin-auto | tee upgrade.log
