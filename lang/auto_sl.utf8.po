@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: translations@galette.eu\n"
 "POT-Creation-Date: 2026-10-01 12:32+0200\n"
-"PO-Revision-Date: 2026-10-03 12:36+0000\n"
+"PO-Revision-Date: 2026-10-08 20:44+0000\n"
 "Last-Translator: Jože Felicijan <joze@felicijan.com>\n"
 "Language-Team: Slovenian <https://hosted.weblate.org/projects/galette/auto-"
 "plugin/sl/>\n"
@@ -401,7 +401,7 @@ msgstr[3] "%1$s končnic je bilo uspešno izbrisanih."
 
 #: ../lib/GaletteAuto/Finition.php:81
 msgid "This finition is used by one or more vehicles, it cannot be deleted."
-msgstr "To končnico uporablja eno ali več vozil in je ni mogoče izbrisati."
+msgstr "Ta zaključek uporablja eno ali več vozil, ni ga mogoče izbrisati."
 
 #: ../lib/GaletteAuto/Finition.php:89
 msgid "An error occurred trying to remove finition :/"
