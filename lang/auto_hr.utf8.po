@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: translations@galette.eu\n"
 "POT-Creation-Date: 2026-10-01 12:32+0200\n"
-"PO-Revision-Date: 2026-10-08 21:01+0000\n"
+"PO-Revision-Date: 2026-10-10 11:51+0000\n"
 "Last-Translator: Marko Puljic <markopuljic.uo@gmail.com>\n"
 "Language-Team: Croatian <https://hosted.weblate.org/projects/galette/auto-"
 "plugin/hr/>\n"
@@ -109,7 +109,7 @@ msgstr ""
 
 #: ../lib/GaletteAuto/Controllers/Crud/PropertiesController.php:245
 msgid "New"
-msgstr ""
+msgstr "Nova"
 
 #: ../lib/GaletteAuto/Controllers/Crud/PropertiesController.php:251
 #, php-format
@@ -142,7 +142,7 @@ msgstr ""
 #: ../lib/GaletteAuto/Controllers/Crud/PropertiesController.php:440
 #, php-format
 msgid "Remove %1$s %2$s"
-msgstr ""
+msgstr "Ukloni %1$s %2$s"
 
 #: ../lib/GaletteAuto/Controllers/Crud/ModelsController.php:112
 #: ../lib/GaletteAuto/PluginGaletteAuto.php:94
@@ -194,7 +194,7 @@ msgstr ""
 #: ../templates/default/public_vehicles_list.html.twig:57
 #: ../templates/default/vehicles.html.twig:34
 msgid "Name"
-msgstr ""
+msgstr "Naziv"
 
 #: ../lib/GaletteAuto/Auto.php:113 ../templates/default/model.html.twig:19
 #: ../templates/default/vehicles_list.html.twig:12
@@ -204,7 +204,7 @@ msgstr ""
 #: ../templates/default/public_vehicles_list.html.twig:69
 #: ../templates/default/vehicles.html.twig:60
 msgid "Model"
-msgstr ""
+msgstr "Predložak"
 
 #: ../lib/GaletteAuto/Auto.php:114 ../templates/default/history.html.twig:21
 #: ../templates/default/history.html.twig:48 ../templates/default/vehicles.html.twig:193
@@ -242,7 +242,7 @@ msgstr ""
 #: ../lib/GaletteAuto/Auto.php:122 ../templates/default/vehicles.html.twig:285
 #: ../templates/default/vehicles.html.twig:290
 msgid "Comment"
-msgstr "Komentar"
+msgstr "Napomena"
 
 #: ../lib/GaletteAuto/Auto.php:123 ../lib/GaletteAuto/Color.php:30
 #: ../templates/default/history.html.twig:24 ../templates/default/history.html.twig:49
@@ -269,7 +269,7 @@ msgstr ""
 #: ../lib/GaletteAuto/Auto.php:127 ../lib/GaletteAuto/Body.php:30
 #: ../templates/default/vehicles.html.twig:215
 msgid "Body"
-msgstr ""
+msgstr "Sadržaj"
 
 #: ../lib/GaletteAuto/Auto.php:128 ../templates/default/vehicles.html.twig:275
 msgid "Fuel"
@@ -646,7 +646,7 @@ msgstr ""
 #: ../templates/default/public_vehicles_list.html.twig:14
 #: ../templates/default/public_vehicles_list.html.twig:70
 msgid "Description"
-msgstr ""
+msgstr "Opis"
 
 #: ../templates/default/public_vehicles_list.html.twig:60
 #: ../templates/default/vehicles.html.twig:132
