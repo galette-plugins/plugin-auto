@@ -1,36 +1,35 @@
 ---
-title: Documentation
-description: Plugin to manage Automobile clubs
+title: Dokumentacija
+description: Dodatak za upravljanje automobilskim klubovima
 ---
 
-This plugin provides vehicles management for automobile clubs, you can manage:
+Dodatak omogućuje automobilskim klubovima upravljanje:
 
-* vehicles (owner, several information, photo, etc),
-* vehicle history modification (owner, color, ...),
-* brands,
-* models,
-* transmission types,
-* body types,
-* colors,
-* finitions,
-* states.
+* vozilima (vlasnik, razni podaci, fotografija i slično),
+* poviješću izmjena vozila (vlasnik, boja i slično),
+* markama,
+* modelima,
+* vrstama mjenjača,
+* vrstama karoserije,
+* bojama,
+* paketima opreme,
+* stanjima vozila.
 
-This plugin has been initially developed in collaboration with Anatole from
-[Club 404](https://www.leclub404.com/), and François from [club Fiat
-500](http://www.club500.fr/). A big thanks to them for their precious help
-during plugin development :)
+Dodatak je izvorno razvijen u suradnji s Anatoleom iz [Club
+404](https://www.leclub404.com/) i Françoisom iz [club Fiat
+500](http://www.club500.fr/). Hvala im na dragocjenoj pomoći pri razvoju :)
 
-## Installation
+## Instalacija
 
-First of all, download the plugin:
+Najprije preuzmite dodatak:
 
-* [Get latest Auto
-  plugin!](https://github.com/galette-plugins/plugin-auto/releases/latest)
-* [Get Auto plugin nightly
-  build!](https://github.com/galette-plugins/plugin-auto/releases/tag/nightly)
+* [Preuzmite najnoviji dodatak
+  Auto!](https://github.com/galette-plugins/plugin-auto/releases/latest)
+* [Preuzmite noćnu razvojnu verziju dodatka
+  Auto!](https://github.com/galette-plugins/plugin-auto/releases/tag/nightly)
 
-Extract the downloaded archive in Galette `plugins` directory. For example,
-under linux (replacing `{url}` and `{version}` with correct values):
+Raspakirajte preuzetu arhivu u Galetteovu mapu `plugins`. Primjerice, na Linuxu
+(zamijenite `{url}` i `{version}` odgovarajućim vrijednostima):
 
 ```bash
 $ cd /var/www/html/galette/plugins
@@ -38,24 +37,22 @@ $ wget {url}
 $ tar xjvf galette-plugin-auto-{version}.tar.bz2
 ```
 
-## Database initialisation
+## Inicijalizacija baze podataka
 
-In order to work, this plugin requires several tables in the database. See
-[Galette plugins management
-interface](https://doc.galette.eu/en/master/plugins/index.html#plugins-managment).
+Dodatak zahtijeva nekoliko tablica u bazi. Pogledajte [sučelje za upravljanje
+dodacima
+Galettea](https://doc.galette.eu/en/master/plugins/index.html#plugins-managment).
 
-And this is finished; Auto plugin is installed :)
+Gotovo; dodatak Auto je instaliran :)
 
-There is no particular setup required, you can just enter data in the database.
+Nisu potrebne posebne postavke; možete odmah unositi podatke u bazu.
 
-## Configure required fields
+## Podešavanje obveznih polja
 
-When adding a new vehicle in database, there are several fields that are
-required, but that may not fit your needs. In such case, you can define your own
-required fields: just create a `local_auto_required.inc.php` file in your
-Galette `config` directory and declare an array of the fields you want to
-require. As example, if you just want to require name and model for a car, you
-will need:
+Pri dodavanju vozila neka su polja obvezna, što možda ne odgovara vašim
+potrebama. Možete zadati vlastita obvezna polja: u Galetteovoj mapi `config`
+izradite datoteku `local_auto_required.inc.php` i definirajte niz željenih
+polja. Ako želite da obvezni budu samo naziv i model, unesite:
 
 ```php
 <?php
