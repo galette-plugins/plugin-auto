@@ -2,13 +2,15 @@
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
 # Marko Puljic <markopuljic.uo@gmail.com>, 2026.
+# Marko Puljic <markopuljic.uo@users.noreply.hosted.weblate.org>, 2026.
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: translations@galette.eu\n"
 "POT-Creation-Date: 2026-10-01 12:32+0200\n"
-"PO-Revision-Date: 2026-10-10 11:51+0000\n"
-"Last-Translator: Marko Puljic <markopuljic.uo@gmail.com>\n"
+"PO-Revision-Date: 2026-10-13 08:39+0000\n"
+"Last-Translator: Marko Puljic "
+"<markopuljic.uo@users.noreply.hosted.weblate.org>\n"
 "Language-Team: Croatian <https://hosted.weblate.org/projects/galette/auto-"
 "plugin/hr/>\n"
 "Language: hr\n"
@@ -17,127 +19,128 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
 "n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
-"X-Generator: Weblate 2026.10.1.dev0\n"
+"X-Generator: Weblate 2026.11.dev0\n"
 
 #: ../lib/GaletteAuto/Controllers/PreferencesController.php:48
 msgid "Cars preferences"
-msgstr ""
+msgstr "Postavke vozila"
 
 #: ../lib/GaletteAuto/Controllers/PreferencesController.php:76
 msgid "Preferences have been successfully stored!"
-msgstr ""
+msgstr "Postavke su uspješno spremljene!"
 
 #: ../lib/GaletteAuto/Controllers/Controller.php:74
 msgid "You do not have enough privileges."
-msgstr ""
+msgstr "Nemate dovoljno ovlasti."
 
 #: ../lib/GaletteAuto/Controllers/Controller.php:288
 #: ../lib/GaletteAuto/PluginGaletteAuto.php:101
 msgid "Cars list"
-msgstr ""
+msgstr "Popis automobila"
 
 #: ../lib/GaletteAuto/Controllers/Controller.php:290
 #: ../lib/GaletteAuto/PluginGaletteAuto.php:121
 #: ../lib/GaletteAuto/PluginGaletteAuto.php:197
 msgid "My cars"
-msgstr ""
+msgstr "Moja vozila"
 
 #: ../lib/GaletteAuto/Controllers/Controller.php:292
 #: ../lib/GaletteAuto/PluginGaletteAuto.php:227
 msgid "Member's cars"
-msgstr ""
+msgstr "Vozila člana"
 
 #: ../lib/GaletteAuto/Controllers/Controller.php:297
 msgid "Vehicles list"
-msgstr ""
+msgstr "Popis vozila"
 
 #: ../lib/GaletteAuto/Controllers/Controller.php:387
 msgid "New vehicle"
-msgstr ""
+msgstr "Novo vozilo"
 
 #: ../lib/GaletteAuto/Controllers/Controller.php:388
 #, php-format
 msgid "Change vehicle '%s'"
-msgstr ""
+msgstr "Izmijeni vozilo '%s'"
 
 #: ../lib/GaletteAuto/Controllers/Controller.php:504
 msgid "- An error has occurred while saving vehicle in the database."
-msgstr ""
+msgstr "- Došlo je do pogreške pri spremanju vozila u bazu podataka."
 
 #: ../lib/GaletteAuto/Controllers/Controller.php:506
 msgid "Vehicle has been saved!"
-msgstr ""
+msgstr "Vozilo je spremljeno!"
 
 #: ../lib/GaletteAuto/Controllers/Controller.php:569
 #, php-format
 msgid "History of car #%d"
-msgstr ""
+msgstr "Povijest automobila #%d"
 
 #: ../lib/GaletteAuto/Controllers/Controller.php:628
 #: ../lib/GaletteAuto/Controllers/Controller.php:703
 msgid "Vehicle"
-msgstr ""
+msgstr "Vozilo"
 
 #: ../lib/GaletteAuto/Controllers/Controller.php:631
 #, php-format
 msgid "Remove vehicle %1$s"
-msgstr ""
+msgstr "Ukloni vozilo %1$s"
 
 #: ../lib/GaletteAuto/Controllers/Controller.php:655
 msgid "No vehicle was selected, please check at least one name."
-msgstr ""
+msgstr "Nijedno vozilo nije odabrano. Označite barem jedno."
 
 #: ../lib/GaletteAuto/Controllers/Controller.php:705
 msgid "Remove vehicles"
-msgstr ""
+msgstr "Ukloni vozila"
 
 #: ../lib/GaletteAuto/Controllers/Controller.php:709
 #, php-format
 msgid "You are about to remove %count vehicle."
 msgid_plural "You are about to remove %count vehicles."
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "Uklonit ćete %count vozilo."
+msgstr[1] "Uklonit ćete %count vozila."
+msgstr[2] "Uklonit ćete %count vozila."
 
 #: ../lib/GaletteAuto/Controllers/Controller.php:751
 msgid "An error occurred trying to remove vehicles :/"
-msgstr ""
+msgstr "Došlo je do pogreške pri uklanjanju vozila :/"
 
 #: ../lib/GaletteAuto/Controllers/Controller.php:761
 #, php-format
 msgid "%count vehicles have been successfully deleted."
-msgstr ""
+msgstr "Vozila su uspješno izbrisana: %count."
 
 #: ../lib/GaletteAuto/Controllers/Crud/PropertiesController.php:245
 msgid "New"
-msgstr "Nova"
+msgstr "Novo"
 
 #: ../lib/GaletteAuto/Controllers/Crud/PropertiesController.php:251
 #, php-format
 msgid "Change '%s'"
-msgstr ""
+msgstr "Izmijeni '%s'"
 
 #: ../lib/GaletteAuto/Controllers/Crud/PropertiesController.php:318
 #: ../lib/GaletteAuto/Model.php:186
 msgid "- You must provide a value!"
-msgstr ""
+msgstr "- Morate navesti vrijednost!"
 
 #: ../lib/GaletteAuto/Controllers/Crud/PropertiesController.php:329
 msgid "New %property has been added!"
-msgstr ""
+msgstr "Dodana je nova stavka: %property!"
 
 #: ../lib/GaletteAuto/Controllers/Crud/PropertiesController.php:330
 msgid "%property has been saved!"
-msgstr ""
+msgstr "Stavka %property je spremljena!"
 
 #: ../lib/GaletteAuto/Controllers/Crud/PropertiesController.php:338
 #: ../lib/GaletteAuto/Controllers/Crud/ModelsController.php:248
 msgid "- An error occurred while saving record. Please try again."
-msgstr ""
+msgstr "- Došlo je do pogreške pri spremanju zapisa. Pokušajte ponovno."
 
 #: ../lib/GaletteAuto/Controllers/Crud/PropertiesController.php:386
 #, php-format
 msgid "Show '%s' brand"
-msgstr ""
+msgstr "Prikaži marku '%s'"
 
 #: ../lib/GaletteAuto/Controllers/Crud/PropertiesController.php:440
 #, php-format
@@ -147,46 +150,47 @@ msgstr "Ukloni %1$s %2$s"
 #: ../lib/GaletteAuto/Controllers/Crud/ModelsController.php:112
 #: ../lib/GaletteAuto/PluginGaletteAuto.php:94
 msgid "Models list"
-msgstr ""
+msgstr "Popis modela"
 
 #: ../lib/GaletteAuto/Controllers/Crud/ModelsController.php:185
 #, php-format
 msgid "Change model '%s'"
-msgstr ""
+msgstr "Izmijeni model '%s'"
 
 #: ../lib/GaletteAuto/Controllers/Crud/ModelsController.php:189
 msgid "New model"
-msgstr ""
+msgstr "Novi model"
 
 #: ../lib/GaletteAuto/Controllers/Crud/ModelsController.php:240
 msgid "New model has been added!"
-msgstr ""
+msgstr "Novi model je dodan!"
 
 #: ../lib/GaletteAuto/Controllers/Crud/ModelsController.php:241
 msgid "Model has been saved!"
-msgstr ""
+msgstr "Model je spremljen!"
 
 #. TRANS: first parameter is the number of models
 #: ../lib/GaletteAuto/Controllers/Crud/ModelsController.php:333
 #, php-format
 msgid "Remove %1$s model"
 msgid_plural "Remove %1$s models"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "Ukloni %1$s model"
+msgstr[1] "Ukloni %1$s modela"
+msgstr[2] "Ukloni %1$s modela"
 
 #. TRANS: first parameter is the model name
 #: ../lib/GaletteAuto/Controllers/Crud/ModelsController.php:341
 #, php-format
 msgid "Remove model \"%1$s\""
-msgstr ""
+msgstr "Ukloni model „%1$s”"
 
 #: ../lib/GaletteAuto/Controllers/Crud/ModelsController.php:370
 msgid "This model is used by one or more vehicles, it cannot be deleted."
-msgstr ""
+msgstr "Ovaj model koristi jedno ili više vozila pa se ne može izbrisati."
 
 #: ../lib/GaletteAuto/Controllers/Crud/ModelsController.php:375
 msgid "An error occurred while deleting model."
-msgstr ""
+msgstr "Došlo je do pogreške pri brisanju modela."
 
 #: ../lib/GaletteAuto/Auto.php:112 ../templates/default/vehicles_list.html.twig:12
 #: ../templates/default/vehicles_list.html.twig:63
@@ -204,40 +208,40 @@ msgstr "Naziv"
 #: ../templates/default/public_vehicles_list.html.twig:69
 #: ../templates/default/vehicles.html.twig:60
 msgid "Model"
-msgstr "Predložak"
+msgstr "Model"
 
 #: ../lib/GaletteAuto/Auto.php:114 ../templates/default/history.html.twig:21
 #: ../templates/default/history.html.twig:48 ../templates/default/vehicles.html.twig:193
 msgid "Registration number"
-msgstr ""
+msgstr "Registracijska oznaka"
 
 #: ../lib/GaletteAuto/Auto.php:115 ../templates/default/vehicles.html.twig:67
 msgid "First registration date"
-msgstr ""
+msgstr "Datum prve registracije"
 
 #: ../lib/GaletteAuto/Auto.php:116 ../templates/default/vehicles.html.twig:74
 msgid "First circulation date"
-msgstr ""
+msgstr "Datum prvog puštanja u promet"
 
 #: ../lib/GaletteAuto/Auto.php:117 ../templates/default/vehicles.html.twig:81
 msgid "Mileage"
-msgstr ""
+msgstr "Prijeđeni kilometri"
 
 #: ../lib/GaletteAuto/Auto.php:118 ../templates/default/vehicles.html.twig:88
 msgid "Seats"
-msgstr ""
+msgstr "Broj sjedala"
 
 #: ../lib/GaletteAuto/Auto.php:119 ../templates/default/vehicles.html.twig:255
 msgid "Horsepower"
-msgstr ""
+msgstr "Snaga motora"
 
 #: ../lib/GaletteAuto/Auto.php:120 ../templates/default/vehicles.html.twig:262
 msgid "Engine size"
-msgstr ""
+msgstr "Obujam motora"
 
 #: ../lib/GaletteAuto/Auto.php:121 ../templates/default/vehicles.html.twig:248
 msgid "Chassis number"
-msgstr ""
+msgstr "Broj šasije"
 
 #: ../lib/GaletteAuto/Auto.php:122 ../templates/default/vehicles.html.twig:285
 #: ../templates/default/vehicles.html.twig:290
@@ -248,239 +252,250 @@ msgstr "Napomena"
 #: ../templates/default/history.html.twig:24 ../templates/default/history.html.twig:49
 #: ../templates/default/vehicles.html.twig:173
 msgid "Color"
-msgstr ""
+msgstr "Boja"
 
 #: ../lib/GaletteAuto/Auto.php:124 ../lib/GaletteAuto/State.php:30
 #: ../templates/default/history.html.twig:27 ../templates/default/history.html.twig:50
 #: ../templates/default/vehicles.html.twig:186
 msgid "State"
-msgstr ""
+msgstr "Stanje"
 
 #: ../lib/GaletteAuto/Auto.php:125 ../lib/GaletteAuto/Finition.php:30
 #: ../templates/default/vehicles.html.twig:241
 msgid "Finition"
-msgstr ""
+msgstr "Paket opreme"
 
 #: ../lib/GaletteAuto/Auto.php:126 ../lib/GaletteAuto/Transmission.php:30
 #: ../templates/default/vehicles.html.twig:228
 msgid "Transmission"
-msgstr ""
+msgstr "Mjenjač"
 
 #: ../lib/GaletteAuto/Auto.php:127 ../lib/GaletteAuto/Body.php:30
 #: ../templates/default/vehicles.html.twig:215
 msgid "Body"
-msgstr "Sadržaj"
+msgstr "Karoserija"
 
 #: ../lib/GaletteAuto/Auto.php:128 ../templates/default/vehicles.html.twig:275
 msgid "Fuel"
-msgstr ""
+msgstr "Gorivo"
 
 #: ../lib/GaletteAuto/Auto.php:217
 msgid "Petrol"
-msgstr ""
+msgstr "Benzin"
 
 #: ../lib/GaletteAuto/Auto.php:218
 msgid "Diesel"
-msgstr ""
+msgstr "Dizel"
 
 #: ../lib/GaletteAuto/Auto.php:219
 msgid "Gas"
-msgstr ""
+msgstr "Plin"
 
 #: ../lib/GaletteAuto/Auto.php:220
 msgid "Hybrid"
-msgstr ""
+msgstr "Hibrid"
 
 #: ../lib/GaletteAuto/Auto.php:221
 msgid "Electricity"
-msgstr ""
+msgstr "Električna energija"
 
 #: ../lib/GaletteAuto/Auto.php:222
 msgid "Bio"
-msgstr ""
+msgstr "Biogorivo"
 
 #: ../lib/GaletteAuto/Auto.php:349
 msgid "- Maximum size for %field is %maxsize (current %cursize)!"
-msgstr ""
+msgstr "- Najveća duljina polja %field je %maxsize (trenutno %cursize)!"
 
 #: ../lib/GaletteAuto/Auto.php:398
 #, php-format
 msgid "- You must enter a positive integer for %s"
-msgstr ""
+msgstr "- Za %s morate unijeti pozitivan cijeli broj"
 
 #: ../lib/GaletteAuto/Auto.php:409
 msgid "- You must choose a fuel in the list"
-msgstr ""
+msgstr "- Morate odabrati gorivo s popisa"
 
 #: ../lib/GaletteAuto/Auto.php:423
 #, php-format
 msgid "- You must choose a %s in the list"
-msgstr ""
+msgstr "- Morate odabrati %s s popisa"
 
 #: ../lib/GaletteAuto/Auto.php:435
 msgid "- you must attach an owner to this car"
-msgstr ""
+msgstr "- Morate dodijeliti vlasnika ovom automobilu"
 
 #: ../lib/GaletteAuto/Auto.php:442
 msgid "- you cannot attach this car to this member"
-msgstr ""
+msgstr "- Ovaj automobil ne možete povezati s ovim članom"
 
 #: ../lib/GaletteAuto/Auto.php:455
 msgid "An error occurred while trying to delete car's photo"
-msgstr ""
+msgstr "Došlo je do pogreške pri brisanju fotografije automobila"
 
 #: ../lib/GaletteAuto/Color.php:38 ../lib/GaletteAuto/PluginGaletteAuto.php:64
 msgid "Colors list"
-msgstr ""
+msgstr "Popis boja"
 
 #: ../lib/GaletteAuto/Color.php:46
 msgid "Add new color"
-msgstr ""
+msgstr "Dodaj novu boju"
 
 #: ../lib/GaletteAuto/Color.php:59
 #, php-format
 msgid "%count color"
 msgid_plural "%count colors"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "%count boja"
+msgstr[1] "%count boje"
+msgstr[2] "%count boja"
 
 #: ../lib/GaletteAuto/Color.php:71
 #, php-format
 msgid "%1$s color has been successfully deleted."
 msgid_plural "%1$s colors have been successfully deleted."
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "Uspješno je izbrisana %1$s boja."
+msgstr[1] "Uspješno su izbrisane %1$s boje."
+msgstr[2] "Uspješno je izbrisano %1$s boja."
 
 #: ../lib/GaletteAuto/Color.php:81
 msgid "This color is used by one or more vehicles, it cannot be deleted."
-msgstr ""
+msgstr "Ovu boju koristi jedno ili više vozila pa se ne može izbrisati."
 
 #: ../lib/GaletteAuto/Color.php:89
 msgid "An error occurred trying to remove color :/"
-msgstr ""
+msgstr "Došlo je do pogreške pri uklanjanju boje :/"
 
 #: ../lib/GaletteAuto/Finition.php:38
 #: ../lib/GaletteAuto/PluginGaletteAuto.php:72
 msgid "Finitions list"
-msgstr ""
+msgstr "Popis paketa opreme"
 
 #: ../lib/GaletteAuto/Finition.php:46
 msgid "Add new finition"
-msgstr ""
+msgstr "Dodaj novi paket opreme"
 
 #: ../lib/GaletteAuto/Finition.php:59
 #, php-format
 msgid "%count finition"
 msgid_plural "%count finitions"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "%count paket opreme"
+msgstr[1] "%count paketa opreme"
+msgstr[2] "%count paketa opreme"
 
 #: ../lib/GaletteAuto/Finition.php:71
 #, php-format
 msgid "%1$s finition has been successfully deleted."
 msgid_plural "%1$s finitions have been successfully deleted."
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "Uspješno je izbrisan %1$s paket opreme."
+msgstr[1] "Uspješno su izbrisana %1$s paketa opreme."
+msgstr[2] "Uspješno je izbrisano %1$s paketa opreme."
 
 #: ../lib/GaletteAuto/Finition.php:81
 msgid "This finition is used by one or more vehicles, it cannot be deleted."
 msgstr ""
+"Ovaj paket opreme koristi jedno ili više vozila pa se ne može izbrisati."
 
 #: ../lib/GaletteAuto/Finition.php:89
 msgid "An error occurred trying to remove finition :/"
-msgstr ""
+msgstr "Došlo je do pogreške pri uklanjanju paketa opreme :/"
 
 #: ../lib/GaletteAuto/Transmission.php:38
 #: ../lib/GaletteAuto/PluginGaletteAuto.php:80
 msgid "Transmissions list"
-msgstr ""
+msgstr "Popis mjenjača"
 
 #: ../lib/GaletteAuto/Transmission.php:46
 msgid "Add new transmission"
-msgstr ""
+msgstr "Dodaj novi mjenjač"
 
 #: ../lib/GaletteAuto/Transmission.php:59
 #, php-format
 msgid "%count transmission"
 msgid_plural "%count transmissions"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "%count mjenjač"
+msgstr[1] "%count mjenjača"
+msgstr[2] "%count mjenjača"
 
 #: ../lib/GaletteAuto/Transmission.php:71
 #, php-format
 msgid "%1$s transmission has been successfully deleted."
 msgid_plural "%1$s transmissions have been successfully deleted."
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "Uspješno je izbrisan %1$s mjenjač."
+msgstr[1] "Uspješno su izbrisana %1$s mjenjača."
+msgstr[2] "Uspješno je izbrisano %1$s mjenjača."
 
 #: ../lib/GaletteAuto/Transmission.php:81
 msgid ""
 "This transmission is used by one or more vehicles, it cannot be deleted."
-msgstr ""
+msgstr "Ovaj mjenjač koristi jedno ili više vozila pa se ne može izbrisati."
 
 #: ../lib/GaletteAuto/Transmission.php:89
 msgid "An error occurred trying to remove transmission :/"
-msgstr ""
+msgstr "Došlo je do pogreške pri uklanjanju mjenjača :/"
 
 #: ../lib/GaletteAuto/Body.php:38 ../lib/GaletteAuto/PluginGaletteAuto.php:76
 msgid "Bodies list"
-msgstr ""
+msgstr "Popis karoserija"
 
 #: ../lib/GaletteAuto/Body.php:46
 msgid "Add new body"
-msgstr ""
+msgstr "Dodaj novu karoseriju"
 
 #: ../lib/GaletteAuto/Body.php:59
 #, php-format
 msgid "%count body"
 msgid_plural "%count bodies"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "%count karoserija"
+msgstr[1] "%count karoserije"
+msgstr[2] "%count karoserija"
 
 #: ../lib/GaletteAuto/Body.php:71
 #, php-format
 msgid "%1$s body has been successfully deleted."
 msgid_plural "%1$s bodies have been successfully deleted."
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "Uspješno je izbrisana %1$s karoserija."
+msgstr[1] "Uspješno su izbrisane %1$s karoserije."
+msgstr[2] "Uspješno je izbrisano %1$s karoserija."
 
 #: ../lib/GaletteAuto/Body.php:81
 msgid "This body is used by one or more vehicles, it cannot be deleted."
-msgstr ""
+msgstr "Ovu karoseriju koristi jedno ili više vozila pa se ne može izbrisati."
 
 #: ../lib/GaletteAuto/Body.php:89
 msgid "An error occurred trying to remove body :/"
-msgstr ""
+msgstr "Došlo je do pogreške pri uklanjanju karoserije :/"
 
 #: ../lib/GaletteAuto/State.php:38 ../lib/GaletteAuto/PluginGaletteAuto.php:68
 msgid "States list"
-msgstr ""
+msgstr "Popis stanja"
 
 #: ../lib/GaletteAuto/State.php:46
 msgid "Add new state"
-msgstr ""
+msgstr "Dodaj novo stanje"
 
 #: ../lib/GaletteAuto/State.php:59
 #, php-format
 msgid "%count state"
 msgid_plural "%count states"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "%count stanje"
+msgstr[1] "%count stanja"
+msgstr[2] "%count stanja"
 
 #: ../lib/GaletteAuto/State.php:71
 #, php-format
 msgid "%1$s state has been successfully deleted."
 msgid_plural "%1$s states have been successfully deleted."
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "Uspješno je izbrisano %1$s stanje."
+msgstr[1] "Uspješno su izbrisana %1$s stanja."
+msgstr[2] "Uspješno je izbrisano %1$s stanja."
 
 #: ../lib/GaletteAuto/State.php:81
 msgid "This state is used by one or more vehicles, it cannot be deleted."
-msgstr ""
+msgstr "Ovo stanje koristi jedno ili više vozila pa se ne može izbrisati."
 
 #: ../lib/GaletteAuto/State.php:89
 msgid "An error occurred trying to remove state :/"
-msgstr ""
+msgstr "Došlo je do pogreške pri uklanjanju stanja :/"
 
 #: ../lib/GaletteAuto/Brand.php:30 ../templates/default/model.html.twig:34
 #: ../templates/default/vehicles_list.html.twig:12
@@ -490,84 +505,88 @@ msgstr ""
 #: ../templates/default/public_vehicles_list.html.twig:68
 #: ../templates/default/vehicles.html.twig:47
 msgid "Brand"
-msgstr ""
+msgstr "Marka"
 
 #: ../lib/GaletteAuto/Brand.php:38 ../lib/GaletteAuto/PluginGaletteAuto.php:84
 msgid "Brands list"
-msgstr ""
+msgstr "Popis marki"
 
 #: ../lib/GaletteAuto/Brand.php:46 ../templates/default/object_show.html.twig:16
 msgid "Add new brand"
-msgstr ""
+msgstr "Dodaj novu marku"
 
 #: ../lib/GaletteAuto/Brand.php:59
 #, php-format
 msgid "%count brand"
 msgid_plural "%count brands"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "%count marka"
+msgstr[1] "%count marke"
+msgstr[2] "%count marki"
 
 #: ../lib/GaletteAuto/Brand.php:71
 #, php-format
 msgid "%1$s brand has been successfully deleted."
 msgid_plural "%1$s brands have been successfully deleted."
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "Uspješno je izbrisana %1$s marka."
+msgstr[1] "Uspješno su izbrisane %1$s marke."
+msgstr[2] "Uspješno je izbrisano %1$s marki."
 
 #: ../lib/GaletteAuto/Brand.php:81
 msgid "This brand is used by one or more vehicles, it cannot be deleted."
-msgstr ""
+msgstr "Ovu marku koristi jedno ili više vozila pa se ne može izbrisati."
 
 #: ../lib/GaletteAuto/Brand.php:89
 msgid "An error occurred trying to remove brand :/"
-msgstr ""
+msgstr "Došlo je do pogreške pri uklanjanju marke :/"
 
 #: ../lib/GaletteAuto/Repository/Vehicles.php:174
 msgid "New car added"
-msgstr ""
+msgstr "Novi automobil je dodan"
 
 #: ../lib/GaletteAuto/Repository/Vehicles.php:183
 msgid "Car updated"
-msgstr ""
+msgstr "Automobil je ažuriran"
 
 #: ../lib/GaletteAuto/Repository/Vehicles.php:263
 msgid "Vehicle picture deleted"
-msgstr ""
+msgstr "Fotografija vozila je izbrisana"
 
 #: ../lib/GaletteAuto/Repository/Vehicles.php:278
 msgid "Delete vehicles cards"
-msgstr ""
+msgstr "Izbriši kartone vozila"
 
 #: ../lib/GaletteAuto/PluginGaletteAuto.php:53
 msgid "Cars"
-msgstr ""
+msgstr "Automobili"
 
 #: ../lib/GaletteAuto/PluginGaletteAuto.php:111
 msgid "Preferences"
-msgstr ""
+msgstr "Postavke"
 
 #: ../lib/GaletteAuto/PluginGaletteAuto.php:151
 #: ../lib/GaletteAuto/PluginGaletteAuto.php:179
 msgid "Vehicles"
-msgstr ""
+msgstr "Vozila"
 
 #: ../lib/GaletteAuto/Model.php:180
 msgid "- You must select a brand!"
-msgstr ""
+msgstr "- Morate odabrati marku!"
 
 #: ../templates/default/model.html.twig:25 ../templates/default/vehicles.html.twig:39
 msgid "Choose a brand"
-msgstr ""
+msgstr "Odaberite marku"
 
 #: ../templates/default/model.html.twig:39
 msgid ""
 "No brand is registered yet. You have to create at least one brand to "
 "register models."
 msgstr ""
+"Još nije dodana nijedna marka. Za dodavanje modela morate stvoriti barem "
+"jednu marku."
 
 #: ../templates/default/model.html.twig:40
 msgid "Add a brand"
-msgstr ""
+msgstr "Dodaj marku"
 
 #: ../templates/default/vehicles_list.html.twig:12
 #: ../templates/default/vehicles_list.html.twig:64
@@ -576,72 +595,74 @@ msgstr ""
 #: ../templates/default/history.html.twig:18 ../templates/default/history.html.twig:36
 #: ../templates/default/vehicles.html.twig:149 ../templates/default/vehicles.html.twig:160
 msgid "Owner"
-msgstr ""
+msgstr "Vlasnik"
 
 #: ../templates/default/vehicles_list.html.twig:108
 msgid "No vehicle selected"
-msgstr ""
+msgstr "Nijedno vozilo nije odabrano"
 
 #: ../templates/default/vehicles_list.html.twig:108
 msgid ""
 "Please make sure to select at least one vehicle from the list to perform "
 "this action."
-msgstr ""
+msgstr "Za ovu radnju odaberite barem jedno vozilo s popisa."
 
 #: ../templates/default/vehicles_list.html.twig:31
 #: ../templates/default/public_vehicles_list.html.twig:33
 #, php-format
 msgid "%count vehicle"
 msgid_plural "%count vehicles"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "%count vozilo"
+msgstr[1] "%count vozila"
+msgstr[2] "%count vozila"
 
 #: ../templates/default/vehicles_list.html.twig:47
 msgid "Add new vehicle"
-msgstr ""
+msgstr "Dodaj novo vozilo"
 
 #: ../templates/default/vehicles_list.html.twig:69
 msgid "Edit %vehicle"
-msgstr ""
+msgstr "Uredi %vehicle"
 
 #: ../templates/default/vehicles_list.html.twig:74
 msgid "%vehiclename: remove from database"
-msgstr ""
+msgstr "%vehiclename: ukloni iz baze podataka"
 
 #: ../templates/default/vehicles_list.html.twig:96
 msgid "No car has been registered yet for your account."
-msgstr ""
+msgstr "Na vašem računu još nije evidentiran nijedan automobil."
 
 #: ../templates/default/vehicles_list.html.twig:96
 #: ../templates/default/public_vehicles_list.html.twig:90
 msgid "No car in the database"
-msgstr ""
+msgstr "U bazi podataka nema automobila"
 
 #: ../templates/default/models_list.html.twig:27
 #, php-format
 msgid "%count model"
 msgid_plural "%count models"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "%count model"
+msgstr[1] "%count modela"
+msgstr[2] "%count modela"
 
 #: ../templates/default/models_list.html.twig:42
 msgid "Add new model"
-msgstr ""
+msgstr "Dodaj novi model"
 
 #: ../templates/default/models_list.html.twig:54
 #: ../templates/default/object_list.html.twig:51
 msgid "Edit %property"
-msgstr ""
+msgstr "Uredi %property"
 
 #: ../templates/default/models_list.html.twig:55
 #: ../templates/default/object_list.html.twig:52
 msgid "%property: remove from database"
-msgstr ""
+msgstr "%property: ukloni iz baze podataka"
 
 #: ../templates/default/models_list.html.twig:59
 #: ../templates/default/object_list.html.twig:56
 msgid "no record found"
-msgstr ""
+msgstr "nema pronađenih zapisa"
 
 #: ../templates/default/public_vehicles_list.html.twig:14
 #: ../templates/default/public_vehicles_list.html.twig:70
@@ -651,103 +672,105 @@ msgstr "Opis"
 #: ../templates/default/public_vehicles_list.html.twig:60
 #: ../templates/default/vehicles.html.twig:132
 msgid "Show full car state history"
-msgstr ""
+msgstr "Prikaži cijelu povijest stanja automobila"
 
 #: ../templates/default/public_vehicles_list.html.twig:62
 #: ../templates/default/vehicles.html.twig:134
 msgid "Car state history"
-msgstr ""
+msgstr "Povijest stanja automobila"
 
 #: ../templates/default/public_vehicles_list.html.twig:75
 #, php-format
 msgid "%1$s cc"
-msgstr ""
+msgstr "%1$s cm³"
 
 #: ../templates/default/public_vehicles_list.html.twig:78
 #, php-format
 msgid "%1$s hp"
-msgstr ""
+msgstr "%1$s KS"
 
 #: ../templates/default/object_show.html.twig:24
 #, php-format
 msgid "Registered models for the brand '%s'"
-msgstr ""
+msgstr "Evidentirani modeli marke '%s'"
 
 #: ../templates/default/object_show.html.twig:40
 #, php-format
 msgid "The brand '%s' does not have any registered model at this time."
-msgstr ""
+msgstr "Za marku '%s' trenutno nema evidentiranih modela."
 
 #: ../templates/default/history.html.twig:57
 msgid "no history entries"
-msgstr ""
+msgstr "nema zapisa u povijesti"
 
 #: ../templates/default/preferences.html.twig:12
 msgid "Required fields"
-msgstr ""
+msgstr "Obvezna polja"
 
 #: ../templates/default/preferences.html.twig:13
 msgid ""
 "Model, brand, dates, color, state, body, transmission and finition are "
 "always required."
 msgstr ""
+"Model, marka, datumi, boja, stanje, karoserija, mjenjač i paket opreme "
+"uvijek su obvezni."
 
 #: ../templates/default/history_modal.js.twig:13
 msgid "Car's history"
-msgstr ""
+msgstr "Povijest automobila"
 
 #: ../templates/default/history_modal.js.twig:23
 msgid "An error occurred displaying history :("
-msgstr ""
+msgstr "Došlo je do pogreške pri prikazu povijesti :("
 
 #: ../templates/default/vehicles.html.twig:24 ../templates/default/vehicles.html.twig:52
 msgid "Choose a model"
-msgstr ""
+msgstr "Odaberite model"
 
 #: ../templates/default/vehicles.html.twig:29
 msgid "Car's base informations"
-msgstr ""
+msgstr "Osnovni podaci o automobilu"
 
 #: ../templates/default/vehicles.html.twig:99 ../templates/default/vehicles.html.twig:102
 msgid "Car's photo"
-msgstr ""
+msgstr "Fotografija automobila"
 
 #: ../templates/default/vehicles.html.twig:124
 msgid "Current car's state informations"
-msgstr ""
+msgstr "Podaci o trenutnom stanju automobila"
 
 #: ../templates/default/vehicles.html.twig:129
 msgid "Current owner"
-msgstr ""
+msgstr "Trenutni vlasnik"
 
 #: ../templates/default/vehicles.html.twig:140
 msgid "Change car's owner"
-msgstr ""
+msgstr "Promijeni vlasnika automobila"
 
 #: ../templates/default/vehicles.html.twig:165
 msgid "Choose a color"
-msgstr ""
+msgstr "Odaberite boju"
 
 #: ../templates/default/vehicles.html.twig:178
 msgid "Choose a state"
-msgstr ""
+msgstr "Odaberite stanje"
 
 #: ../templates/default/vehicles.html.twig:204
 msgid "Car's technical informations"
-msgstr ""
+msgstr "Tehnički podaci o automobilu"
 
 #: ../templates/default/vehicles.html.twig:207
 msgid "Choose a body"
-msgstr ""
+msgstr "Odaberite karoseriju"
 
 #: ../templates/default/vehicles.html.twig:220
 msgid "Choose a transmission"
-msgstr ""
+msgstr "Odaberite mjenjač"
 
 #: ../templates/default/vehicles.html.twig:233
 msgid "Choose a finition"
-msgstr ""
+msgstr "Odaberite paket opreme"
 
 #: ../templates/default/vehicles.html.twig:267
 msgid "Choose a fuel"
-msgstr ""
+msgstr "Odaberite gorivo"
