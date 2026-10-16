@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: translations@galette.eu\n"
 "POT-Creation-Date: 2026-10-01 12:32+0200\n"
-"PO-Revision-Date: 2026-10-13 08:39+0000\n"
+"PO-Revision-Date: 2026-10-17 11:51+0000\n"
 "Last-Translator: Marko Puljic "
 "<markopuljic.uo@users.noreply.hosted.weblate.org>\n"
 "Language-Team: Croatian <https://hosted.weblate.org/projects/galette/auto-"
@@ -198,7 +198,7 @@ msgstr "Došlo je do pogreške pri brisanju modela."
 #: ../templates/default/public_vehicles_list.html.twig:57
 #: ../templates/default/vehicles.html.twig:34
 msgid "Name"
-msgstr "Naziv"
+msgstr "Prezime"
 
 #: ../lib/GaletteAuto/Auto.php:113 ../templates/default/model.html.twig:19
 #: ../templates/default/vehicles_list.html.twig:12
