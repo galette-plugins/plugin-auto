@@ -28,10 +28,10 @@ class State extends GaletteTestCase
     {
         $state = new \GaletteAuto\State($this->zdb);
         $states = new \GaletteAuto\Repository\Properties(
-            $this->zdb,
-            $this->preferences,
-            $this->login,
-            \GaletteAuto\State::class
+            zdb: $this->zdb,
+            preferences: $this->preferences,
+            login: $this->login,
+            class: \GaletteAuto\State::class
         );
         $this->assertSame('State', $state->getFieldLabel());
 
@@ -46,17 +46,17 @@ class State extends GaletteTestCase
     {
         $state = new \GaletteAuto\State($this->zdb);
         $states = new \GaletteAuto\Repository\Properties(
-            $this->zdb,
-            $this->preferences,
-            $this->login,
-            \GaletteAuto\State::class
+            zdb: $this->zdb,
+            preferences: $this->preferences,
+            login: $this->login,
+            class: \GaletteAuto\State::class
         );
         //ensure the table is empty
         $this->assertCount(0, $states->getList());
 
         //Add new state
         $state->setValue('Good');
-        $state->store(true);
+        $state->store(new: true);
         $first_id = $state->getId();
 
         $this->assertCount(1, $states->getList());
@@ -69,7 +69,7 @@ class State extends GaletteTestCase
         //add another one
         $state = new \GaletteAuto\State($this->zdb);
         $state->setValue('Wrec');
-        $state->store(true);
+        $state->store(new: true);
         $id = $state->getId();
 
         $this->assertCount(2, $states->getList());

@@ -41,7 +41,7 @@ class PropertiesController extends GaletteRoutingTestCase
     {
         $color = new Color($this->zdb);
         $color->setValue($value);
-        $color->store(true);
+        $color->store(new: true);
         return $color->getId();
     }
 
@@ -154,7 +154,7 @@ class PropertiesController extends GaletteRoutingTestCase
             foreach (['Zeta ' . $property, 'Alpha ' . $property] as $value) {
                 $object = new $class($this->zdb);
                 $object->setValue($value);
-                $object->store(true);
+                $object->store(new: true);
             }
 
             $test_response = $this->app->handle($this->createRequest($route));
@@ -189,10 +189,10 @@ class PropertiesController extends GaletteRoutingTestCase
         $id = $this->createColor('Red');
         $brand = new \GaletteAuto\Brand($this->zdb);
         $brand->setValue('Peugeot');
-        $brand->store(true);
+        $brand->store(new: true);
         $model = new \GaletteAuto\Model($this->zdb);
         $this->assertTrue($model->check(['model' => '307', 'brand' => $brand->getId()]));
-        $model->store(true);
+        $model->store(new: true);
 
         $this->logSuperAdmin();
         $test_response = $this->app->handle(
@@ -248,10 +248,10 @@ class PropertiesController extends GaletteRoutingTestCase
         }
         $brand = new \GaletteAuto\Brand($this->zdb);
         $brand->setValue('Peugeot');
-        $brand->store(true);
+        $brand->store(new: true);
         $model = new \GaletteAuto\Model($this->zdb);
         $this->assertTrue($model->check(['model' => '307', 'brand' => $brand->getId()]));
-        $model->store(true);
+        $model->store(new: true);
         $insert = $this->zdb->insert(AUTO_PREFIX . \GaletteAuto\Auto::TABLE);
         $insert->values($values + [
             'car_name' => 'Titine',

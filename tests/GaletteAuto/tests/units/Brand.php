@@ -28,10 +28,10 @@ class Brand extends GaletteTestCase
     {
         $brand = new \GaletteAuto\Brand($this->zdb);
         $brands = new \GaletteAuto\Repository\Properties(
-            $this->zdb,
-            $this->preferences,
-            $this->login,
-            \GaletteAuto\Brand::class
+            zdb: $this->zdb,
+            preferences: $this->preferences,
+            login: $this->login,
+            class: \GaletteAuto\Brand::class
         );
         $this->assertSame('Brand', $brand->getFieldLabel());
 
@@ -46,17 +46,17 @@ class Brand extends GaletteTestCase
     {
         $brand = new \GaletteAuto\Brand($this->zdb);
         $brands = new \GaletteAuto\Repository\Properties(
-            $this->zdb,
-            $this->preferences,
-            $this->login,
-            \GaletteAuto\Brand::class
+            zdb: $this->zdb,
+            preferences: $this->preferences,
+            login: $this->login,
+            class: \GaletteAuto\Brand::class
         );
         //ensure the table is empty
         $this->assertCount(0, $brands->getList());
 
         //Add new brand
         $brand->setValue('Audi');
-        $brand->store(true);
+        $brand->store(new: true);
         $first_id = $brand->getId();
 
         $this->assertCount(1, $brands->getList());
@@ -69,7 +69,7 @@ class Brand extends GaletteTestCase
         //add another one
         $brand = new \GaletteAuto\Brand($this->zdb);
         $brand->setValue('Mercede');
-        $brand->store(true);
+        $brand->store(new: true);
         $id = $brand->getId();
 
         $this->assertCount(2, $brands->getList());

@@ -32,7 +32,6 @@ class Model
 
     /** @var string[] */
     private array $errors = [];
-    private Db $zdb;
 
     /**
      * Default constructor
@@ -40,10 +39,9 @@ class Model
      * @param Db                                  $zdb  Database instance
      * @param ArrayObject<string, mixed>|int|null $args model's id to load or ResultSet. Defaults to null
      */
-    public function __construct(Db $zdb, ArrayObject|int|null $args = null)
+    public function __construct(private readonly Db $zdb, ArrayObject|int|null $args = null)
     {
-        $this->zdb = $zdb;
-        $this->brand = new Brand($zdb);
+        $this->brand = new Brand($this->zdb);
 
         if ($args instanceof ArrayObject) {
             $this->loadFromRS($args);

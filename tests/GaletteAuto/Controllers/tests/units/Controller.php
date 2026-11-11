@@ -54,7 +54,7 @@ class Controller extends GaletteRoutingTestCase
 
         $model = new \GaletteAuto\Model($this->zdb);
         $this->assertTrue($model->check(['model' => '307', 'brand' => $this->props['brand']]));
-        $model->store(true);
+        $model->store(new: true);
         $this->props['model'] = $model->getId();
     }
 
@@ -546,7 +546,7 @@ class Controller extends GaletteRoutingTestCase
         \Galette\Enums\PublicPageVisibility $page,
         \Galette\Enums\PublicPageVisibility $generic = \Galette\Enums\PublicPageVisibility::Everyone
     ): void {
-        $this->setRawPreference('pref_bool_publicpages', true);
+        $this->setRawPreference('pref_bool_publicpages', value: true);
         $this->setRawPreference('pref_publicpages_visibility_generic', $generic->value);
         $this->setRawPreference('pref_auto_publicpages_visibility_vehicles', $page->value);
     }
@@ -841,7 +841,7 @@ class Controller extends GaletteRoutingTestCase
                 (string)$test_response->getBody(),
                 $matches
             );
-            return array_map('intval', $matches[1]);
+            return array_map(intval(...), $matches[1]);
         };
 
         $this->assertSame([], $links());
@@ -952,7 +952,13 @@ class Controller extends GaletteRoutingTestCase
         $this->login->logout();
 
         $this->logSuperAdmin();
-        $request = $this->createRequest('vehicleAdd', [], 'GET', 'text/html', ['id_adh' => (string)$member_one->id]);
+        $request = $this->createRequest(
+            route_name: 'vehicleAdd',
+            route_args: [],
+            method: 'GET',
+            content_type: 'text/html',
+            query_params: ['id_adh' => (string)$member_one->id]
+        );
         $test_response = $this->app->handle($request);
         $this->expectOK($test_response);
         $body = (string)$test_response->getBody();
@@ -1009,16 +1015,16 @@ class Controller extends GaletteRoutingTestCase
         $model = new \GaletteAuto\Model($this->zdb);
         $brand = new \GaletteAuto\Brand($this->zdb);
         $brand->setValue('Renault');
-        $brand->store(true);
+        $brand->store(new: true);
         $this->assertTrue($model->check(['model' => 'Clio', 'brand' => $brand->getId()]));
-        $model->store(true);
+        $model->store(new: true);
 
         $this->getMemberOne();
         $this->logMember($this->dataAdherentOne());
         $request = $this->createRequest('ajaxModels', [], 'POST')->withParsedBody(['brand' => (string)$brand->getId()]);
         $test_response = $this->app->handle($request);
         $this->assertSame(200, $test_response->getStatusCode());
-        $models = json_decode((string)$test_response->getBody(), true);
+        $models = json_decode((string)$test_response->getBody(), associative: true);
         $this->assertSame(['Clio'], array_column($models, 'model'));
     }
 
@@ -1032,7 +1038,7 @@ class Controller extends GaletteRoutingTestCase
     {
         $model = new \GaletteAuto\Model($this->zdb);
         $this->assertTrue($model->check(['model' => $name, 'brand' => $brand]));
-        $model->store(true);
+        $model->store(new: true);
         return (int)$model->getId();
     }
 
@@ -1067,7 +1073,7 @@ class Controller extends GaletteRoutingTestCase
         $member_two = $this->getMemberTwo();
         $renault = new \GaletteAuto\Brand($this->zdb);
         $renault->setValue('Renault');
-        $renault->store(true);
+        $renault->store(new: true);
 
         //each order gives a different sequence
         $vehicles = [

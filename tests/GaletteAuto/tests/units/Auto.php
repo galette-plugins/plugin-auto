@@ -40,32 +40,32 @@ class Auto extends GaletteTestCase
     {
         $body = new \GaletteAuto\Body($this->zdb);
         $body->setValue('Berline');
-        $body->store(true);
+        $body->store(new: true);
         $body_id = $body->getId();
 
         $color = new \GaletteAuto\Color($this->zdb);
         $color->setValue('Grey');
-        $color->store(true);
+        $color->store(new: true);
         $color_id = $color->getId();
 
         $finition = new \GaletteAuto\Finition($this->zdb);
         $finition->setValue('Standard');
-        $finition->store(true);
+        $finition->store(new: true);
         $finition_id = $finition->getId();
 
         $state = new \GaletteAuto\State($this->zdb);
         $state->setValue('Correct');
-        $state->store(true);
+        $state->store(new: true);
         $state_id = $state->getId();
 
         $transmission = new \GaletteAuto\Transmission($this->zdb);
         $transmission->setValue('Manual');
-        $transmission->store(true);
+        $transmission->store(new: true);
         $transmission_id = $transmission->getId();
 
         $brand = new \GaletteAuto\Brand($this->zdb);
         $brand->setValue('Peugeot');
-        $brand->store(true);
+        $brand->store(new: true);
         $brand_id = $brand->getId();
 
         $model = new \GaletteAuto\Model($this->zdb);
@@ -74,13 +74,18 @@ class Auto extends GaletteTestCase
             'brand' => $brand_id,
         ];
         $this->assertTrue($model->check($data));
-        $model->store(true);
+        $model->store(new: true);
         $model_id = $model->getId();
 
         $this->logSuperAdmin();
         $access = new \GaletteAuto\VehicleAccess($this->zdb, $this->login, $this->preferences);
         $prefs = new \GaletteAuto\AutoPreferences($this->preferences);
-        $vehicles = new \GaletteAuto\Repository\Vehicles($this->plugins, $this->zdb, $this->login, $this->history);
+        $vehicles = new \GaletteAuto\Repository\Vehicles(
+            plugins: $this->plugins,
+            zdb: $this->zdb,
+            login: $this->login,
+            history: $this->history
+        );
         $auto = new \GaletteAuto\Auto($this->plugins, $this->zdb);
 
         $data = [];
@@ -183,7 +188,7 @@ class Auto extends GaletteTestCase
         $adh2 = $this->getMemberTwo();
         $color2 = new \GaletteAuto\Color($this->zdb);
         $color2->setValue('Yellow');
-        $color2->store(true);
+        $color2->store(new: true);
         $color2_id = $color2->getId();
 
         $data = [

@@ -61,9 +61,6 @@ class Auto
         'owner_id'
     ];
 
-    private Plugins $plugins;
-    private Db $zdb;
-
     private ?int $id = null;
     private ?string $registration = null;
     private ?string $name = null;
@@ -80,13 +77,13 @@ class Auto
 
     //External objects
     private ?Picture $picture = null;
-    private Finition $finition;
-    private Color $color;
+    private readonly Finition $finition;
+    private readonly Color $color;
     private Model $model;
-    private Transmission $transmission;
-    private Body $body;
+    private readonly Transmission $transmission;
+    private readonly Body $body;
     private ?History $history = null;
-    private State $state;
+    private readonly State $state;
     private ?int $owner_id = null;
     private ?Adherent $owner = null;
 
@@ -103,11 +100,8 @@ class Auto
      * @param Db                          $zdb     Database instance
      * @param ?ArrayObject<string, mixed> $args    A resultset row to load
      */
-    public function __construct(Plugins $plugins, Db $zdb, ?ArrayObject $args = null)
+    public function __construct(private readonly Plugins $plugins, private readonly Db $zdb, ?ArrayObject $args = null)
     {
-        $this->plugins = $plugins;
-        $this->zdb = $zdb;
-
         $this->propnames = [
             'name'                      => mb_strtolower(_T("Name", "auto")),
             'model'                     => mb_strtolower(_T("Model", "auto")),
@@ -403,7 +397,7 @@ class Auto
                 case 'fuel':
                     if ($value === null || $value === '') {
                         $this->fuel = null;
-                    } elseif (in_array((int)$value, array_keys($this->listFuels()), true)) {
+                    } elseif (in_array((int)$value, array_keys($this->listFuels()), strict: true)) {
                         $this->fuel = (int)$value;
                     } else {
                         $this->errors[] = _T("- You must choose a fuel in the list", "auto");
@@ -735,9 +729,7 @@ class Auto
      */
     public function getPicture(): Picture
     {
-        if ($this->picture === null) {
-            $this->picture = new Picture($this->plugins, $this->id);
-        }
+        $this->picture ??= new Picture($this->plugins, $this->id);
         return $this->picture;
     }
 
@@ -746,9 +738,7 @@ class Auto
      */
     public function getHistory(): History
     {
-        if ($this->history === null) {
-            $this->history = new History($this->zdb, $this->id);
-        }
+        $this->history ??= new History($this->zdb, $this->id);
         return $this->history;
     }
 }

@@ -56,7 +56,7 @@ class Fixtures extends GaletteTestCase
         //a value fixtures also use, that must be kept
         $color = new \GaletteAuto\Color($this->zdb);
         $color->setValue('Rouge');
-        $color->store(true);
+        $color->store(new: true);
         $colors = $this->countRows(\GaletteAuto\Color::TABLE);
 
         $context = new FixturesContext(

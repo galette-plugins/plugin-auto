@@ -56,7 +56,7 @@ class Body extends AbstractObject
         return str_replace(
             '%count',
             (string)$count,
-            _Tn('%count body', '%count bodies', $count, 'auto')
+            _Tn(singular: '%count body', plural: '%count bodies', count: $count, domain: 'auto')
         );
     }
 
@@ -68,7 +68,12 @@ class Body extends AbstractObject
     public function getRemovedMessage(int $count): string
     {
         return sprintf(
-            _Tn('%1$s body has been successfully deleted.', '%1$s bodies have been successfully deleted.', $count, 'auto'),
+            _Tn(
+                singular: '%1$s body has been successfully deleted.',
+                plural: '%1$s bodies have been successfully deleted.',
+                count: $count,
+                domain: 'auto'
+            ),
             $count
         );
     }

@@ -41,8 +41,6 @@ abstract class AbstractObject
         State::FIELD => State::class,
         Transmission::FIELD => Transmission::class,
     ];
-
-    protected Db $zdb;
     protected ?int $id = null;
     protected ?string $value = null;
 
@@ -52,9 +50,8 @@ abstract class AbstractObject
      * @param Db   $zdb Database instance
      * @param ?int $id  id to load. Defaults to null
      */
-    final public function __construct(Db $zdb, ?int $id = null)
+    final public function __construct(protected Db $zdb, ?int $id = null)
     {
-        $this->zdb = $zdb;
         if (is_int($id)) {
             $this->load($id);
         }

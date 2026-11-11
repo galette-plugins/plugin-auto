@@ -89,7 +89,12 @@ class Controller extends AbstractPluginController
      */
     protected function getVehicles(): Vehicles
     {
-        return new Vehicles($this->plugins, $this->zdb, $this->login, $this->history);
+        return new Vehicles(
+            plugins: $this->plugins,
+            zdb: $this->zdb,
+            login: $this->login,
+            history: $this->history
+        );
     }
 
     /**
@@ -101,7 +106,12 @@ class Controller extends AbstractPluginController
      */
     protected function getProperties(string $class): array
     {
-        return (new Properties($this->zdb, $this->preferences, $this->login, $class))->getList();
+        return (new Properties(
+            zdb: $this->zdb,
+            preferences: $this->preferences,
+            login: $this->login,
+            class: $class
+        ))->getList();
     }
 
     /**
@@ -195,7 +205,13 @@ class Controller extends AbstractPluginController
      */
     public function publicVehiclesList(Request $request, Response $response, ?string $option = null, ?int $value = null): Response
     {
-        return $this->listVehicles($request, $response, $option, $value, public: true);
+        return $this->listVehicles(
+            request: $request,
+            response: $response,
+            option: $option,
+            value: $value,
+            public: true
+        );
     }
 
     /**
@@ -206,7 +222,14 @@ class Controller extends AbstractPluginController
      */
     public function myVehiclesList(Request $request, Response $response, ?string $option = null, ?int $value = null): Response
     {
-        return $this->listVehicles($request, $response, $option, $value, (int)$this->login->id, mine: true);
+        return $this->listVehicles(
+            request: $request,
+            response: $response,
+            option: $option,
+            value: $value,
+            id_adh: (int)$this->login->id,
+            mine: true
+        );
     }
 
     /**
@@ -218,7 +241,13 @@ class Controller extends AbstractPluginController
      */
     public function memberVehiclesList(Request $request, Response $response, int $id, ?string $option = null, ?int $value = null): Response
     {
-        return $this->listVehicles($request, $response, $option, $value, $id);
+        return $this->listVehicles(
+            request: $request,
+            response: $response,
+            option: $option,
+            value: $value,
+            id_adh: $id
+        );
     }
 
     /**
@@ -229,7 +258,7 @@ class Controller extends AbstractPluginController
      */
     public function vehiclesList(Request $request, Response $response, ?string $option = null, ?int $value = null): Response
     {
-        return $this->listVehicles($request, $response, $option, $value);
+        return $this->listVehicles(request: $request, response: $response, option: $option, value: $value);
     }
 
     /**
@@ -303,7 +332,7 @@ class Controller extends AbstractPluginController
         if ($id_adh !== null) {
             $params['id_adh'] = $id_adh;
         }
-        $params['autos'] = $vehicles->getList($afilters, $id_adh, $mine, $public);
+        $params['autos'] = $vehicles->getList(filters: $afilters, id_adh: $id_adh, mine: $mine, public: $public);
         $params['count_vehicles'] = $vehicles->getCount();
 
         if ($public) {
@@ -347,7 +376,7 @@ class Controller extends AbstractPluginController
      */
     public function showEditVehicle(Request $request, Response $response, int $id): Response
     {
-        return $this->showAddEditVehicle($request, $response, 'edit', $id);
+        return $this->showAddEditVehicle(request: $request, response: $response, action: 'edit', id: $id);
     }
 
     /**
@@ -389,10 +418,10 @@ class Controller extends AbstractPluginController
 
         $mfilters = new ModelsList();
         $models = new Models(
-            $this->zdb,
-            $this->preferences,
-            $this->login,
-            $mfilters
+            zdb: $this->zdb,
+            preferences: $this->preferences,
+            login: $this->login,
+            filters: $mfilters
         );
 
         $params = [
@@ -459,7 +488,7 @@ class Controller extends AbstractPluginController
      */
     public function doEditVehicle(Request $request, Response $response, int $id): Response
     {
-        return $this->doAddEditVehicle($request, $response, 'edit', $id);
+        return $this->doAddEditVehicle(request: $request, response: $response, action: 'edit', id: $id);
     }
 
     /**
@@ -497,7 +526,7 @@ class Controller extends AbstractPluginController
             try {
                 $this->getVehicles()->store($auto);
                 $stored = true;
-            } catch (\Throwable $e) {
+            } catch (\Throwable) {
                 $stored = false;
             }
             if (!$stored) {
@@ -587,10 +616,10 @@ class Controller extends AbstractPluginController
         $post = $request->getParsedBody();
         $list = [];
         $models = new Models(
-            $this->zdb,
-            $this->preferences,
-            $this->login,
-            new ModelsList()
+            zdb: $this->zdb,
+            preferences: $this->preferences,
+            login: $this->login,
+            filters: new ModelsList()
         );
 
         $id_brand = null;
@@ -598,7 +627,7 @@ class Controller extends AbstractPluginController
             $id_brand = (int)$post['brand'];
         }
         /** @var array<int, Model>|ResultSet $list */
-        $list = $models->getList($id_brand, false);
+        $list = $models->getList($id_brand, as_object: false);
         return $this->withJson($response, $list->toArray());
     }
 
@@ -657,7 +686,7 @@ class Controller extends AbstractPluginController
             );
         }
 
-        $this->session->filter_vehicles = array_map('intval', (array)$post['entries_sel']);
+        $this->session->filter_vehicles = array_map(intval(...), (array)$post['entries_sel']);
         if (isset($post['delete'])) {
             return $response
                 ->withStatus(301)
@@ -681,7 +710,7 @@ class Controller extends AbstractPluginController
         $post = $request->getParsedBody();
         $route = $this->routeparser->urlFor('vehiclesList');
         $ids = $post['entries_sel'] ?? $this->session->filter_vehicles ?? [];
-        $ids = array_map('intval', (array)$ids);
+        $ids = array_map(intval(...), (array)$ids);
 
         if (!$this->canManageVehicles($ids)) {
             return $this->accessDenied($response, 'Trying to remove vehicles #' . implode(', #', $ids));
@@ -706,7 +735,12 @@ class Controller extends AbstractPluginController
                 'message'       => str_replace(
                     '%count',
                     (string)count($data['id']),
-                    _Tn('You are about to remove %count vehicle.', 'You are about to remove %count vehicles.', count($data['id']), 'auto')
+                    _Tn(
+                        singular: 'You are about to remove %count vehicle.',
+                        plural: 'You are about to remove %count vehicles.',
+                        count: count($data['id']),
+                        domain: 'auto'
+                    )
                 ),
                 'form_url'      => $this->routeparser->urlFor('doRemoveVehicle'),
                 'cancel_uri'    => $route,
@@ -734,7 +768,7 @@ class Controller extends AbstractPluginController
                 _T("Removal has not been confirmed!")
             );
         } else {
-            $ids = array_map('intval', (array)($post['id'] ?? []));
+            $ids = array_map(intval(...), (array)($post['id'] ?? []));
             if (!$this->canManageVehicles($ids)) {
                 return $this->accessDenied($response, 'Trying to remove vehicles #' . implode(', #', $ids));
             }
@@ -742,7 +776,7 @@ class Controller extends AbstractPluginController
             try {
                 $this->getVehicles()->remove($ids);
                 $del = true;
-            } catch (\Throwable $e) {
+            } catch (\Throwable) {
                 $del = false;
             }
             unset($this->session->filter_vehicles);

@@ -28,10 +28,10 @@ class Transmission extends GaletteTestCase
     {
         $transmission = new \GaletteAuto\Transmission($this->zdb);
         $transmissions = new \GaletteAuto\Repository\Properties(
-            $this->zdb,
-            $this->preferences,
-            $this->login,
-            \GaletteAuto\Transmission::class
+            zdb: $this->zdb,
+            preferences: $this->preferences,
+            login: $this->login,
+            class: \GaletteAuto\Transmission::class
         );
         $this->assertSame('Transmission', $transmission->getFieldLabel());
 
@@ -46,17 +46,17 @@ class Transmission extends GaletteTestCase
     {
         $transmission = new \GaletteAuto\Transmission($this->zdb);
         $transmissions = new \GaletteAuto\Repository\Properties(
-            $this->zdb,
-            $this->preferences,
-            $this->login,
-            \GaletteAuto\Transmission::class
+            zdb: $this->zdb,
+            preferences: $this->preferences,
+            login: $this->login,
+            class: \GaletteAuto\Transmission::class
         );
         //ensure the table is empty
         $this->assertCount(0, $transmissions->getList());
 
         //Add new transmission
         $transmission->setValue('Manual');
-        $transmission->store(true);
+        $transmission->store(new: true);
         $first_id = $transmission->getId();
 
         $this->assertCount(1, $transmissions->getList());
@@ -69,7 +69,7 @@ class Transmission extends GaletteTestCase
         //add another one
         $transmission = new \GaletteAuto\Transmission($this->zdb);
         $transmission->setValue('Auto');
-        $transmission->store(true);
+        $transmission->store(new: true);
         $id = $transmission->getId();
 
         $this->assertCount(2, $transmissions->getList());

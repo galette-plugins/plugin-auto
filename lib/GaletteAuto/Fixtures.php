@@ -162,7 +162,12 @@ class Fixtures implements FixturesProviderInterface
 
         $access = new VehicleAccess($zdb, $context->login, $context->preferences);
         $preferences = new AutoPreferences($context->preferences);
-        $vehicles = new Vehicles($context->plugins, $zdb, $context->login, $context->history);
+        $vehicles = new Vehicles(
+            plugins: $context->plugins,
+            zdb: $zdb,
+            login: $context->login,
+            history: $context->history
+        );
         $today = new \DateTimeImmutable('today');
 
         foreach (self::VEHICLES as $position => $data) {
@@ -195,7 +200,7 @@ class Fixtures implements FixturesProviderInterface
                 ));
             }
             $vehicles->store($vehicle);
-            $this->backdate($context, $vehicle, $data, $position);
+            $this->backdate(context: $context, vehicle: $vehicle, data: $data, position: $position);
         }
 
         return sprintf('Created %d vehicles', count(self::VEHICLES));
@@ -259,7 +264,7 @@ class Fixtures implements FixturesProviderInterface
 
         $object = new $class($context->zdb);
         $object->setValue($value);
-        $object->store(true);
+        $object->store(new: true);
         return (int)$object->getId();
     }
 
@@ -285,7 +290,7 @@ class Fixtures implements FixturesProviderInterface
         if (!$model->check(['brand' => $brand_id, 'model' => $name])) {
             throw new RuntimeException(sprintf('Invalid fixture model %s', $name));
         }
-        $model->store(true);
+        $model->store(new: true);
         return (int)$model->getId();
     }
 
@@ -305,35 +310,46 @@ class Fixtures implements FixturesProviderInterface
             $ids[] = (int)$row->{Auto::PK};
         }
         if ($ids !== []) {
-            (new Vehicles($context->plugins, $zdb, $context->login, $context->history))->remove($ids);
+            (new Vehicles(
+                plugins: $context->plugins,
+                zdb: $zdb,
+                login: $context->login,
+                history: $context->history
+            ))->remove($ids);
         }
 
         foreach (self::MODELS as $brand => $models) {
             $select = $zdb->select(AUTO_PREFIX . Brand::TABLE)->columns([Brand::PK])->where([Brand::FIELD => $brand]);
             foreach ($zdb->execute($select) as $row) {
                 $this->removeUnused(
-                    $context,
-                    Model::TABLE,
-                    Model::PK,
-                    [Model::FIELD => $models, Brand::PK => (int)$row->{Brand::PK}],
-                    [Auto::TABLE]
+                    context: $context,
+                    table: Model::TABLE,
+                    pk: Model::PK,
+                    where: [Model::FIELD => $models, Brand::PK => (int)$row->{Brand::PK}],
+                    referencers: [Auto::TABLE]
                 );
             }
         }
         $this->removeUnused(
-            $context,
-            Brand::TABLE,
-            Brand::PK,
-            [Brand::FIELD => array_keys(self::MODELS)],
-            [Model::TABLE]
+            context: $context,
+            table: Brand::TABLE,
+            pk: Brand::PK,
+            where: [Brand::FIELD => array_keys(self::MODELS)],
+            referencers: [Model::TABLE]
         );
 
         foreach (self::VALUES as $class => $values) {
             //history keeps colors and states too
-            $referencers = in_array($class, [Color::class, State::class], true)
+            $referencers = in_array($class, [Color::class, State::class], strict: true)
                 ? [Auto::TABLE, History::TABLE]
                 : [Auto::TABLE];
-            $this->removeUnused($context, $class::TABLE, $class::PK, [$class::FIELD => $values], $referencers);
+            $this->removeUnused(
+                context: $context,
+                table: $class::TABLE,
+                pk: $class::PK,
+                where: [$class::FIELD => $values],
+                referencers: $referencers
+            );
         }
     }
 

@@ -52,7 +52,13 @@ class PropertiesController extends AbstractPluginController
         ?string $option = null,
         string|int|null $value = null
     ): Response {
-        return $this->propertiesList($request, $response, new Brand($this->zdb), $option, $value);
+        return $this->propertiesList(
+            request: $request,
+            response: $response,
+            obj: new Brand($this->zdb),
+            option: $option,
+            value: $value
+        );
     }
 
     /**
@@ -67,7 +73,13 @@ class PropertiesController extends AbstractPluginController
         ?string $option = null,
         int|string|null $value = null
     ): Response {
-        return $this->propertiesList($request, $response, new Color($this->zdb), $option, $value);
+        return $this->propertiesList(
+            request: $request,
+            response: $response,
+            obj: new Color($this->zdb),
+            option: $option,
+            value: $value
+        );
     }
 
     /**
@@ -82,7 +94,13 @@ class PropertiesController extends AbstractPluginController
         ?string $option = null,
         string|int|null $value = null
     ): Response {
-        return $this->propertiesList($request, $response, new State($this->zdb), $option, $value);
+        return $this->propertiesList(
+            request: $request,
+            response: $response,
+            obj: new State($this->zdb),
+            option: $option,
+            value: $value
+        );
     }
 
     /**
@@ -97,7 +115,13 @@ class PropertiesController extends AbstractPluginController
         ?string $option = null,
         string|int|null $value = null
     ): Response {
-        return $this->propertiesList($request, $response, new Finition($this->zdb), $option, $value);
+        return $this->propertiesList(
+            request: $request,
+            response: $response,
+            obj: new Finition($this->zdb),
+            option: $option,
+            value: $value
+        );
     }
 
     /**
@@ -112,7 +136,13 @@ class PropertiesController extends AbstractPluginController
         ?string $option = null,
         string|int|null $value = null
     ): Response {
-        return $this->propertiesList($request, $response, new Body($this->zdb), $option, $value);
+        return $this->propertiesList(
+            request: $request,
+            response: $response,
+            obj: new Body($this->zdb),
+            option: $option,
+            value: $value
+        );
     }
 
     /**
@@ -127,7 +157,13 @@ class PropertiesController extends AbstractPluginController
         ?string $option = null,
         string|int|null $value = null
     ): Response {
-        return $this->propertiesList($request, $response, new Transmission($this->zdb), $option, $value);
+        return $this->propertiesList(
+            request: $request,
+            response: $response,
+            obj: new Transmission($this->zdb),
+            option: $option,
+            value: $value
+        );
     }
 
     /**
@@ -174,7 +210,7 @@ class PropertiesController extends AbstractPluginController
         ];
 
         //assign pagination variables to the template and add pagination links
-        $filters->setViewPagination($this->routeparser, $this->view, false);
+        $filters->setViewPagination($this->routeparser, $this->view, restricted: false);
 
         // display page
         $this->view->render(
@@ -221,7 +257,13 @@ class PropertiesController extends AbstractPluginController
      */
     public function propertyAdd(Request $request, Response $response, string $property): Response
     {
-        return $this->propertyEdit($request, $response, $property, null, 'add');
+        return $this->propertyEdit(
+            request: $request,
+            response: $response,
+            property: $property,
+            id: null,
+            action: 'add'
+        );
     }
 
     /**
@@ -285,7 +327,13 @@ class PropertiesController extends AbstractPluginController
         Response $response,
         string $property
     ): Response {
-        return $this->doPropertyEdit($request, $response, $property, null, 'add');
+        return $this->doPropertyEdit(
+            request: $request,
+            response: $response,
+            property: $property,
+            id: null,
+            action: 'add'
+        );
     }
 
     /**
@@ -333,7 +381,7 @@ class PropertiesController extends AbstractPluginController
                     'success_detected',
                     $msg
                 );
-            } catch (\Throwable $e) {
+            } catch (\Throwable) {
                 $error_detected[]
                     = _T("- An error occurred while saving record. Please try again.", "auto");
             }
@@ -393,10 +441,10 @@ class PropertiesController extends AbstractPluginController
 
         if ($object instanceof \GaletteAuto\Brand) {
             $models = new Models(
-                $this->zdb,
-                $this->preferences,
-                $this->login,
-                new ModelsList()
+                zdb: $this->zdb,
+                preferences: $this->preferences,
+                login: $this->login,
+                filters: new ModelsList()
             );
             $params['models'] = $models->getList($object->getId());
         }
@@ -473,7 +521,7 @@ class PropertiesController extends AbstractPluginController
                 _T("Removal has not been confirmed!")
             );
         } else {
-            $ids = array_map('intval', (array)$post['id']);
+            $ids = array_map(intval(...), (array)$post['id']);
             $object = AbstractObject::fromPropertyName($this->zdb, $property);
 
             try {
@@ -530,7 +578,13 @@ class PropertiesController extends AbstractPluginController
      */
     protected function getRepository(string $class, ?PropertiesList $filters = null): Properties
     {
-        return new Properties($this->zdb, $this->preferences, $this->login, $class, $filters);
+        return new Properties(
+            zdb: $this->zdb,
+            preferences: $this->preferences,
+            login: $this->login,
+            class: $class,
+            filters: $filters
+        );
     }
 
     /**

@@ -256,7 +256,7 @@ class Vehicles
                 if ($picture->hasPicture()) {
                     //file may be gone if the transaction is rolled back: it
                     //will be written again from the database when displayed
-                    if (!$picture->delete(false)) {
+                    if (!$picture->delete(transaction: false)) {
                         throw new \RuntimeException('Unable to delete picture for vehicle ' . $str_v);
                     }
                     $this->history->add(
@@ -425,7 +425,7 @@ class Vehicles
      */
     private function loadOwners(array $ids): array
     {
-        $ids = array_unique(array_map('intval', $ids));
+        $ids = array_unique(array_map(intval(...), $ids));
         if (count($ids) === 0) {
             return [];
         }
@@ -439,7 +439,7 @@ class Vehicles
 
         $owners = [];
         foreach ($this->zdb->execute($select) as $row) {
-            $owners[(int)$row[Adherent::PK]] = new Adherent($this->zdb, $row, false);
+            $owners[(int)$row[Adherent::PK]] = new Adherent($this->zdb, $row, deps: false);
         }
         return $owners;
     }

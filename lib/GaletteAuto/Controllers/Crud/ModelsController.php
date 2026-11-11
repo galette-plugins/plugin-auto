@@ -45,7 +45,7 @@ class ModelsController extends AbstractPluginController
      */
     public function add(Request $request, Response $response): Response
     {
-        return $this->edit($request, $response, null, 'add');
+        return $this->edit(request: $request, response: $response, id: null, action: 'add');
     }
 
     /**
@@ -56,7 +56,7 @@ class ModelsController extends AbstractPluginController
      */
     public function doAdd(Request $request, Response $response): Response
     {
-        return $this->doEdit($request, $response, null, 'add');
+        return $this->doEdit(request: $request, response: $response, id: null, action: 'add');
     }
 
     // /CRUD - Create
@@ -95,10 +95,10 @@ class ModelsController extends AbstractPluginController
         }
 
         $models = new Models(
-            $this->zdb,
-            $this->preferences,
-            $this->login,
-            $mfilters
+            zdb: $this->zdb,
+            preferences: $this->preferences,
+            login: $this->login,
+            filters: $mfilters
         );
         $list = $models->getList();
 
@@ -193,7 +193,12 @@ class ModelsController extends AbstractPluginController
             }
         }
 
-        $brands = new Properties($this->zdb, $this->preferences, $this->login, Brand::class);
+        $brands = new Properties(
+            zdb: $this->zdb,
+            preferences: $this->preferences,
+            login: $this->login,
+            class: Brand::class
+        );
         $params = [
             'page_title'        => $title,
             'mode'              => ($action === 'add' ? 'new' : 'modif'),
@@ -243,7 +248,7 @@ class ModelsController extends AbstractPluginController
                     'success_detected',
                     $msg
                 );
-            } catch (\Throwable $e) {
+            } catch (\Throwable) {
                 $error_detected[]
                     = _T("- An error occurred while saving record. Please try again.", "auto");
             }
@@ -330,7 +335,7 @@ class ModelsController extends AbstractPluginController
             $count = count($args['ids']);
             return sprintf(
                 //TRANS: first parameter is the number of models
-                _Tn('Remove %1$s model', 'Remove %1$s models', $count, 'auto'),
+                _Tn(singular: 'Remove %1$s model', plural: 'Remove %1$s models', count: $count, domain: 'auto'),
                 $count,
             );
         } else {
@@ -352,12 +357,12 @@ class ModelsController extends AbstractPluginController
      */
     protected function doDelete(array $args, array $post): bool
     {
-        $ids = array_map('intval', (array)$post['id']);
+        $ids = array_map(intval(...), (array)$post['id']);
         $models = new Models(
-            $this->zdb,
-            $this->preferences,
-            $this->login,
-            new ModelsList()
+            zdb: $this->zdb,
+            preferences: $this->preferences,
+            login: $this->login,
+            filters: new ModelsList()
         );
 
         try {

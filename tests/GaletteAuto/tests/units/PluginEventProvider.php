@@ -53,7 +53,7 @@ class PluginEventProvider extends GaletteTestCase
 
         $model = new \GaletteAuto\Model($this->zdb);
         $this->assertTrue($model->check(['model' => '307', 'brand' => $this->props['brand']]));
-        $model->store(true);
+        $model->store(new: true);
         $this->props['model'] = $model->getId();
     }
 

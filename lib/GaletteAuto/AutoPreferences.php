@@ -21,7 +21,7 @@ use Galette\Core\PreferencesSchema;
  *
  * @author Johan Cwiklinski <johan@x-tnd.be>
  */
-final class AutoPreferences
+final readonly class AutoPreferences
 {
     public const string PREFIX = 'pref_auto_';
     /** Prefix of the yes/no preferences making a vehicle field required */
@@ -75,7 +75,7 @@ final class AutoPreferences
      *
      * @param Preferences $preferences Core preferences
      */
-    public function __construct(private readonly Preferences $preferences)
+    public function __construct(private Preferences $preferences)
     {
     }
 
@@ -127,7 +127,7 @@ final class AutoPreferences
      */
     public function isRequired(string $field): bool
     {
-        if (in_array($field, self::ALWAYS_REQUIRED, true)) {
+        if (in_array($field, self::ALWAYS_REQUIRED, strict: true)) {
             return true;
         }
         if (!isset(self::OPTIONAL_FIELDS[$field])) {

@@ -56,7 +56,7 @@ class State extends AbstractObject
         return str_replace(
             '%count',
             (string)$count,
-            _Tn('%count state', '%count states', $count, 'auto')
+            _Tn(singular: '%count state', plural: '%count states', count: $count, domain: 'auto')
         );
     }
 
@@ -68,7 +68,12 @@ class State extends AbstractObject
     public function getRemovedMessage(int $count): string
     {
         return sprintf(
-            _Tn('%1$s state has been successfully deleted.', '%1$s states have been successfully deleted.', $count, 'auto'),
+            _Tn(
+                singular: '%1$s state has been successfully deleted.',
+                plural: '%1$s states have been successfully deleted.',
+                count: $count,
+                domain: 'auto'
+            ),
             $count
         );
     }
