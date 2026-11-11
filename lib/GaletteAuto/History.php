@@ -38,8 +38,6 @@ class History
         State::PK
     ];
 
-    private Db $zdb;
-
     /**
      * history entries
      *
@@ -54,9 +52,8 @@ class History
      * @param Db   $zdb Database instance
      * @param ?int $id  history entry's id to load. Defaults to null
      */
-    public function __construct(Db $zdb, ?int $id = null)
+    public function __construct(private readonly Db $zdb, ?int $id = null)
     {
-        $this->zdb = $zdb;
         if ($id !== null) {
             $this->load($id);
         }

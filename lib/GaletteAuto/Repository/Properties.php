@@ -25,7 +25,7 @@ class Properties extends AbstractRepository
 {
     protected const string ALIAS = 'p';
 
-    private bool $paginate;
+    private readonly bool $paginate;
 
     /**
      * Constructor
@@ -40,16 +40,16 @@ class Properties extends AbstractRepository
         Db $zdb,
         Preferences $preferences,
         Login $login,
-        private string $class,
+        private readonly string $class,
         ?PropertiesList $filters = null
     ) {
         $this->paginate = $filters !== null;
         parent::__construct(
-            $zdb,
-            $preferences,
-            $login,
-            substr($class, strrpos($class, '\\') + 1),
-            $filters ?? new PropertiesList()
+            zdb: $zdb,
+            preferences: $preferences,
+            login: $login,
+            entity: substr($class, strrpos($class, '\\') + 1),
+            filters: $filters ?? new PropertiesList()
         );
     }
 

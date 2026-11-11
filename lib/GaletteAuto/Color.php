@@ -56,7 +56,7 @@ class Color extends AbstractObject
         return str_replace(
             '%count',
             (string)$count,
-            _Tn('%count color', '%count colors', $count, 'auto')
+            _Tn(singular: '%count color', plural: '%count colors', count: $count, domain: 'auto')
         );
     }
 
@@ -68,7 +68,12 @@ class Color extends AbstractObject
     public function getRemovedMessage(int $count): string
     {
         return sprintf(
-            _Tn('%1$s color has been successfully deleted.', '%1$s colors have been successfully deleted.', $count, 'auto'),
+            _Tn(
+                singular: '%1$s color has been successfully deleted.',
+                plural: '%1$s colors have been successfully deleted.',
+                count: $count,
+                domain: 'auto'
+            ),
             $count
         );
     }

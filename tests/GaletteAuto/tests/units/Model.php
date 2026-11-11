@@ -29,28 +29,28 @@ class Model extends GaletteTestCase
         $brand = new \GaletteAuto\Brand($this->zdb);
         //Add new brand
         $brand->setValue('Audi');
-        $brand->store(true);
+        $brand->store(new: true);
         $first_brand_id = $brand->getId();
 
         //add another brand
         $brand = new \GaletteAuto\Brand($this->zdb);
         $brand->setValue('Mercedes');
-        $brand->store(true);
+        $brand->store(new: true);
         $second_brand_id = $brand->getId();
 
         $brands = new \GaletteAuto\Repository\Properties(
-            $this->zdb,
-            $this->preferences,
-            $this->login,
-            \GaletteAuto\Brand::class
+            zdb: $this->zdb,
+            preferences: $this->preferences,
+            login: $this->login,
+            class: \GaletteAuto\Brand::class
         );
         $this->assertCount(2, $brands->getList());
 
         $models = new \GaletteAuto\Repository\Models(
-            $this->zdb,
-            $this->preferences,
-            $this->login,
-            new \GaletteAuto\Filters\ModelsList()
+            zdb: $this->zdb,
+            preferences: $this->preferences,
+            login: $this->login,
+            filters: new \GaletteAuto\Filters\ModelsList()
         );
         $this->assertCount(0, $models->getList());
 
@@ -92,7 +92,7 @@ class Model extends GaletteTestCase
             'brand' => $first_brand_id,
         ];
         $this->assertTrue($model->check($data));
-        $model->store(true);
+        $model->store(new: true);
 
         $this->assertCount(1, $models->getList());
         $this->assertCount(1, $models->getList($first_brand_id));
@@ -104,7 +104,7 @@ class Model extends GaletteTestCase
             'brand' => $first_brand_id,
         ];
         $this->assertTrue($model->check($data));
-        $model->store(true);
+        $model->store(new: true);
         $id_model = $model->getId();
 
         $this->assertCount(2, $models->getList());
@@ -126,7 +126,7 @@ class Model extends GaletteTestCase
             'brand' => $second_brand_id,
         ];
         $this->assertTrue($model->check($data));
-        $model->store(true);
+        $model->store(new: true);
 
         $this->assertCount(3, $models->getList());
         $this->assertSame(3, $models->getCount());

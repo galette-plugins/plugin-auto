@@ -34,7 +34,7 @@ class ModelsController extends GaletteRoutingTestCase
         parent::setUp();
         $brand = new Brand($this->zdb);
         $brand->setValue('Peugeot');
-        $brand->store(true);
+        $brand->store(new: true);
         $this->brand_id = $brand->getId();
     }
 
@@ -56,7 +56,7 @@ class ModelsController extends GaletteRoutingTestCase
     {
         $model = new Model($this->zdb);
         $this->assertTrue($model->check(['model' => $name, 'brand' => $this->brand_id]));
-        $model->store(true);
+        $model->store(new: true);
         return $model->getId();
     }
 
@@ -160,7 +160,13 @@ class ModelsController extends GaletteRoutingTestCase
         $this->assertLessThan(strpos($body, '308'), strpos($body, '207'));
         $this->assertStringContainsString('2 models', $body);
 
-        $request = $this->createRequest('modelAdd', [], 'GET', 'text/html', ['brand' => (string)$this->brand_id]);
+        $request = $this->createRequest(
+            route_name: 'modelAdd',
+            route_args: [],
+            method: 'GET',
+            content_type: 'text/html',
+            query_params: ['brand' => (string)$this->brand_id]
+        );
         $test_response = $this->app->handle($request);
         $this->expectOK($test_response);
         $this->assertStringContainsString('New model', (string)$test_response->getBody());

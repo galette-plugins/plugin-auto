@@ -56,7 +56,7 @@ class Transmission extends AbstractObject
         return str_replace(
             '%count',
             (string)$count,
-            _Tn('%count transmission', '%count transmissions', $count, 'auto')
+            _Tn(singular: '%count transmission', plural: '%count transmissions', count: $count, domain: 'auto')
         );
     }
 
@@ -68,7 +68,12 @@ class Transmission extends AbstractObject
     public function getRemovedMessage(int $count): string
     {
         return sprintf(
-            _Tn('%1$s transmission has been successfully deleted.', '%1$s transmissions have been successfully deleted.', $count, 'auto'),
+            _Tn(
+                singular: '%1$s transmission has been successfully deleted.',
+                plural: '%1$s transmissions have been successfully deleted.',
+                count: $count,
+                domain: 'auto'
+            ),
             $count
         );
     }

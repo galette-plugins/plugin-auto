@@ -103,7 +103,7 @@ class PluginGaletteAuto extends GaletteTestCase
         );
 
         //the public menu entry follows it, not the default visibility
-        $this->setRawPreference('pref_bool_publicpages', true);
+        $this->setRawPreference('pref_bool_publicpages', value: true);
         $this->setRawPreference(
             'pref_publicpages_visibility_generic',
             \Galette\Enums\PublicPageVisibility::Hidden->value

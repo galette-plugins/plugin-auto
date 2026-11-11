@@ -28,10 +28,10 @@ class Color extends GaletteTestCase
     {
         $color = new \GaletteAuto\Color($this->zdb);
         $colors = new \GaletteAuto\Repository\Properties(
-            $this->zdb,
-            $this->preferences,
-            $this->login,
-            \GaletteAuto\Color::class
+            zdb: $this->zdb,
+            preferences: $this->preferences,
+            login: $this->login,
+            class: \GaletteAuto\Color::class
         );
         $this->assertSame('Color', $color->getFieldLabel());
 
@@ -46,17 +46,17 @@ class Color extends GaletteTestCase
     {
         $color = new \GaletteAuto\Color($this->zdb);
         $colors = new \GaletteAuto\Repository\Properties(
-            $this->zdb,
-            $this->preferences,
-            $this->login,
-            \GaletteAuto\Color::class
+            zdb: $this->zdb,
+            preferences: $this->preferences,
+            login: $this->login,
+            class: \GaletteAuto\Color::class
         );
         //ensure the table is empty
         $this->assertCount(0, $colors->getList());
 
         //Add new color
         $color->setValue('Red');
-        $color->store(true);
+        $color->store(new: true);
         $first_id = $color->getId();
 
         $this->assertCount(1, $colors->getList());
@@ -69,7 +69,7 @@ class Color extends GaletteTestCase
         //add another one
         $color = new \GaletteAuto\Color($this->zdb);
         $color->setValue('Blu');
-        $color->store(true);
+        $color->store(new: true);
         $id = $color->getId();
 
         $this->assertCount(2, $colors->getList());

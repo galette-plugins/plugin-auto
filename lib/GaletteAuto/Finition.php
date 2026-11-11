@@ -56,7 +56,7 @@ class Finition extends AbstractObject
         return str_replace(
             '%count',
             (string)$count,
-            _Tn('%count finition', '%count finitions', $count, 'auto')
+            _Tn(singular: '%count finition', plural: '%count finitions', count: $count, domain: 'auto')
         );
     }
 
@@ -68,7 +68,12 @@ class Finition extends AbstractObject
     public function getRemovedMessage(int $count): string
     {
         return sprintf(
-            _Tn('%1$s finition has been successfully deleted.', '%1$s finitions have been successfully deleted.', $count, 'auto'),
+            _Tn(
+                singular: '%1$s finition has been successfully deleted.',
+                plural: '%1$s finitions have been successfully deleted.',
+                count: $count,
+                domain: 'auto'
+            ),
             $count
         );
     }

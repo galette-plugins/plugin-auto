@@ -28,10 +28,10 @@ class Finition extends GaletteTestCase
     {
         $finition = new \GaletteAuto\Finition($this->zdb);
         $finitions = new \GaletteAuto\Repository\Properties(
-            $this->zdb,
-            $this->preferences,
-            $this->login,
-            \GaletteAuto\Finition::class
+            zdb: $this->zdb,
+            preferences: $this->preferences,
+            login: $this->login,
+            class: \GaletteAuto\Finition::class
         );
         $this->assertSame('Finition', $finition->getFieldLabel());
 
@@ -46,17 +46,17 @@ class Finition extends GaletteTestCase
     {
         $finition = new \GaletteAuto\Finition($this->zdb);
         $finitions = new \GaletteAuto\Repository\Properties(
-            $this->zdb,
-            $this->preferences,
-            $this->login,
-            \GaletteAuto\Finition::class
+            zdb: $this->zdb,
+            preferences: $this->preferences,
+            login: $this->login,
+            class: \GaletteAuto\Finition::class
         );
         //ensure the table is empty
         $this->assertCount(0, $finitions->getList());
 
         //Add new finition
         $finition->setValue('Feline');
-        $finition->store(true);
+        $finition->store(new: true);
         $first_id = $finition->getId();
 
         $this->assertCount(1, $finitions->getList());
@@ -69,7 +69,7 @@ class Finition extends GaletteTestCase
         //add another one
         $finition = new \GaletteAuto\Finition($this->zdb);
         $finition->setValue('R');
-        $finition->store(true);
+        $finition->store(new: true);
         $id = $finition->getId();
 
         $this->assertCount(2, $finitions->getList());

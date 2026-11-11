@@ -39,7 +39,13 @@ class Models extends AbstractRepository
      */
     public function __construct(Db $zdb, Preferences $preferences, Login $login, ModelsList $filters)
     {
-        parent::__construct($zdb, $preferences, $login, 'Model', $filters);
+        parent::__construct(
+            zdb: $zdb,
+            preferences: $preferences,
+            login: $login,
+            entity: 'Model',
+            filters: $filters
+        );
     }
 
     /**

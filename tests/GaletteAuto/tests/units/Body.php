@@ -28,10 +28,10 @@ class Body extends GaletteTestCase
     {
         $body = new \GaletteAuto\Body($this->zdb);
         $bodies = new \GaletteAuto\Repository\Properties(
-            $this->zdb,
-            $this->preferences,
-            $this->login,
-            \GaletteAuto\Body::class
+            zdb: $this->zdb,
+            preferences: $this->preferences,
+            login: $this->login,
+            class: \GaletteAuto\Body::class
         );
         $this->assertSame('Body', $body->getFieldLabel());
 
@@ -46,17 +46,17 @@ class Body extends GaletteTestCase
     {
         $body = new \GaletteAuto\Body($this->zdb);
         $bodies = new \GaletteAuto\Repository\Properties(
-            $this->zdb,
-            $this->preferences,
-            $this->login,
-            \GaletteAuto\Body::class
+            zdb: $this->zdb,
+            preferences: $this->preferences,
+            login: $this->login,
+            class: \GaletteAuto\Body::class
         );
         //ensure the table is empty
         $this->assertCount(0, $bodies->getList());
 
         //Add new body
         $body->setValue('Coupe');
-        $body->store(true);
+        $body->store(new: true);
         $first_id = $body->getId();
 
         $this->assertCount(1, $bodies->getList());
@@ -69,7 +69,7 @@ class Body extends GaletteTestCase
         //add another one
         $body = new \GaletteAuto\Body($this->zdb);
         $body->setValue('Brea');
-        $body->store(true);
+        $body->store(new: true);
         $id = $body->getId();
 
         $this->assertCount(2, $bodies->getList());
