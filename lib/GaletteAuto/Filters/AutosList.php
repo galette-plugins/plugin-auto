@@ -24,6 +24,7 @@ class AutosList extends Pagination
     public const int ORDERBY_OWNER = 1;
     public const int ORDERBY_BRAND = 2;
     public const int ORDERBY_MODEL = 3;
+    public const int ORDERBY_TYPE = 4;
 
     /**
      * Returns the field we want to default set order to

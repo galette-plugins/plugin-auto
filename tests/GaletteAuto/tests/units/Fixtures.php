@@ -94,6 +94,7 @@ class Fixtures extends GaletteTestCase
         $this->assertSame(0, $this->countRows(\GaletteAuto\Model::TABLE));
         $this->assertSame(0, $this->countRows(\GaletteAuto\Brand::TABLE));
         $this->assertSame(0, $this->countRows(\GaletteAuto\Body::TABLE));
+        $this->assertSame(0, $this->countRows(\GaletteAuto\VehicleType::TABLE));
         //color that existed before seeding is gone as well: nothing tells it from a fixture one
         $this->assertSame($colors - 1, $this->countRows(\GaletteAuto\Color::TABLE));
     }

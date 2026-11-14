@@ -19,6 +19,7 @@ use GaletteAuto\Color;
 use GaletteAuto\Finition;
 use GaletteAuto\State;
 use GaletteAuto\Transmission;
+use GaletteAuto\VehicleType;
 use Slim\Exception\HttpNotFoundException;
 use Slim\Psr7\Request;
 use Slim\Psr7\Response;
@@ -39,6 +40,27 @@ class PropertiesController extends AbstractPluginController
      */
     #[Inject("Plugin Galette Auto")]
     protected array $module_info;
+
+    /**
+     * List brands
+     *
+     * @param string|null     $option One of 'page' or 'order'
+     * @param string|int|null $value  Value of the option
+     */
+    public function typesList(
+        Request $request,
+        Response $response,
+        ?string $option = null,
+        string|int|null $value = null
+    ): Response {
+        return $this->propertiesList(
+            request: $request,
+            response: $response,
+            obj: new VehicleType($this->zdb),
+            option: $option,
+            value: $value
+        );
+    }
 
     /**
      * List brands

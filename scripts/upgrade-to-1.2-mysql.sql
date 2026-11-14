@@ -18,3 +18,19 @@ ALTER TABLE galette_auto_cars
 ALTER TABLE galette_auto_history
   MODIFY id_color int(10) unsigned DEFAULT NULL,
   MODIFY id_state int(10) unsigned DEFAULT NULL;
+
+-- Vehicle types: existing vehicles are cars
+CREATE TABLE galette_auto_types (
+  id_type int unsigned NOT NULL AUTO_INCREMENT,
+  type varchar(50) NOT NULL,
+  PRIMARY KEY (id_type)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci;
+
+INSERT INTO galette_auto_types (type) VALUES ('Car');
+
+ALTER TABLE galette_auto_cars ADD id_type int unsigned DEFAULT NULL;
+UPDATE galette_auto_cars SET id_type = (SELECT MIN(id_type) FROM galette_auto_types);
+ALTER TABLE galette_auto_cars
+  MODIFY id_type int unsigned NOT NULL,
+  ADD CONSTRAINT galette_auto_cars_id_type_fkey FOREIGN KEY (id_type)
+    REFERENCES galette_auto_types (id_type) ON DELETE RESTRICT ON UPDATE CASCADE;

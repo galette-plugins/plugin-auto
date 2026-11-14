@@ -43,9 +43,10 @@ class Controller extends GaletteRoutingTestCase
             'state' => 'Correct',
             'transmission' => 'Manual',
             'brand' => 'Peugeot',
+            'type' => 'Car',
         ];
         foreach ($values as $property => $value) {
-            $class = '\GaletteAuto\\' . ucfirst($property);
+            $class = \GaletteAuto\AbstractObject::getClassForPropName($property);
             $object = new $class($this->zdb);
             $object->setValue($value);
             $object->store(true);
@@ -89,6 +90,7 @@ class Controller extends GaletteRoutingTestCase
             \GaletteAuto\Transmission::PK => $this->props['transmission'],
             \GaletteAuto\Finition::PK => $this->props['finition'],
             \GaletteAuto\Model::PK => $this->props['model'],
+            \GaletteAuto\VehicleType::PK => $this->props['type'],
             Adherent::PK => $id_adh,
         ]);
         $this->zdb->execute($insert);
@@ -128,6 +130,7 @@ class Controller extends GaletteRoutingTestCase
                 'first_registration_date' => '2001-02-12',
                 'first_circulation_date' => '2001-02-13',
                 'fuel' => (string)Auto::FUEL_PETROL,
+                'type' => (string)$this->props['type'],
                 'model' => (string)$this->props['model'],
                 'color' => (string)$this->props['color'],
                 'body' => (string)$this->props['body'],
@@ -1065,7 +1068,7 @@ class Controller extends GaletteRoutingTestCase
     }
 
     /**
-     * Vehicles lists are sorted by name, owner, brand or model
+     * Vehicles lists are sorted by name, owner, type, brand or model
      */
     public function testVehiclesListOrder(): void
     {
@@ -1108,6 +1111,14 @@ class Controller extends GaletteRoutingTestCase
         $this->assertSame(['Car Gamma', 'Car Alpha', 'Car Beta'], $this->getListedOrder($order(AutosList::ORDERBY_OWNER), $names));
         //brand, then model
         $this->assertSame(['Car Beta', 'Car Gamma', 'Car Alpha'], $this->getListedOrder($order(AutosList::ORDERBY_BRAND), $names));
+        //type, then vehicle name
+        $bike = new \GaletteAuto\VehicleType($this->zdb);
+        $bike->setValue('Bike');
+        $bike->store(new: true);
+        $update = $this->zdb->update(AUTO_PREFIX . Auto::TABLE);
+        $update->set([\GaletteAuto\VehicleType::PK => $bike->getId()])->where(['car_name' => 'Car Gamma']);
+        $this->zdb->execute($update);
+        $this->assertSame(['Car Gamma', 'Car Alpha', 'Car Beta'], $this->getListedOrder($order(AutosList::ORDERBY_TYPE), $names));
         $test_response = $order(AutosList::ORDERBY_MODEL);
         $this->assertSame(['Car Beta', 'Car Alpha', 'Car Gamma'], $this->getListedOrder($test_response, $names));
         $this->assertStringContainsString('aria-sort="ascending"', (string)$test_response->getBody());

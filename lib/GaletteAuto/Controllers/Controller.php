@@ -24,6 +24,7 @@ use GaletteAuto\Model;
 use GaletteAuto\Picture;
 use GaletteAuto\State;
 use GaletteAuto\Transmission;
+use GaletteAuto\VehicleType;
 use GaletteAuto\VehicleAccess;
 use Laminas\Db\ResultSet\ResultSet;
 use Slim\Psr7\Request;
@@ -431,6 +432,7 @@ class Controller extends AbstractPluginController
             'require_dialog'    => true,
             'car'               => $auto,
             'models'            => $models->getList($auto->getModel()->getBrand()->getId()),
+            'types'             => $this->getProperties(VehicleType::class),
             'brands'            => $this->getProperties(Brand::class),
             'colors'            => $this->getProperties(Color::class),
             'bodies'            => $this->getProperties(Body::class),

@@ -62,6 +62,7 @@ class AutoPreferences extends GaletteTestCase
         $required = (new \GaletteAuto\AutoPreferences($this->preferences))->getRequired();
         $this->assertSame(
             [
+                'type',
                 'model',
                 'first_registration_date',
                 'first_circulation_date',

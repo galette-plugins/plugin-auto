@@ -42,6 +42,7 @@ $this->register(
         'removeModels'      => 'staff',
         'doRemoveModel'     => 'staff',
         'batch-modelslist'  => 'staff',
+        'typesList'         => 'staff',
         'brandsList'        => 'staff',
         'colorsList'        => 'staff',
         'statesList'        => 'staff',

@@ -30,6 +30,7 @@ use GaletteAuto\Model;
 use GaletteAuto\Picture;
 use GaletteAuto\State;
 use GaletteAuto\Transmission;
+use GaletteAuto\VehicleType;
 use Laminas\Db\Sql\Expression;
 use Laminas\Db\Sql\Select;
 
@@ -349,7 +350,7 @@ class Vehicles
     private function buildSelect(): Select
     {
         $select = $this->zdb->select(AUTO_PREFIX . Auto::TABLE, 'a');
-        //only the model is mandatory
+        //only the model and the type are mandatory
         $joins = [
             'co' => [Color::TABLE, Color::PK, [Color::FIELD], Select::JOIN_LEFT],
             'bo' => [Body::TABLE, Body::PK, [Body::FIELD], Select::JOIN_LEFT],
@@ -357,6 +358,7 @@ class Vehicles
             'tr' => [Transmission::TABLE, Transmission::PK, [Transmission::FIELD], Select::JOIN_LEFT],
             'fi' => [Finition::TABLE, Finition::PK, [Finition::FIELD], Select::JOIN_LEFT],
             'mo' => [Model::TABLE, Model::PK, [Model::FIELD, Brand::PK], Select::JOIN_INNER],
+            'ty' => [VehicleType::TABLE, VehicleType::PK, [VehicleType::FIELD], Select::JOIN_INNER],
         ];
         foreach ($joins as $alias => [$table, $pk, $columns, $type]) {
             $select->join(
@@ -410,6 +412,9 @@ class Vehicles
             case AutosList::ORDERBY_MODEL:
                 $order[] = 'mo.' . Model::FIELD . ' ' . $direction;
                 $order[] = 'br.' . Brand::FIELD . ' ' . $direction;
+                break;
+            case AutosList::ORDERBY_TYPE:
+                $order[] = 'ty.' . VehicleType::FIELD . ' ' . $direction;
                 break;
         }
         $order[] = 'a.car_name ' . ($orderby === AutosList::ORDERBY_NAME ? $direction : 'ASC');

@@ -15,6 +15,7 @@
     {'label': _T("Picture"), 'collapse': true},
     {'label': _T("Name", "auto"), 'order': constant('GaletteAuto\\Filters\\AutosList::ORDERBY_NAME')},
     {'label': _T("Owner", "auto")},
+    {'label': _T("Vehicle type", "auto"), 'order': constant('GaletteAuto\\Filters\\AutosList::ORDERBY_TYPE')},
     {'label': _T("Brand", "auto"), 'order': constant('GaletteAuto\\Filters\\AutosList::ORDERBY_BRAND')},
     {'label': _T("Model", "auto"), 'order': constant('GaletteAuto\\Filters\\AutosList::ORDERBY_MODEL')},
     {'label': _T("Description", "auto")},
@@ -65,6 +66,7 @@
             </td>
             {# members kept out of the members list are not named #}
             <td data-col-label="{{ _T("Owner", "auto") }}">{{ public_owners[auto.getId()] ? auto.getOwner().sfullname : '—' }}</td>
+            <td data-col-label="{{ _T("Vehicle type", "auto") }}">{{ auto.getType().getValue() }}</td>
             <td data-col-label="{{ _T("Brand", "auto") }}">{{ brand.getValue() }}</td>
             <td data-col-label="{{ _T("Model", "auto") }}">{{ auto.getModel().getModel() }}</td>
             <td data-col-label="{{ _T("Description", "auto") }}">

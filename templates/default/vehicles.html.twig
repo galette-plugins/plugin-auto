@@ -29,6 +29,19 @@
                 {{ _T("Car's base informations", "auto") }}
             </div>
             <div class="active content">
+                {% set type_list_values = {(-1): _T("Choose a vehicle type", "auto")} %}
+                {% for type in types %}
+                    {% set type_list_values = type_list_values + {(type.getId()): type.getValue()} %}
+                {% endfor %}
+
+                {% include "components/forms/select.html.twig" with {
+                    id: 'type',
+                    value: car.getType().getId(),
+                    values: type_list_values,
+                    label: _T("Vehicle type", "auto"),
+                    required: true
+                } %}
+
                 {% include "components/forms/text.html.twig" with {
                     id: 'name',
                     value: car.getName(),

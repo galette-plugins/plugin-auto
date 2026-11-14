@@ -40,6 +40,7 @@ abstract class AbstractObject
         Finition::FIELD => Finition::class,
         State::FIELD => State::class,
         Transmission::FIELD => Transmission::class,
+        VehicleType::FIELD => VehicleType::class,
     ];
     protected ?int $id = null;
     protected ?string $value = null;
@@ -131,9 +132,7 @@ abstract class AbstractObject
                 $this->zdb->execute($insert);
                 /** @phpstan-ignore-next-line */
                 $this->id = (int)$this->zdb->driver->getLastGeneratedValue(
-                    $this->zdb->isPostgres()
-                        ? PREFIX_DB . AUTO_PREFIX . static::TABLE . '_id_seq'
-                        : null
+                    $this->zdb->isPostgres() ? $this->getSequenceName() : null
                 );
             } else {
                 $update = $this->zdb->update(AUTO_PREFIX . static::TABLE);
@@ -152,6 +151,14 @@ abstract class AbstractObject
             );
             throw $e;
         }
+    }
+
+    /**
+     * Get sequence name on PostgreSQL
+     */
+    protected function getSequenceName(): string
+    {
+        return PREFIX_DB . AUTO_PREFIX . static::TABLE . '_id_seq';
     }
 
     /**

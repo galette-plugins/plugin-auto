@@ -147,6 +147,7 @@ class PropertiesController extends GaletteRoutingTestCase
             'finition' => 'finitionsList',
             'state' => 'statesList',
             'transmission' => 'transmissionsList',
+            'type' => 'typesList',
         ];
         $this->logSuperAdmin();
         foreach ($routes as $property => $route) {
@@ -239,7 +240,7 @@ class PropertiesController extends GaletteRoutingTestCase
         $unused = $this->createColor('Red');
         $used = $this->createColor('Blue');
         $values = [Color::PK => $used];
-        foreach (['Body', 'Finition', 'State', 'Transmission'] as $property) {
+        foreach (['Body', 'Finition', 'State', 'Transmission', 'VehicleType'] as $property) {
             $class = '\\GaletteAuto\\' . $property;
             $object = new $class($this->zdb);
             $object->setValue('Test ' . $property);

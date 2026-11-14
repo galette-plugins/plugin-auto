@@ -63,6 +63,11 @@ class Auto extends GaletteTestCase
         $transmission->store(new: true);
         $transmission_id = $transmission->getId();
 
+        $type = new \GaletteAuto\VehicleType($this->zdb);
+        $type->setValue('Car');
+        $type->store(new: true);
+        $type_id = $type->getId();
+
         $brand = new \GaletteAuto\Brand($this->zdb);
         $brand->setValue('Peugeot');
         $brand->store(new: true);
@@ -92,6 +97,7 @@ class Auto extends GaletteTestCase
         $this->assertFalse($auto->check($data, $access, $prefs));
         $this->assertSame(
             [
+                '- Mandatory field <a href="#type">vehicle type</a> empty.',
                 '- Mandatory field <a href="#registration">registration number</a> empty.',
                 '- Mandatory field <a href="#name">name</a> empty.',
                 '- Mandatory field <a href="#first_registration_date">first registration date</a> empty.',
@@ -115,6 +121,7 @@ class Auto extends GaletteTestCase
             'finition' => $finition_id,
             'state' => $state_id,
             'transmission' => $transmission_id,
+            'type' => $type_id,
         ];
         $this->assertFalse($auto->check($data, $access, $prefs));
         $this->assertSame(
@@ -144,6 +151,7 @@ class Auto extends GaletteTestCase
             'finition' => $finition_id,
             'state' => $state_id,
             'transmission' => $transmission_id,
+            'type' => $type_id,
             'owner_id' => $adh->id,
         ];
         $check = $auto->check($data, $access, $prefs);
@@ -203,6 +211,7 @@ class Auto extends GaletteTestCase
             'finition' => $finition_id,
             'state' => $state_id,
             'transmission' => $transmission_id,
+            'type' => $type_id,
             'owner_id' => $adh2->id,
             'change_owner' => true,
         ];
@@ -240,6 +249,7 @@ class Auto extends GaletteTestCase
             'finition' => $finition_id,
             'state' => $state_id,
             'transmission' => $transmission_id,
+            'type' => $type_id,
             'owner_id' => $adh->id,
         ];
         $check = $auto->check($data, $access, $prefs);
@@ -274,6 +284,10 @@ class Auto extends GaletteTestCase
      */
     public function testOptionalProperties(): void
     {
+        $type = new \GaletteAuto\VehicleType($this->zdb);
+        $type->setValue('Moped');
+        $type->store(new: true);
+
         $brand = new \GaletteAuto\Brand($this->zdb);
         $brand->setValue('Velosolex');
         $brand->store(new: true);
@@ -289,6 +303,7 @@ class Auto extends GaletteTestCase
             'car_registration' => '',
             'car_creation_date' => date('Y-m-d'),
             \GaletteAuto\Model::PK => $model->getId(),
+            \GaletteAuto\VehicleType::PK => $type->getId(),
             \Galette\Entity\Adherent::PK => $adh->id,
         ]);
         $this->zdb->execute($insert);
@@ -304,6 +319,7 @@ class Auto extends GaletteTestCase
         $auto = $list[0];
         $this->assertSame('Solex', $auto->getName());
         $this->assertSame('3800', $auto->getModel()->getModel());
+        $this->assertSame('Moped', $auto->getType()->getValue());
         $this->assertNull($auto->getFirstRegistrationDate());
         $this->assertNull($auto->getFirstCirculationDate());
         $this->assertNull($auto->getFirstCirculationYear());

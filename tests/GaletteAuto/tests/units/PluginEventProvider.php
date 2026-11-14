@@ -42,9 +42,10 @@ class PluginEventProvider extends GaletteTestCase
             'state' => 'Correct',
             'transmission' => 'Manual',
             'brand' => 'Peugeot',
+            'type' => 'Car',
         ];
         foreach ($values as $property => $value) {
-            $class = '\GaletteAuto\\' . ucfirst($property);
+            $class = \GaletteAuto\AbstractObject::getClassForPropName($property);
             $object = new $class($this->zdb);
             $object->setValue($value);
             $object->store(true);
@@ -79,6 +80,7 @@ class PluginEventProvider extends GaletteTestCase
             \GaletteAuto\Transmission::PK => $this->props['transmission'],
             \GaletteAuto\Finition::PK => $this->props['finition'],
             \GaletteAuto\Model::PK => $this->props['model'],
+            \GaletteAuto\VehicleType::PK => $this->props['type'],
             Adherent::PK => $id_adh,
         ]);
         $this->zdb->execute($insert);

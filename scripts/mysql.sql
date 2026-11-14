@@ -65,6 +65,14 @@ CREATE TABLE galette_auto_transmissions (
   PRIMARY KEY (id_transmission)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci;
 
+-- Table structure for table galette_auto_types
+DROP TABLE IF EXISTS galette_auto_types;
+CREATE TABLE galette_auto_types (
+  id_type int unsigned NOT NULL AUTO_INCREMENT,
+  type varchar(50) NOT NULL,
+  PRIMARY KEY (id_type)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci;
+
 -- Table structure for table galette_auto_cars
 DROP TABLE IF EXISTS galette_auto_cars;
 CREATE TABLE galette_auto_cars (
@@ -88,6 +96,7 @@ CREATE TABLE galette_auto_cars (
   id_finition int(10) unsigned DEFAULT NULL,
   id_model int(10) unsigned NOT NULL,
   id_adh int(10) unsigned NOT NULL,
+  id_type int unsigned NOT NULL,
   PRIMARY KEY (id_car),
   CONSTRAINT galette_auto_cars_id_color_fkey FOREIGN KEY (id_color)
     REFERENCES galette_auto_colors (id_color) ON DELETE RESTRICT ON UPDATE CASCADE,
@@ -102,7 +111,9 @@ CREATE TABLE galette_auto_cars (
   CONSTRAINT galette_auto_cars_id_model_fkey FOREIGN KEY (id_model)
     REFERENCES galette_auto_models (id_model) ON DELETE RESTRICT ON UPDATE CASCADE,
   CONSTRAINT galette_auto_cars_id_adh_fkey FOREIGN KEY (id_adh)
-    REFERENCES galette_adherents (id_adh) ON DELETE CASCADE ON UPDATE CASCADE
+    REFERENCES galette_adherents (id_adh) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT galette_auto_cars_id_type_fkey FOREIGN KEY (id_type)
+    REFERENCES galette_auto_types (id_type) ON DELETE RESTRICT ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci;
 
 -- Table structure for table galette_auto_history

@@ -41,6 +41,7 @@ class Auto
      * @var array<string>
      */
     private const array POSTED_FIELDS = [
+        'type',
         'registration',
         'name',
         'first_registration_date',
@@ -77,6 +78,7 @@ class Auto
 
     //External objects
     private ?Picture $picture = null;
+    private VehicleType $type;
     private Finition $finition;
     private Color $color;
     private Model $model;
@@ -103,6 +105,7 @@ class Auto
     public function __construct(private readonly Plugins $plugins, private readonly Db $zdb, ?ArrayObject $args = null)
     {
         $this->propnames = [
+            'type'                      => mb_strtolower(_T("Vehicle type", "auto")),
             'name'                      => mb_strtolower(_T("Name", "auto")),
             'model'                     => mb_strtolower(_T("Model", "auto")),
             'registration'              => mb_strtolower(_T("Registration number", "auto")),
@@ -122,6 +125,7 @@ class Auto
             'fuel'                      => mb_strtolower(_T("Fuel", "auto")),
         ];
 
+        $this->type = new VehicleType($this->zdb);
         $this->model = new Model($this->zdb);
         $this->color = new Color($this->zdb);
         $this->state = new State($this->zdb);
@@ -189,6 +193,11 @@ class Auto
         $this->creation_date = (string)$r['car_creation_date'];
         $this->fuel = $r['car_fuel'] !== null ? (int)$r['car_fuel'] : null;
         //External objects, from the row when they have been joined
+        if (isset($r[VehicleType::FIELD])) {
+            $this->type->loadFromRow($r);
+        } else {
+            $this->type->load((int)$r[VehicleType::PK]);
+        }
         foreach (['finition', 'color', 'transmission', 'body', 'state'] as $property) {
             $class = $this->$property::class;
             if ($r[$class::PK] === null) {
@@ -250,6 +259,7 @@ class Auto
             Transmission::PK                => $this->transmission->getId(),
             Finition::PK                    => $this->finition->getId(),
             Model::PK                       => $this->model->getId(),
+            VehicleType::PK                 => $this->type->getId(),
             Adherent::PK                    => $this->owner_id
         ];
     }
@@ -411,6 +421,7 @@ class Auto
                     }
                     break;
                     //external objects
+                case 'type':
                 case 'finition':
                 case 'color':
                 case 'model':
@@ -610,6 +621,14 @@ class Auto
             return null;
         }
         return $this->listFuels()[$this->fuel] ?? null;
+    }
+
+    /**
+     * Get vehicle type
+     */
+    public function getType(): VehicleType
+    {
+        return $this->type;
     }
 
     /**

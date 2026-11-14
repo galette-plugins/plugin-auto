@@ -61,6 +61,10 @@ class PluginGaletteAuto extends GalettePlugin implements MenuProviderInterface, 
                     $menus['plugin_auto']['items'],
                     [
                         [
+                            'label' => _T("Vehicle types list", "auto"),
+                            'route' => ['name' => 'typesList']
+                        ],
+                        [
                             'label' => _T("Colors list", "auto"),
                             'route' => ['name' => 'colorsList']
                         ],

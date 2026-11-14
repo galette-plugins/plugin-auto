@@ -54,6 +54,7 @@ class Fixtures implements FixturesProviderInterface
         Finition::class => ['Standard', 'Confort', 'Sport', 'Luxe'],
         State::class => ['Neuf', 'Très bon état', 'Bon état', 'À restaurer'],
         Transmission::class => ['Manuelle', 'Automatique'],
+        VehicleType::class => ['Voiture'],
     ];
 
     /** @var array<string, list<string>> Models, by brand */
@@ -184,6 +185,7 @@ class Fixtures implements FixturesProviderInterface
                 'horsepower' => (string)$data['horsepower'],
                 'fuel' => (string)$data['fuel'],
                 'comment' => $data['comment'] ?? '',
+                'type' => (string)$this->values[VehicleType::class]['Voiture'],
                 'model' => (string)$this->models[$data['brand'] . '/' . $data['model']],
                 'color' => (string)$this->values[Color::class][$data['color']],
                 'body' => (string)$this->values[Body::class][$data['body']],

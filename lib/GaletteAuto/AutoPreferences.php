@@ -43,6 +43,7 @@ final readonly class AutoPreferences
      * @var array<string>
      */
     public const array ALWAYS_REQUIRED = [
+        'type',
         'model',
         'first_registration_date',
         'first_circulation_date',
