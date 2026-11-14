@@ -675,6 +675,17 @@ class Auto
     }
 
     /**
+     * Set vehicle type
+     *
+     * @param VehicleType $type Vehicle type
+     */
+    public function setType(VehicleType $type): self
+    {
+        $this->type = $type;
+        return $this;
+    }
+
+    /**
      * Get vehicle type
      */
     public function getType(): VehicleType

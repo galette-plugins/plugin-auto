@@ -970,6 +970,56 @@ class Controller extends GaletteRoutingTestCase
     }
 
     /**
+     * Vehicle form follows the fields modes of the vehicle type
+     */
+    public function testFormTypeFields(): void
+    {
+        $member_one = $this->getMemberOne();
+        $car_id = $this->createVehicle((int)$member_one->id);
+        $this->logSuperAdmin();
+
+        //single type: chosen for a new vehicle
+        $test_response = $this->app->handle($this->createRequest('vehicleAdd'));
+        $this->expectOK($test_response);
+        $body = (string)$test_response->getBody();
+        $this->assertMatchesRegularExpression(
+            '/<option\s+value="' . $this->props['type'] . '"\s+selected="selected"/',
+            $body
+        );
+        $this->assertStringContainsString('id="field_body" class="field"', $body);
+
+        $moped = new \GaletteAuto\VehicleType($this->zdb);
+        $moped->setValue('Moped');
+        $moped->setFields([
+            'body' => \GaletteAuto\VehicleType::HIDDEN,
+            'registration' => \GaletteAuto\VehicleType::REQUIRED,
+        ]);
+        $moped->store(new: true);
+
+        //several types: none chosen, every field shown
+        $test_response = $this->app->handle($this->createRequest('vehicleAdd'));
+        $this->expectOK($test_response);
+        $body = (string)$test_response->getBody();
+        $this->assertDoesNotMatchRegularExpression('/<select\s+name="type"[^>]*>(?:(?!<\/select>).)*selected/s', $body);
+        $this->assertStringContainsString('id="field_body" class="field"', $body);
+        $this->assertStringContainsString('id="field_registration" class="field"', $body);
+        //every type fields modes are given to the form
+        $this->assertStringContainsString('data-types-fields="{&quot;', $body);
+        $this->assertStringContainsString('&quot;' . $moped->getId() . '&quot;:{&quot;name&quot;:1', $body);
+
+        //existing vehicle shows the fields of its type
+        $update = $this->zdb->update(AUTO_PREFIX . Auto::TABLE);
+        $update->set([\GaletteAuto\VehicleType::PK => $moped->getId()])->where([Auto::PK => $car_id]);
+        $this->zdb->execute($update);
+        $test_response = $this->app->handle($this->createRequest('vehicleEdit', ['id' => (string)$car_id]));
+        $this->expectOK($test_response);
+        $body = (string)$test_response->getBody();
+        $this->assertStringContainsString('id="field_body" class="field displaynone"', $body);
+        $this->assertStringContainsString('id="field_registration" class="field required"', $body);
+        $this->assertStringContainsString('id="field_color" class="field"', $body);
+    }
+
+    /**
      * History entries are added when registration, color, state or owner change
      */
     public function testHistoryTracksChanges(): void

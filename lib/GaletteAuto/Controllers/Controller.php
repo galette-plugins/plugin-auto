@@ -399,10 +399,27 @@ class Controller extends AbstractPluginController
             }
         }
 
+        /** @var array<int, VehicleType> $types */
+        $types = $this->getProperties(VehicleType::class);
+        if ($is_new && count($types) === 1) {
+            //no choice to make
+            $auto->setType($types[0]);
+        }
+
         if ($this->session->auto !== null) {
             $auto->check($this->session->auto, $this->getAccess());
             $this->session->auto = null;
         }
+
+        //fields modes of every type, for the form to follow the chosen one
+        $types_fields = [];
+        foreach ($types as $type) {
+            $types_fields[(int)$type->getId()] = $type->getFields();
+        }
+        $hidden = array_filter(
+            $auto->getType()->getFields(),
+            fn(int $mode): bool => $mode === VehicleType::HIDDEN
+        );
 
         $title = ($is_new)
             ? _T("New vehicle", "auto")
@@ -423,7 +440,9 @@ class Controller extends AbstractPluginController
             'require_dialog'    => true,
             'car'               => $auto,
             'models'            => $models->getList($auto->getModel()->getBrand()->getId()),
-            'types'             => $this->getProperties(VehicleType::class),
+            'types'             => $types,
+            'types_fields'      => $types_fields,
+            'hidden'            => $hidden,
             'brands'            => $this->getProperties(Brand::class),
             'colors'            => $this->getProperties(Color::class),
             'bodies'            => $this->getProperties(Body::class),

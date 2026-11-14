@@ -4,8 +4,8 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-/* Vehicle form: models follow the chosen brand, and the owner can only be
- * changed once asked for.
+/* Vehicle form: models follow the chosen brand, fields follow the chosen
+ * type, and the owner can only be changed once asked for.
  */
 var _autoVehicleForm = function() {
     var $form = $('#modifform');
@@ -29,6 +29,27 @@ var _autoVehicleForm = function() {
             },
             'json'
         );
+    });
+
+    /* modes are 0 (hidden), 1 (optional) and 2 (required) */
+    var _typesFields = $form.data('types-fields') || {};
+    $('#type').dropdown('setting', 'onChange', function(id_type) {
+        var _fields = _typesFields[id_type];
+        if (!_fields) {
+            //no type chosen: every field is shown, none required
+            _fields = {};
+            $form.find('[id^="field_"]').each(function() {
+                _fields[this.id.substring(6)] = 1;
+            });
+        }
+        $.each(_fields, function(field, mode) {
+            var _container = $('#field_' + field);
+            var _input = _container.find('input, select, textarea').not('.search');
+            _container.toggleClass('displaynone', mode === 0);
+            _container.toggleClass('required', mode === 2);
+            //a hidden field must not block the submission
+            _input.prop('required', mode === 2);
+        });
     });
 
     $('#change_owner-checkbox').checkbox({
