@@ -34,6 +34,7 @@ class Auto
     public const int FUEL_ELECTRICITY = 4;
     public const int FUEL_BIO = 5;
     public const int FUEL_HYBRID = 6;
+    public const int FUEL_TWO_STROKE = 7;
 
     /**
      * Fields that can be posted, in the order they are checked
@@ -229,7 +230,9 @@ class Auto
             self::FUEL_GAS          => _T("Gas", "auto"),
             self::FUEL_HYBRID       => _T("Hybrid", "auto"),
             self::FUEL_ELECTRICITY  => _T("Electricity", "auto"),
-            self::FUEL_BIO          => _T("Bio", "auto")
+            self::FUEL_BIO          => _T("Bio", "auto"),
+            //TRANS: petrol and oil mix of mopeds and two-stroke engines
+            self::FUEL_TWO_STROKE   => _T("Two-stroke mix", "auto")
         ];
     }
 

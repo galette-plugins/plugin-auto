@@ -438,7 +438,9 @@ class Auto extends GaletteTestCase
     public function testListFuels(): void
     {
         $auto = new \GaletteAuto\Auto($this->plugins, $this->zdb);
-        $this->assertCount(6, $auto->listFuels());
+        $fuels = $auto->listFuels();
+        $this->assertCount(7, $fuels);
+        $this->assertSame('Two-stroke mix', $fuels[\GaletteAuto\Auto::FUEL_TWO_STROKE]);
     }
 
     /**
