@@ -349,19 +349,21 @@ class Vehicles
     private function buildSelect(): Select
     {
         $select = $this->zdb->select(AUTO_PREFIX . Auto::TABLE, 'a');
+        //only the model is mandatory
         $joins = [
-            'co' => [Color::TABLE, Color::PK, [Color::FIELD]],
-            'bo' => [Body::TABLE, Body::PK, [Body::FIELD]],
-            'st' => [State::TABLE, State::PK, [State::FIELD]],
-            'tr' => [Transmission::TABLE, Transmission::PK, [Transmission::FIELD]],
-            'fi' => [Finition::TABLE, Finition::PK, [Finition::FIELD]],
-            'mo' => [Model::TABLE, Model::PK, [Model::FIELD, Brand::PK]],
+            'co' => [Color::TABLE, Color::PK, [Color::FIELD], Select::JOIN_LEFT],
+            'bo' => [Body::TABLE, Body::PK, [Body::FIELD], Select::JOIN_LEFT],
+            'st' => [State::TABLE, State::PK, [State::FIELD], Select::JOIN_LEFT],
+            'tr' => [Transmission::TABLE, Transmission::PK, [Transmission::FIELD], Select::JOIN_LEFT],
+            'fi' => [Finition::TABLE, Finition::PK, [Finition::FIELD], Select::JOIN_LEFT],
+            'mo' => [Model::TABLE, Model::PK, [Model::FIELD, Brand::PK], Select::JOIN_INNER],
         ];
-        foreach ($joins as $alias => [$table, $pk, $columns]) {
+        foreach ($joins as $alias => [$table, $pk, $columns, $type]) {
             $select->join(
                 [$alias => PREFIX_DB . AUTO_PREFIX . $table],
                 'a.' . $pk . ' = ' . $alias . '.' . $pk,
-                $columns
+                $columns,
+                $type
             );
         }
         $select->join(

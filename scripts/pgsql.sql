@@ -132,8 +132,8 @@ CREATE TABLE galette_auto_cars (
   id_car integer DEFAULT nextval('galette_auto_cars_id_seq'::text) NOT NULL,
   car_name character varying(50) NOT NULL,
   car_registration varchar(10) NOT NULL,
-  car_first_registration_date date NOT NULL,
-  car_first_circulation_date date NOT NULL,
+  car_first_registration_date date DEFAULT NULL,
+  car_first_circulation_date date DEFAULT NULL,
   car_mileage integer DEFAULT NULL,
   car_comment text,
   car_creation_date date NOT NULL,
@@ -142,15 +142,15 @@ CREATE TABLE galette_auto_cars (
   car_horsepower integer DEFAULT NULL,
   car_engine_size integer DEFAULT NULL,
   car_fuel integer DEFAULT NULL,
-  id_color integer NOT NULL
+  id_color integer DEFAULT NULL
     CONSTRAINT galette_auto_cars_id_color_fkey REFERENCES galette_auto_colors (id_color) ON DELETE RESTRICT ON UPDATE CASCADE,
-  id_body integer NOT NULL
+  id_body integer DEFAULT NULL
     CONSTRAINT galette_auto_cars_id_body_fkey REFERENCES galette_auto_bodies (id_body) ON DELETE RESTRICT ON UPDATE CASCADE,
-  id_state integer NOT NULL
+  id_state integer DEFAULT NULL
     CONSTRAINT galette_auto_cars_id_state_fkey REFERENCES galette_auto_states (id_state) ON DELETE RESTRICT ON UPDATE CASCADE,
-  id_transmission integer NOT NULL
+  id_transmission integer DEFAULT NULL
     CONSTRAINT galette_auto_cars_id_transmission_fkey REFERENCES galette_auto_transmissions (id_transmission) ON DELETE RESTRICT ON UPDATE CASCADE,
-  id_finition integer NOT NULL
+  id_finition integer DEFAULT NULL
     CONSTRAINT galette_auto_cars_id_finition_fkey REFERENCES galette_auto_finitions (id_finition) ON DELETE RESTRICT ON UPDATE CASCADE,
   id_model integer NOT NULL
     CONSTRAINT galette_auto_cars_id_model_fkey REFERENCES galette_auto_models (id_model) ON DELETE RESTRICT ON UPDATE CASCADE,
@@ -168,9 +168,9 @@ CREATE TABLE galette_auto_history (
     CONSTRAINT galette_auto_history_id_adh_fkey REFERENCES galette_adherents (id_adh) ON DELETE CASCADE ON UPDATE CASCADE,
   history_date timestamp NOT NULL,
   car_registration character varying(10) NOT NULL,
-  id_color integer NOT NULL
+  id_color integer DEFAULT NULL
     CONSTRAINT galette_auto_history_id_color_fkey REFERENCES galette_auto_colors (id_color) ON DELETE RESTRICT ON UPDATE CASCADE,
-  id_state integer NOT NULL
+  id_state integer DEFAULT NULL
     CONSTRAINT galette_auto_history_id_state_fkey REFERENCES galette_auto_states (id_state) ON DELETE RESTRICT ON UPDATE CASCADE,
   PRIMARY KEY (id_car,id_adh,history_date)
 );

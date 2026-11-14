@@ -77,13 +77,13 @@ class Auto
 
     //External objects
     private ?Picture $picture = null;
-    private readonly Finition $finition;
-    private readonly Color $color;
+    private Finition $finition;
+    private Color $color;
     private Model $model;
-    private readonly Transmission $transmission;
-    private readonly Body $body;
+    private Transmission $transmission;
+    private Body $body;
     private ?History $history = null;
-    private readonly State $state;
+    private State $state;
     private ?int $owner_id = null;
     private ?Adherent $owner = null;
 
@@ -174,8 +174,12 @@ class Auto
         $this->id = (int)$r[self::PK];
         $this->registration = (string)$r['car_registration'];
         $this->name = (string)$r['car_name'];
-        $this->first_registration_date = (string)$r['car_first_registration_date'];
-        $this->first_circulation_date = (string)$r['car_first_circulation_date'];
+        $this->first_registration_date = $r['car_first_registration_date'] !== null
+            ? (string)$r['car_first_registration_date']
+            : null;
+        $this->first_circulation_date = $r['car_first_circulation_date'] !== null
+            ? (string)$r['car_first_circulation_date']
+            : null;
         $this->mileage = $r['car_mileage'] !== null ? (int)$r['car_mileage'] : null;
         $this->comment = $r['car_comment'] !== null ? (string)$r['car_comment'] : null;
         $this->chassis_number = $r['car_chassis_number'] !== null ? (string)$r['car_chassis_number'] : null;
@@ -187,7 +191,10 @@ class Auto
         //External objects, from the row when they have been joined
         foreach (['finition', 'color', 'transmission', 'body', 'state'] as $property) {
             $class = $this->$property::class;
-            if (isset($r[$class::FIELD])) {
+            if ($r[$class::PK] === null) {
+                //property is optional
+                $this->$property = new $class($this->zdb);
+            } elseif (isset($r[$class::FIELD])) {
                 $this->$property->loadFromRow($r);
             } else {
                 $this->$property->load((int)$r[$class::PK]);

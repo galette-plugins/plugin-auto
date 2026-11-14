@@ -61,5 +61,5 @@ $this->register(
         'autoPreferences'   => 'admin',
         'storeAutoPreferences' => 'admin'
     ],
-    dbver: 1.1
+    dbver: 1.2
 );

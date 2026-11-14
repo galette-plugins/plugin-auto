@@ -270,6 +270,65 @@ class Auto extends GaletteTestCase
     }
 
     /**
+     * Test a vehicle without any of the optional properties
+     */
+    public function testOptionalProperties(): void
+    {
+        $brand = new \GaletteAuto\Brand($this->zdb);
+        $brand->setValue('Velosolex');
+        $brand->store(new: true);
+
+        $model = new \GaletteAuto\Model($this->zdb);
+        $this->assertTrue($model->check(['model' => '3800', 'brand' => $brand->getId()]));
+        $model->store(new: true);
+
+        $adh = $this->getMemberOne();
+        $insert = $this->zdb->insert(AUTO_PREFIX . \GaletteAuto\Auto::TABLE);
+        $insert->values([
+            'car_name' => 'Solex',
+            'car_registration' => '',
+            'car_creation_date' => date('Y-m-d'),
+            \GaletteAuto\Model::PK => $model->getId(),
+            \Galette\Entity\Adherent::PK => $adh->id,
+        ]);
+        $this->zdb->execute($insert);
+
+        $vehicles = new \GaletteAuto\Repository\Vehicles(
+            plugins: $this->plugins,
+            zdb: $this->zdb,
+            login: $this->login,
+            history: $this->history
+        );
+        $list = $vehicles->getList(id_adh: $adh->id);
+        $this->assertCount(1, $list);
+        $auto = $list[0];
+        $this->assertSame('Solex', $auto->getName());
+        $this->assertSame('3800', $auto->getModel()->getModel());
+        $this->assertNull($auto->getFirstRegistrationDate());
+        $this->assertNull($auto->getFirstCirculationDate());
+        $this->assertNull($auto->getFirstCirculationYear());
+        foreach (['getColor', 'getState', 'getBody', 'getTransmission', 'getFinition'] as $getter) {
+            $this->assertNull($auto->$getter()->getId(), $getter);
+            $this->assertNull($auto->$getter()->getValue(), $getter);
+        }
+
+        //same from a single load
+        $loaded = new \GaletteAuto\Auto($this->plugins, $this->zdb);
+        $this->assertTrue($loaded->load((int)$auto->getId()));
+        $this->assertNull($loaded->getColor()->getId());
+        $this->assertNull($loaded->getFirstRegistrationDate());
+
+        //history keeps an entry without color nor state
+        $history = $loaded->getHistory();
+        $history->register($loaded->getHistoryValues());
+        $this->assertTrue($history->load((int)$loaded->getId()));
+        $entries = $history->getEntries();
+        $this->assertCount(1, $entries);
+        $this->assertNull($entries[0][\GaletteAuto\Color::FIELD]);
+        $this->assertNull($entries[0][\GaletteAuto\State::FIELD]);
+    }
+
+    /**
      * Test fuels
      */
     public function testListFuels(): void
