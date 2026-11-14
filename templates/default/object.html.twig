@@ -28,6 +28,27 @@
             </div>
         </div>
 
+        {% if fields_labels is defined %}
+        <div class="ui styled fluid accordion field">
+            <div class="active title">
+                <i class="icon dropdown" aria-hidden="true"></i>
+                {{ _T("Vehicle fields", "auto") }}
+            </div>
+            <div class="active content">
+                <p>{{ _T("Choose which fields vehicles of this type use; brand and model are always required.", "auto") }}</p>
+                {% for field, label in fields_labels %}
+                    {% include "components/forms/select.html.twig" with {
+                        id: 'fields_' ~ field,
+                        name: 'fields[' ~ field ~ ']',
+                        value: obj.getFieldMode(field),
+                        values: fields_modes,
+                        label: label|capitalize
+                    } %}
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
         <div class="ui basic center aligned fitted segment">
             <button type="submit" name="valid" class="action ui labeled icon primary button">
                 <i class="save icon" aria-hidden="true"></i> {{ _T("Save") }}

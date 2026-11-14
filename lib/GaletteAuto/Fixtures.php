@@ -162,7 +162,6 @@ class Fixtures implements FixturesProviderInterface
         }
 
         $access = new VehicleAccess($zdb, $context->login, $context->preferences);
-        $preferences = new AutoPreferences($context->preferences);
         $vehicles = new Vehicles(
             plugins: $context->plugins,
             zdb: $zdb,
@@ -194,7 +193,7 @@ class Fixtures implements FixturesProviderInterface
                 'transmission' => (string)$this->values[Transmission::class][$data['transmission']],
                 'owner_id' => (string)$context->getMemberId($data['member']),
             ];
-            if (!$vehicle->check($post, $access, $preferences)) {
+            if (!$vehicle->check($post, $access)) {
                 throw new RuntimeException(sprintf(
                     'Invalid fixture vehicle %s: %s',
                     $data['name'],

@@ -134,6 +134,16 @@ CREATE TABLE galette_auto_types (
   PRIMARY KEY (id_type)
 );
 
+-- Table structure for table galette_auto_types_fields
+DROP TABLE IF EXISTS galette_auto_types_fields CASCADE;
+CREATE TABLE galette_auto_types_fields (
+  id_type integer NOT NULL
+    CONSTRAINT galette_auto_types_fields_id_type_fkey REFERENCES galette_auto_types (id_type) ON DELETE CASCADE ON UPDATE CASCADE,
+  field character varying(30) NOT NULL,
+  mode smallint NOT NULL,
+  PRIMARY KEY (id_type, field)
+);
+
 -- Table structure for table galette_auto_cars
 DROP TABLE IF EXISTS galette_auto_cars CASCADE;
 CREATE TABLE galette_auto_cars (

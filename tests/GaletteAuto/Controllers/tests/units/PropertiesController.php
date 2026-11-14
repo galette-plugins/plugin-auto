@@ -126,6 +126,73 @@ class PropertiesController extends GaletteRoutingTestCase
     }
 
     /**
+     * Vehicle types forms show and store the fields modes
+     */
+    public function testTypeFields(): void
+    {
+        $this->logSuperAdmin();
+        $test_response = $this->app->handle($this->createRequest('propertyAdd', ['property' => 'type']));
+        $this->expectOK($test_response);
+        $body = (string)$test_response->getBody();
+        $this->assertStringContainsString('name="fields[body]"', $body);
+        $this->assertStringContainsString('name="fields[first_registration_date]"', $body);
+        $this->assertStringNotContainsString('name="fields[model]"', $body);
+
+        //an error keeps posted modes
+        $request = $this->createRequest('doPropertyAdd', ['property' => 'type'], 'POST')
+            ->withParsedBody(['type' => '', 'fields' => ['body' => '0']]);
+        $test_response = $this->app->handle($request);
+        $this->assertSame(
+            ['Location' => [$this->routeparser->urlFor('propertyAdd', ['property' => 'type'])]],
+            $test_response->getHeaders()
+        );
+        $this->expectFlashData(['error_detected' => ['- You must provide a value!']]);
+        $test_response = $this->app->handle($this->createRequest('propertyAdd', ['property' => 'type']));
+        $this->expectOK($test_response);
+        $this->assertMatchesRegularExpression(
+            '/name="fields\[body\]".*?<option\s+value="0"\s+selected="selected"/s',
+            (string)$test_response->getBody()
+        );
+        $this->assertFalse(isset($this->session->auto_type_fields));
+
+        $request = $this->createRequest('doPropertyAdd', ['property' => 'type'], 'POST')
+            ->withParsedBody([
+                'type' => 'Moped',
+                'fields' => ['body' => '0', 'registration' => '0', 'name' => '2'],
+            ]);
+        $test_response = $this->app->handle($request);
+        $this->assertSame(
+            ['Location' => [$this->routeparser->urlFor('typesList')]],
+            $test_response->getHeaders()
+        );
+        $this->expectFlashData(['success_detected' => ['New Vehicle type has been added!']]);
+
+        $select = $this->zdb->select(AUTO_PREFIX . \GaletteAuto\VehicleType::TABLE);
+        $select->where([\GaletteAuto\VehicleType::FIELD => 'Moped']);
+        $id = (int)$this->zdb->execute($select)->current()[\GaletteAuto\VehicleType::PK];
+        $type = new \GaletteAuto\VehicleType($this->zdb, $id);
+        $this->assertTrue($type->isHidden('body'));
+        $this->assertTrue($type->isHidden('registration'));
+        $this->assertTrue($type->isRequired('name'));
+        $this->assertFalse($type->isHidden('color'));
+
+        //edit form shows stored modes
+        $test_response = $this->app->handle(
+            $this->createRequest('propertyEdit', ['property' => 'type', 'id' => (string)$id])
+        );
+        $this->expectOK($test_response);
+        $this->assertMatchesRegularExpression(
+            '/name="fields\[registration\]".*?<option\s+value="0"\s+selected="selected"/s',
+            (string)$test_response->getBody()
+        );
+
+        //other properties have no fields
+        $test_response = $this->app->handle($this->createRequest('propertyAdd', ['property' => 'color']));
+        $this->expectOK($test_response);
+        $this->assertStringNotContainsString('name="fields[', (string)$test_response->getBody());
+    }
+
+    /**
      * Log in member one
      */
     private function logMemberOne(): void

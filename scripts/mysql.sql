@@ -73,6 +73,17 @@ CREATE TABLE galette_auto_types (
   PRIMARY KEY (id_type)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci;
 
+-- Table structure for table galette_auto_types_fields
+DROP TABLE IF EXISTS galette_auto_types_fields;
+CREATE TABLE galette_auto_types_fields (
+  id_type int unsigned NOT NULL,
+  field varchar(30) NOT NULL,
+  mode smallint NOT NULL,
+  PRIMARY KEY (id_type, field),
+  CONSTRAINT galette_auto_types_fields_id_type_fkey FOREIGN KEY (id_type)
+    REFERENCES galette_auto_types (id_type) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci;
+
 -- Table structure for table galette_auto_cars
 DROP TABLE IF EXISTS galette_auto_cars;
 CREATE TABLE galette_auto_cars (

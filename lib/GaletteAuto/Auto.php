@@ -318,20 +318,26 @@ class Auto
     /**
      * Check posted values validity
      *
-     * @param array<string,mixed> $post        All values to check, basically the $_POST array
-     *                                         after sending the form
-     * @param VehicleAccess       $access      Access rules for current user
-     * @param AutoPreferences     $preferences Plugin preferences
+     * @param array<string,mixed> $post   All values to check, basically the $_POST array
+     *                                    after sending the form
+     * @param VehicleAccess       $access Access rules for current user
      */
-    public function check(array $post, VehicleAccess $access, AutoPreferences $preferences): bool
+    public function check(array $post, VehicleAccess $access): bool
     {
         $this->errors = [];
 
-        //check for required fields, and correct values
+        //check for required fields, and correct values; the type comes
+        //first, its fields modes apply to the following ones
         foreach (self::POSTED_FIELDS as $prop) {
             $value = $post[$prop] ?? null;
 
-            if (($value == '' || $value == null) && $preferences->isRequired($prop)) {
+            if ($prop !== 'owner_id' && $this->type->isHidden($prop)) {
+                //the type does not use this field
+                $this->clearField($prop);
+                continue;
+            }
+
+            if (($value == '' || $value == null) && $prop !== 'owner_id' && $this->type->isRequired($prop)) {
                 $this->errors[] = str_replace(
                     '%field',
                     '<a href="#' . $prop . '">' . $this->getPropName($prop) . '</a>',
@@ -374,6 +380,10 @@ class Auto
                     //dates
                 case 'first_registration_date':
                 case 'first_circulation_date':
+                    if ($value === null || $value === '') {
+                        $this->clearField($prop);
+                        break;
+                    }
                     $d = \DateTime::createFromFormat(__("Y-m-d"), (string)$value);
                     if ($d === false) {
                         //try with non localized date
@@ -421,13 +431,20 @@ class Auto
                     }
                     break;
                     //external objects
-                case 'type':
                 case 'finition':
                 case 'color':
-                case 'model':
                 case 'transmission':
                 case 'body':
                 case 'state':
+                    if ((int)$value <= 0) {
+                        //optional property, unset
+                        $this->clearField($prop);
+                        break;
+                    }
+                    //a chosen value is checked like the model and the type
+                    // no break
+                case 'type':
+                case 'model':
                     if ((int)$value <= 0 || !$this->$prop->load((int)$value)) {
                         $this->errors[] = str_replace(
                             '%s',
@@ -469,6 +486,40 @@ class Auto
         }
 
         return count($this->errors) === 0;
+    }
+
+    /**
+     * Clear a field the vehicle does not use
+     *
+     * @param string $prop Field name
+     */
+    private function clearField(string $prop): void
+    {
+        switch ($prop) {
+            case 'name':
+            case 'registration':
+                //not nullable
+                $this->$prop = '';
+                break;
+            case 'finition':
+            case 'color':
+            case 'transmission':
+            case 'body':
+            case 'state':
+                $this->$prop = new ($this->$prop::class)($this->zdb);
+                break;
+            case 'first_registration_date':
+            case 'first_circulation_date':
+            case 'mileage':
+            case 'comment':
+            case 'chassis_number':
+            case 'seats':
+            case 'horsepower':
+            case 'engine_size':
+            case 'fuel':
+                $this->$prop = null;
+                break;
+        }
     }
 
     /**

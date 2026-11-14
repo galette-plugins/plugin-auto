@@ -17,7 +17,6 @@ use Galette\Core\Plugins\DashboardProviderInterface;
 use Galette\Core\Plugins\InstallableInterface;
 use Galette\Core\Plugins\MemberActionProviderInterface;
 use Galette\Core\Plugins\MenuProviderInterface;
-use Galette\Core\Plugins\PreferencesProviderInterface;
 use Galette\Core\Plugins\PublicPagesProviderInterface;
 use Galette\Entity\Adherent;
 use Galette\Core\GalettePlugin;
@@ -30,7 +29,7 @@ use Laminas\Db\Metadata\Source\Factory;
  * @author Johan Cwiklinski <johan@x-tnd.be>
  */
 
-class PluginGaletteAuto extends GalettePlugin implements MenuProviderInterface, DashboardProviderInterface, MemberActionProviderInterface, InstallableInterface, PublicPagesProviderInterface, PreferencesProviderInterface
+class PluginGaletteAuto extends GalettePlugin implements MenuProviderInterface, DashboardProviderInterface, MemberActionProviderInterface, InstallableInterface, PublicPagesProviderInterface
 {
     #[Inject]
     private readonly Db $zdb; //@phpstan-ignore property.uninitializedReadonly,property.onlyRead (injected from DI)
@@ -110,13 +109,6 @@ class PluginGaletteAuto extends GalettePlugin implements MenuProviderInterface, 
                 ];
             }
 
-            if ($login->isAdmin()) {
-                $menus['plugin_auto']['items'][] = [
-                    'label' => _T("Preferences", "auto"),
-                    'route' => ['name' => 'autoPreferences']
-                ];
-            }
-
             // Super Admin is not a regular user
             if (!$login->isSuperAdmin()) {
                 $menus['myaccount'] = [
@@ -131,16 +123,6 @@ class PluginGaletteAuto extends GalettePlugin implements MenuProviderInterface, 
         }
 
         return $menus;
-    }
-
-    /**
-     * Get the preferences the plugin declares
-     *
-     * @return array<string, array<string, mixed>>
-     */
-    public function getPreferences(): array
-    {
-        return AutoPreferences::getSchema();
     }
 
     /**

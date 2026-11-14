@@ -62,7 +62,6 @@ class PluginGaletteAuto extends GaletteTestCase
                 'brandsList',
                 'modelsList',
                 'vehiclesList',
-                'autoPreferences',
             ],
             $this->getMenuRoutes()
         );

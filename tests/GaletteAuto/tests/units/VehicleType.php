@@ -92,6 +92,73 @@ class VehicleType extends GaletteTestCase
     }
 
     /**
+     * Test fields modes
+     */
+    public function testFields(): void
+    {
+        $type = new \GaletteAuto\VehicleType($this->zdb);
+        //a new type uses every field, none required
+        $this->assertSame(
+            array_fill_keys(\GaletteAuto\VehicleType::FIELDS, \GaletteAuto\VehicleType::OPTIONAL),
+            $type->getFields()
+        );
+        $this->assertSame(['type' => true, 'model' => true], $type->getRequired());
+
+        $type->setValue('Moped');
+        $type->setFields([
+            'body' => \GaletteAuto\VehicleType::HIDDEN,
+            'transmission' => (string)\GaletteAuto\VehicleType::HIDDEN,
+            'name' => \GaletteAuto\VehicleType::REQUIRED,
+            //ignored
+            'model' => \GaletteAuto\VehicleType::HIDDEN,
+            'unknown' => \GaletteAuto\VehicleType::REQUIRED,
+            'color' => 42,
+            'state' => 'hidden',
+        ]);
+        $type->store(new: true);
+
+        $loaded = new \GaletteAuto\VehicleType($this->zdb);
+        $this->assertTrue($loaded->load((int)$type->getId()));
+        $this->assertTrue($loaded->isHidden('body'));
+        $this->assertTrue($loaded->isHidden('transmission'));
+        $this->assertFalse($loaded->isHidden('color'));
+        $this->assertFalse($loaded->isRequired('color'));
+        $this->assertFalse($loaded->isHidden('model'));
+        $this->assertTrue($loaded->isRequired('model'));
+        $this->assertTrue($loaded->isRequired('type'));
+        $this->assertSame(\GaletteAuto\VehicleType::OPTIONAL, $loaded->getFieldMode('state'));
+        $this->assertSame(\GaletteAuto\VehicleType::OPTIONAL, $loaded->getFieldMode('unknown'));
+        $this->assertSame(['type' => true, 'model' => true, 'name' => true], $loaded->getRequired());
+        $this->assertCount(count(\GaletteAuto\VehicleType::FIELDS), $loaded->getFields());
+
+        //update replaces modes
+        $loaded->setFields(['body' => \GaletteAuto\VehicleType::OPTIONAL]);
+        $loaded->store();
+        $this->assertTrue($type->load((int)$type->getId()));
+        $this->assertFalse($type->isHidden('body'));
+        $this->assertTrue($type->isHidden('transmission'));
+
+        //a value update keeps modes
+        $type->setValue('Mobylette');
+        $type->store();
+        $this->assertTrue($loaded->load((int)$type->getId()));
+        $this->assertSame('Mobylette', $loaded->getValue());
+        $this->assertTrue($loaded->isHidden('transmission'));
+
+        //modes go along with their type
+        $types = new \GaletteAuto\Repository\Properties(
+            zdb: $this->zdb,
+            preferences: $this->preferences,
+            login: $this->login,
+            class: \GaletteAuto\VehicleType::class
+        );
+        $types->remove([(int)$type->getId()]);
+        $select = $this->zdb->select(AUTO_PREFIX . \GaletteAuto\VehicleType::FIELDS_TABLE);
+        $select->where([\GaletteAuto\VehicleType::PK => $type->getId()]);
+        $this->assertSame(0, $this->zdb->execute($select)->count());
+    }
+
+    /**
      * Test load error
      */
     public function testLoadError(): void

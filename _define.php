@@ -58,9 +58,7 @@ $this->register(
         'batch-propertieslist' => 'staff',
         'removeProperty'    => 'staff',
         'removeProperties'  => 'staff',
-        'doRemoveProperty'  => 'staff',
-        'autoPreferences'   => 'admin',
-        'storeAutoPreferences' => 'admin'
+        'doRemoveProperty'  => 'staff'
     ],
     dbver: 1.2
 );
