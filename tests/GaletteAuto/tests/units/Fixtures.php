@@ -69,8 +69,20 @@ class Fixtures extends GaletteTestCase
         );
 
         $fixtures = new \GaletteAuto\Fixtures();
-        $this->assertSame('Created 15 vehicles', $fixtures->seedFixtures($context));
-        $this->assertSame(15, $this->countRows(\GaletteAuto\Auto::TABLE));
+        $this->assertSame('Created 20 vehicles', $fixtures->seedFixtures($context));
+        $this->assertSame(20, $this->countRows(\GaletteAuto\Auto::TABLE));
+        //types come with their fields; two-wheelers have no body
+        $select = $this->zdb->select(AUTO_PREFIX . \GaletteAuto\VehicleType::TABLE)->where(['type' => 'Mobylette']);
+        $moped = new \GaletteAuto\VehicleType(
+            $this->zdb,
+            (int)$this->zdb->execute($select)->current()[\GaletteAuto\VehicleType::PK]
+        );
+        $this->assertTrue($moped->isHidden('body'));
+        $this->assertTrue($moped->isRequired('name'));
+        $select = $this->zdb->select(AUTO_PREFIX . \GaletteAuto\Auto::TABLE)->where([\GaletteAuto\VehicleType::PK => $moped->getId()]);
+        $mopeds = $this->zdb->execute($select)->toArray();
+        $this->assertCount(3, $mopeds);
+        $this->assertSame([null], array_unique(array_column($mopeds, \GaletteAuto\Body::PK)));
         //existing value is reused
         $select = $this->zdb->select(AUTO_PREFIX . \GaletteAuto\Color::TABLE)->where(['color' => 'Rouge']);
         $this->assertSame(1, $this->zdb->execute($select)->count());
@@ -83,10 +95,10 @@ class Fixtures extends GaletteTestCase
         }
 
         //one history entry per vehicle, and a former owner for one of them
-        $this->assertSame(16, $this->countRows(\GaletteAuto\History::TABLE));
+        $this->assertSame(21, $this->countRows(\GaletteAuto\History::TABLE));
         $select = $this->zdb->select(AUTO_PREFIX . \GaletteAuto\History::TABLE);
         $select->where->lessThan('history_date', $today);
-        $this->assertSame(16, $this->zdb->execute($select)->count());
+        $this->assertSame(21, $this->zdb->execute($select)->count());
 
         $fixtures->cleanFixtures($context);
         $this->assertSame(0, $this->countRows(\GaletteAuto\Auto::TABLE));
