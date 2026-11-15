@@ -26,6 +26,7 @@ CREATE TABLE galette_auto_types (
   PRIMARY KEY (id_type)
 );
 
+-- renamed in the language of the user upgrading, by the UpgradeTo12 update class
 INSERT INTO galette_auto_types (type) VALUES ('Car');
 
 ALTER TABLE galette_auto_cars ADD COLUMN id_type integer DEFAULT NULL;
