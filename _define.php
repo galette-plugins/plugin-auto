@@ -8,13 +8,14 @@
 
 declare(strict_types=1);
 
-/** @var \Galette\Core\Plugins $this */
-$this->register(
+use Galette\Core\Plugins\PluginDefinition;
+
+return new PluginDefinition(
     name: 'Galette Auto',                      //Name
     desc: 'Plugin to manage Automobile clubs', //Short description
     author: 'Johan Cwiklinski',                //Author
     version: '2.3.0',                          //Version
-    compver: '1.3.0',                          //Galette compatible version
+    compver: '1.4.0',                          //Galette compatible version
     route: 'auto',                             //routing name
     date: '2026-10-03',                        //Release date
     acls: [                                    //routes permissions
