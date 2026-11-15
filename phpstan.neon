@@ -9,7 +9,6 @@ parameters:
         - _config.inc.php
         - ../../includes/sys_config/paths.inc.php
         - ../../config/config.inc.php.dist
-        - ../../includes/sys_config/galette_tcpdf_config.php
     scanDirectories:
         - ../../includes/
         - ../../lib/
