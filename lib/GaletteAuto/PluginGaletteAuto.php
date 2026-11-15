@@ -262,7 +262,8 @@ class PluginGaletteAuto extends GalettePlugin implements MenuProviderInterface, 
     /**
      * Version of tables installed before plugins versions were recorded
      *
-     * Vehicles of a removed member are removed along since 1.1.
+     * Vehicles of a removed member are removed along since 1.1, vehicles
+     * have a type since 1.2.
      */
     public function getLegacyDbVersion(): ?float
     {
@@ -270,9 +271,12 @@ class PluginGaletteAuto extends GalettePlugin implements MenuProviderInterface, 
         /** @var ConstraintObject $constraint */
         foreach ($metadata->getConstraints(PREFIX_DB . AUTO_PREFIX . Auto::TABLE) as $constraint) {
             if ($constraint->isForeignKey() && $constraint->getColumns() === [Adherent::PK]) {
-                return $constraint->getDeleteRule() === 'CASCADE' ? null : 1.0;
+                if ($constraint->getDeleteRule() !== 'CASCADE') {
+                    return 1.0;
+                }
+                break;
             }
         }
-        return null;
+        return $this->zdb->tableExists(AUTO_PREFIX . VehicleType::TABLE) ? null : 1.1;
     }
 }
