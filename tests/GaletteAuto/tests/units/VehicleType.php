@@ -22,6 +22,18 @@ class VehicleType extends GaletteTestCase
     protected int $seed = 20240130141727;
 
     /**
+     * Set up tests
+     */
+    public function setUp(): void
+    {
+        parent::setUp();
+        //start without the vehicle types the plugin creates on install or upgrade;
+        //removed in the test transaction, they are back once it is rolled back
+        $this->zdb->execute($this->zdb->delete(AUTO_PREFIX . \GaletteAuto\VehicleType::FIELDS_TABLE));
+        $this->zdb->execute($this->zdb->delete(AUTO_PREFIX . \GaletteAuto\VehicleType::TABLE));
+    }
+
+    /**
      * Test empty
      */
     public function testEmpty(): void

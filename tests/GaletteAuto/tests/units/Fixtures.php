@@ -32,6 +32,10 @@ class Fixtures extends GaletteTestCase
     {
         parent::setUp();
         $this->plugins = $this->container->get(\Galette\Core\Plugins::class);
+        //start without the vehicle types the plugin creates on install or upgrade;
+        //removed in the test transaction, they are back once it is rolled back
+        $this->zdb->execute($this->zdb->delete(AUTO_PREFIX . \GaletteAuto\VehicleType::FIELDS_TABLE));
+        $this->zdb->execute($this->zdb->delete(AUTO_PREFIX . \GaletteAuto\VehicleType::TABLE));
     }
 
     /**
