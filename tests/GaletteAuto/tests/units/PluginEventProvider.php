@@ -48,7 +48,7 @@ class PluginEventProvider extends GaletteTestCase
             $class = \GaletteAuto\AbstractObject::getClassForPropName($property);
             $object = new $class($this->zdb);
             $object->setValue($value);
-            $object->store(true);
+            $object->store(new: true);
             $this->props[$property] = $object->getId();
         }
 

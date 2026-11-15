@@ -72,15 +72,15 @@ class History
         try {
             $select = $this->zdb->select(AUTO_PREFIX . self::TABLE, 'h');
             $select->join(
-                ['c' => PREFIX_DB . AUTO_PREFIX . Color::TABLE],
-                'h.' . Color::PK . ' = c.' . Color::PK,
-                [Color::FIELD],
-                Select::JOIN_LEFT
+                name: ['c' => PREFIX_DB . AUTO_PREFIX . Color::TABLE],
+                on: 'h.' . Color::PK . ' = c.' . Color::PK,
+                columns: [Color::FIELD],
+                type: Select::JOIN_LEFT
             )->join(
-                ['s' => PREFIX_DB . AUTO_PREFIX . State::TABLE],
-                'h.' . State::PK . ' = s.' . State::PK,
-                [State::FIELD],
-                Select::JOIN_LEFT
+                name: ['s' => PREFIX_DB . AUTO_PREFIX . State::TABLE],
+                on: 'h.' . State::PK . ' = s.' . State::PK,
+                columns: [State::FIELD],
+                type: Select::JOIN_LEFT
             )->where(
                 [
                     'h.' . Auto::PK => $id

@@ -362,10 +362,10 @@ class Vehicles
         ];
         foreach ($joins as $alias => [$table, $pk, $columns, $type]) {
             $select->join(
-                [$alias => PREFIX_DB . AUTO_PREFIX . $table],
-                'a.' . $pk . ' = ' . $alias . '.' . $pk,
-                $columns,
-                $type
+                name: [$alias => PREFIX_DB . AUTO_PREFIX . $table],
+                on: 'a.' . $pk . ' = ' . $alias . '.' . $pk,
+                columns: $columns,
+                type: $type
             );
         }
         $select->join(
