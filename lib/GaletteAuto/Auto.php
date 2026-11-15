@@ -244,8 +244,9 @@ class Auto
     public function getStorableValues(): array
     {
         return [
-            'car_name'                      => $this->name,
-            'car_registration'              => $this->registration,
+            //not nullable, even when the type does not use them
+            'car_name'                      => $this->name ?? '',
+            'car_registration'              => $this->registration ?? '',
             'car_first_registration_date'   => $this->first_registration_date,
             'car_first_circulation_date'    => $this->first_circulation_date,
             'car_mileage'                   => $this->mileage,
@@ -278,7 +279,7 @@ class Auto
             self::PK            => $this->id,
             Adherent::PK        => $this->owner_id,
             'history_date'      => date('Y-m-d H:i:s'),
-            'car_registration'  => $this->registration,
+            'car_registration'  => $this->registration ?? '',
             Color::PK           => $this->color->getId(),
             State::PK           => $this->state->getId()
         ];
@@ -335,8 +336,8 @@ class Auto
             $value = $post[$prop] ?? null;
 
             if ($prop !== 'owner_id' && $this->type->isHidden($prop)) {
-                //the type does not use this field
-                $this->clearField($prop);
+                //the type does not use this field: posted value is ignored,
+                //stored one is kept should the vehicle change type again
                 continue;
             }
 
@@ -492,7 +493,7 @@ class Auto
     }
 
     /**
-     * Clear a field the vehicle does not use
+     * Clear an optional field left empty
      *
      * @param string $prop Field name
      */

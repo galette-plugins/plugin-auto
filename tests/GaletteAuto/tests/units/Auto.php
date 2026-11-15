@@ -424,12 +424,20 @@ class Auto extends GaletteTestCase
         $this->assertSame('SO-123-LX', $auto->getRegistration());
         $this->assertSame(1, $auto->getSeats());
 
-        //back to a moped: hidden fields values are dropped
+        //back to a moped: hidden fields values are kept, whatever is posted
         $data['type'] = $moped->getId();
+        $data['registration'] = '';
+        $data['seats'] = '';
         $this->assertTrue($auto->check($data, $access));
-        $this->assertNull($auto->getBody()->getId());
-        $this->assertSame('', $auto->getRegistration());
-        $this->assertNull($auto->getSeats());
+        //registration changed: history entries are keyed by the second
+        sleep(1);
+        $vehicles->store($auto);
+        $auto = new \GaletteAuto\Auto($this->plugins, $this->zdb);
+        $this->assertTrue($auto->load((int)$row[\GaletteAuto\Auto::PK]));
+        $this->assertSame($moped->getId(), $auto->getType()->getId());
+        $this->assertSame((int)$body->getId(), $auto->getBody()->getId());
+        $this->assertSame('SO-123-LX', $auto->getRegistration());
+        $this->assertSame(1, $auto->getSeats());
     }
 
     /**
