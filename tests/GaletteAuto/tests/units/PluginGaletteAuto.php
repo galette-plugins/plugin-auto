@@ -127,4 +127,25 @@ class PluginGaletteAuto extends GaletteTestCase
         $plugin = $this->container->get(\GaletteAuto\PluginGaletteAuto::class);
         $this->assertNull($plugin->getLegacyDbVersion());
     }
+
+    /**
+     * Default vehicle types are created on install
+     */
+    public function testInstallInit(): void
+    {
+        $plugin = $this->container->get(\GaletteAuto\PluginGaletteAuto::class);
+        $plugin->installInit($this->zdb);
+
+        $types = [];
+        foreach ($this->zdb->execute($this->zdb->select(AUTO_PREFIX . \GaletteAuto\VehicleType::TABLE)) as $row) {
+            $types[$row->type] = new \GaletteAuto\VehicleType($this->zdb, (int)$row->id_type);
+        }
+        $this->assertSame(['Car', 'Motorbike'], array_keys($types));
+
+        $this->assertTrue($types['Car']->isRequired('registration'));
+        $this->assertFalse($types['Car']->isHidden('body'));
+        $this->assertTrue($types['Motorbike']->isRequired('registration'));
+        $this->assertTrue($types['Motorbike']->isHidden('body'));
+        $this->assertFalse($types['Motorbike']->isHidden('transmission'));
+    }
 }

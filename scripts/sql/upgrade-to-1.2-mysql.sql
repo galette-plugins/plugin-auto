@@ -26,6 +26,7 @@ CREATE TABLE galette_auto_types (
   PRIMARY KEY (id_type)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci;
 
+-- renamed in the language of the user upgrading, by the UpgradeTo12 update class
 INSERT INTO galette_auto_types (type) VALUES ('Car');
 
 ALTER TABLE galette_auto_cars ADD id_type int unsigned DEFAULT NULL;

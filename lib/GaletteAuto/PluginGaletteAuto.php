@@ -15,6 +15,7 @@ use Galette\Core\Db;
 use Galette\Core\Login;
 use Galette\Core\Plugins\DashboardProviderInterface;
 use Galette\Core\Plugins\InstallableInterface;
+use Galette\Core\Plugins\InstallInitInterface;
 use Galette\Core\Plugins\MemberActionProviderInterface;
 use Galette\Core\Plugins\MenuProviderInterface;
 use Galette\Core\Plugins\PublicPagesProviderInterface;
@@ -29,7 +30,7 @@ use Laminas\Db\Metadata\Source\Factory;
  * @author Johan Cwiklinski <johan@x-tnd.be>
  */
 
-class PluginGaletteAuto extends GalettePlugin implements MenuProviderInterface, DashboardProviderInterface, MemberActionProviderInterface, InstallableInterface, PublicPagesProviderInterface
+class PluginGaletteAuto extends GalettePlugin implements MenuProviderInterface, DashboardProviderInterface, MemberActionProviderInterface, InstallableInterface, InstallInitInterface, PublicPagesProviderInterface
 {
     #[Inject]
     private readonly Db $zdb; //@phpstan-ignore property.uninitializedReadonly,property.onlyRead (injected from DI)
@@ -257,6 +258,35 @@ class PluginGaletteAuto extends GalettePlugin implements MenuProviderInterface, 
             && $this->zdb->tableExists(AUTO_PREFIX . State::TABLE)
             && $this->zdb->tableExists(AUTO_PREFIX . Transmission::TABLE)
         ;
+    }
+
+    /**
+     * Create default vehicle types, in the language of the user installing the plugin
+     *
+     * @param Db $zdb Database instance
+     */
+    public function installInit(Db $zdb): void
+    {
+        $types = [
+            _T('Car', 'auto') => [
+                'name' => VehicleType::REQUIRED,
+                'registration' => VehicleType::REQUIRED,
+            ],
+            _T('Motorbike', 'auto') => [
+                'name' => VehicleType::REQUIRED,
+                'registration' => VehicleType::REQUIRED,
+                'body' => VehicleType::HIDDEN,
+                'finition' => VehicleType::HIDDEN,
+                'seats' => VehicleType::HIDDEN,
+            ],
+        ];
+
+        foreach ($types as $name => $fields) {
+            $type = new VehicleType($zdb);
+            $type->setValue((string)$name);
+            $type->setFields($fields);
+            $type->store(new: true);
+        }
     }
 
     /**
