@@ -22,6 +22,7 @@
         enctype="multipart/form-data"
         data-models-url="{{ url_for("ajaxModels") }}"
         data-models-placeholder="{{ _T("Choose a model", "auto") }}"
+        data-types-fields="{{ types_fields|json_encode }}"
     >
         <div class="ui styled fluid accordion field">
             <div class="active title">
@@ -29,8 +30,23 @@
                 {{ _T("Car's base informations", "auto") }}
             </div>
             <div class="active content">
+                {% set type_list_values = {(-1): _T("Choose a vehicle type", "auto")} %}
+                {% for type in types %}
+                    {% set type_list_values = type_list_values + {(type.getId()): type.getValue()} %}
+                {% endfor %}
+
+                {% include "components/forms/select.html.twig" with {
+                    id: 'type',
+                    value: car.getType().getId(),
+                    values: type_list_values,
+                    label: _T("Vehicle type", "auto"),
+                    required: true
+                } %}
+
                 {% include "components/forms/text.html.twig" with {
                     id: 'name',
+                    component_id: 'field_name',
+                    component_class: hidden.name is defined ? 'field displaynone' : 'field',
                     value: car.getName(),
                     label: _T("Name", "auto"),
                     required: required.name is defined
@@ -64,6 +80,9 @@
 
                 {% include "components/forms/date.html.twig" with {
                     id: 'first_registration_date',
+                    component_id: 'field_first_registration_date',
+                    component_class: hidden.first_registration_date is defined ? 'field displaynone' : 'field',
+                    required: required.first_registration_date is defined,
                     value: car.getFirstRegistrationDate() ? car.getFirstRegistrationDate()|date(_T("Y-m-d")) : '',
                     label: _T("First registration date", "auto"),
                     title: _T("First registration date", "auto")
@@ -71,6 +90,9 @@
 
                 {% include "components/forms/date.html.twig" with {
                     id: 'first_circulation_date',
+                    component_id: 'field_first_circulation_date',
+                    component_class: hidden.first_circulation_date is defined ? 'field displaynone' : 'field',
+                    required: required.first_circulation_date is defined,
                     value: car.getFirstCirculationDate() ? car.getFirstCirculationDate()|date(_T("Y-m-d")) : '',
                     label: _T("First circulation date", "auto"),
                     title: _T("First circulation date", "auto")
@@ -78,6 +100,8 @@
 
                 {% include "components/forms/number.html.twig" with {
                     id: 'mileage',
+                    component_id: 'field_mileage',
+                    component_class: hidden.mileage is defined ? 'field displaynone' : 'field',
                     value: car.getMileage(),
                     label: _T("Mileage", "auto"),
                     required: required.mileage is defined
@@ -85,6 +109,8 @@
 
                 {% include "components/forms/number.html.twig" with {
                     id: 'seats',
+                    component_id: 'field_seats',
+                    component_class: hidden.seats is defined ? 'field displaynone' : 'field',
                     value: car.getSeats(),
                     label: _T("Seats", "auto"),
                     required: required.seats is defined
@@ -169,6 +195,8 @@
 
                 {% include "components/forms/select.html.twig" with {
                     id: 'color',
+                    component_id: 'field_color',
+                    component_class: hidden.color is defined ? 'field displaynone' : 'field',
                     value: car.getColor().getId(),
                     values: color_list_values,
                     label: _T("Color", "auto"),
@@ -182,6 +210,8 @@
 
                 {% include "components/forms/select.html.twig" with {
                     id: 'state',
+                    component_id: 'field_state',
+                    component_class: hidden.state is defined ? 'field displaynone' : 'field',
                     value: car.getState().getId(),
                     values: state_list_values,
                     label: _T("State", "auto"),
@@ -190,6 +220,8 @@
 
                 {% include "components/forms/text.html.twig" with {
                     id: 'registration',
+                    component_id: 'field_registration',
+                    component_class: hidden.registration is defined ? 'field displaynone' : 'field',
                     value: car.getRegistration(),
                     label: _T("Registration number", "auto"),
                     required: required.registration is defined
@@ -211,6 +243,8 @@
 
                 {% include "components/forms/select.html.twig" with {
                     id: 'body',
+                    component_id: 'field_body',
+                    component_class: hidden.body is defined ? 'field displaynone' : 'field',
                     value: car.getBody().getId(),
                     values: body_list_values,
                     label: _T("Body", "auto"),
@@ -224,6 +258,8 @@
 
                 {% include "components/forms/select.html.twig" with {
                     id: 'transmission',
+                    component_id: 'field_transmission',
+                    component_class: hidden.transmission is defined ? 'field displaynone' : 'field',
                     value: car.getTransmission().getId(),
                     values: transmission_list_values,
                     label: _T("Transmission", "auto"),
@@ -237,6 +273,8 @@
 
                 {% include "components/forms/select.html.twig" with {
                     id: 'finition',
+                    component_id: 'field_finition',
+                    component_class: hidden.finition is defined ? 'field displaynone' : 'field',
                     value: car.getFinition().getId(),
                     values: finition_list_values,
                     label: _T("Finition", "auto"),
@@ -245,6 +283,8 @@
 
                 {% include "components/forms/text.html.twig" with {
                     id: 'chassis_number',
+                    component_id: 'field_chassis_number',
+                    component_class: hidden.chassis_number is defined ? 'field displaynone' : 'field',
                     value: car.getChassisNumber(),
                     label: _T("Chassis number", "auto"),
                     required: required.chassis_number is defined
@@ -252,6 +292,8 @@
 
                 {% include "components/forms/number.html.twig" with {
                     id: 'horsepower',
+                    component_id: 'field_horsepower',
+                    component_class: hidden.horsepower is defined ? 'field displaynone' : 'field',
                     value: car.getHorsepower(),
                     label: _T("Horsepower", "auto"),
                     required: required.horsepower is defined
@@ -259,6 +301,8 @@
 
                 {% include "components/forms/number.html.twig" with {
                     id: 'engine_size',
+                    component_id: 'field_engine_size',
+                    component_class: hidden.engine_size is defined ? 'field displaynone' : 'field',
                     value: car.getEngineSize(),
                     label: _T("Engine size", "auto"),
                     required: required.engine_size is defined
@@ -271,6 +315,8 @@
 
                 {% include "components/forms/select.html.twig" with {
                     id: 'fuel',
+                    component_id: 'field_fuel',
+                    component_class: hidden.fuel is defined ? 'field displaynone' : 'field',
                     value: car.getFuel(),
                     values: fuel_list_values,
                     label: _T("Fuel", "auto"),
@@ -287,6 +333,8 @@
             <div class="active content">
                 {% include "components/forms/textarea.html.twig" with {
                     id: 'comment',
+                    component_id: 'field_comment',
+                    component_class: hidden.comment is defined ? 'field displaynone' : 'field',
                     value: car.getComment(),
                     label: _T("Comment", "auto"),
                     required: required.comment is defined

@@ -13,12 +13,14 @@ namespace GaletteAuto\Controllers\Crud;
 use DI\Attribute\Inject;
 use Galette\Controllers\AbstractPluginController;
 use GaletteAuto\AbstractObject;
+use GaletteAuto\Auto;
 use GaletteAuto\Body;
 use GaletteAuto\Brand;
 use GaletteAuto\Color;
 use GaletteAuto\Finition;
 use GaletteAuto\State;
 use GaletteAuto\Transmission;
+use GaletteAuto\VehicleType;
 use Slim\Exception\HttpNotFoundException;
 use Slim\Psr7\Request;
 use Slim\Psr7\Response;
@@ -39,6 +41,27 @@ class PropertiesController extends AbstractPluginController
      */
     #[Inject("Plugin Galette Auto")]
     protected array $module_info;
+
+    /**
+     * List brands
+     *
+     * @param string|null     $option One of 'page' or 'order'
+     * @param string|int|null $value  Value of the option
+     */
+    public function typesList(
+        Request $request,
+        Response $response,
+        ?string $option = null,
+        string|int|null $value = null
+    ): Response {
+        return $this->propertiesList(
+            request: $request,
+            response: $response,
+            obj: new VehicleType($this->zdb),
+            option: $option,
+            value: $value
+        );
+    }
 
     /**
      * List brands
@@ -294,11 +317,16 @@ class PropertiesController extends AbstractPluginController
             );
         }
 
-        //value from a failed submission
+        //values from a failed submission
         $session_oname = 'auto_' . $property . '_data';
         if (isset($this->session->$session_oname)) {
             $object->setValue((string)$this->session->$session_oname);
             unset($this->session->$session_oname);
+        }
+        $session_fname = 'auto_' . $property . '_fields';
+        if ($object instanceof VehicleType && isset($this->session->$session_fname)) {
+            $object->setFields((array)$this->session->$session_fname);
+            unset($this->session->$session_fname);
         }
 
         $params = [
@@ -307,6 +335,16 @@ class PropertiesController extends AbstractPluginController
             'obj'           => $object,
             'set'           => $property,
         ];
+
+        if ($object instanceof VehicleType) {
+            $auto = new Auto($this->plugins, $this->zdb);
+            $labels = [];
+            foreach (VehicleType::FIELDS as $field) {
+                $labels[$field] = $auto->getPropName($field);
+            }
+            $params['fields_labels'] = $labels;
+            $params['fields_modes'] = VehicleType::getModes();
+        }
 
         // display page
         $this->view->render(
@@ -367,6 +405,10 @@ class PropertiesController extends AbstractPluginController
         } else {
             $object->setValue($value);
         }
+        $fields = isset($post['fields']) && is_array($post['fields']) ? $post['fields'] : [];
+        if ($object instanceof VehicleType) {
+            $object->setFields($fields);
+        }
 
         if (count($error_detected) == 0) {
             try {
@@ -393,6 +435,10 @@ class PropertiesController extends AbstractPluginController
             //store entity in session
             $session_oname = 'auto_' . $property . '_data';
             $this->session->$session_oname = (string)($value ?? '');
+            if ($object instanceof VehicleType) {
+                $session_fname = 'auto_' . $property . '_fields';
+                $this->session->$session_fname = $fields;
+            }
             if ($is_new) {
                 $route = $this->routeparser->urlFor('propertyAdd', ['property' => $property]);
             } else {

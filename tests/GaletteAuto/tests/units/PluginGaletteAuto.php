@@ -53,6 +53,7 @@ class PluginGaletteAuto extends GaletteTestCase
         $this->logSuperAdmin();
         $this->assertSame(
             [
+                'typesList',
                 'colorsList',
                 'statesList',
                 'finitionsList',
@@ -61,7 +62,6 @@ class PluginGaletteAuto extends GaletteTestCase
                 'brandsList',
                 'modelsList',
                 'vehiclesList',
-                'autoPreferences',
             ],
             $this->getMenuRoutes()
         );

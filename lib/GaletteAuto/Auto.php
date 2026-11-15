@@ -34,6 +34,7 @@ class Auto
     public const int FUEL_ELECTRICITY = 4;
     public const int FUEL_BIO = 5;
     public const int FUEL_HYBRID = 6;
+    public const int FUEL_TWO_STROKE = 7;
 
     /**
      * Fields that can be posted, in the order they are checked
@@ -41,6 +42,7 @@ class Auto
      * @var array<string>
      */
     private const array POSTED_FIELDS = [
+        'type',
         'registration',
         'name',
         'first_registration_date',
@@ -77,6 +79,7 @@ class Auto
 
     //External objects
     private ?Picture $picture = null;
+    private VehicleType $type;
     private readonly Finition $finition;
     private readonly Color $color;
     private Model $model;
@@ -103,6 +106,7 @@ class Auto
     public function __construct(private readonly Plugins $plugins, private readonly Db $zdb, ?ArrayObject $args = null)
     {
         $this->propnames = [
+            'type'                      => mb_strtolower(_T("Vehicle type", "auto")),
             'name'                      => mb_strtolower(_T("Name", "auto")),
             'model'                     => mb_strtolower(_T("Model", "auto")),
             'registration'              => mb_strtolower(_T("Registration number", "auto")),
@@ -122,6 +126,7 @@ class Auto
             'fuel'                      => mb_strtolower(_T("Fuel", "auto")),
         ];
 
+        $this->type = new VehicleType($this->zdb);
         $this->model = new Model($this->zdb);
         $this->color = new Color($this->zdb);
         $this->state = new State($this->zdb);
@@ -174,8 +179,12 @@ class Auto
         $this->id = (int)$r[self::PK];
         $this->registration = (string)$r['car_registration'];
         $this->name = (string)$r['car_name'];
-        $this->first_registration_date = (string)$r['car_first_registration_date'];
-        $this->first_circulation_date = (string)$r['car_first_circulation_date'];
+        $this->first_registration_date = $r['car_first_registration_date'] !== null
+            ? (string)$r['car_first_registration_date']
+            : null;
+        $this->first_circulation_date = $r['car_first_circulation_date'] !== null
+            ? (string)$r['car_first_circulation_date']
+            : null;
         $this->mileage = $r['car_mileage'] !== null ? (int)$r['car_mileage'] : null;
         $this->comment = $r['car_comment'] !== null ? (string)$r['car_comment'] : null;
         $this->chassis_number = $r['car_chassis_number'] !== null ? (string)$r['car_chassis_number'] : null;
@@ -185,9 +194,17 @@ class Auto
         $this->creation_date = (string)$r['car_creation_date'];
         $this->fuel = $r['car_fuel'] !== null ? (int)$r['car_fuel'] : null;
         //External objects, from the row when they have been joined
+        if (isset($r[VehicleType::FIELD])) {
+            $this->type->loadFromRow($r);
+        } else {
+            $this->type->load((int)$r[VehicleType::PK]);
+        }
         foreach (['finition', 'color', 'transmission', 'body', 'state'] as $property) {
             $class = $this->$property::class;
-            if (isset($r[$class::FIELD])) {
+            if ($r[$class::PK] === null) {
+                //property is optional
+                $this->$property->reset();
+            } elseif (isset($r[$class::FIELD])) {
                 $this->$property->loadFromRow($r);
             } else {
                 $this->$property->load((int)$r[$class::PK]);
@@ -213,7 +230,9 @@ class Auto
             self::FUEL_GAS          => _T("Gas", "auto"),
             self::FUEL_HYBRID       => _T("Hybrid", "auto"),
             self::FUEL_ELECTRICITY  => _T("Electricity", "auto"),
-            self::FUEL_BIO          => _T("Bio", "auto")
+            self::FUEL_BIO          => _T("Bio", "auto"),
+            //TRANS: petrol and oil mix of mopeds and two-stroke engines
+            self::FUEL_TWO_STROKE   => _T("Two-stroke mix", "auto")
         ];
     }
 
@@ -225,8 +244,9 @@ class Auto
     public function getStorableValues(): array
     {
         return [
-            'car_name'                      => $this->name,
-            'car_registration'              => $this->registration,
+            //not nullable, even when the type does not use them
+            'car_name'                      => $this->name ?? '',
+            'car_registration'              => $this->registration ?? '',
             'car_first_registration_date'   => $this->first_registration_date,
             'car_first_circulation_date'    => $this->first_circulation_date,
             'car_mileage'                   => $this->mileage,
@@ -243,6 +263,7 @@ class Auto
             Transmission::PK                => $this->transmission->getId(),
             Finition::PK                    => $this->finition->getId(),
             Model::PK                       => $this->model->getId(),
+            VehicleType::PK                 => $this->type->getId(),
             Adherent::PK                    => $this->owner_id
         ];
     }
@@ -258,7 +279,7 @@ class Auto
             self::PK            => $this->id,
             Adherent::PK        => $this->owner_id,
             'history_date'      => date('Y-m-d H:i:s'),
-            'car_registration'  => $this->registration,
+            'car_registration'  => $this->registration ?? '',
             Color::PK           => $this->color->getId(),
             State::PK           => $this->state->getId()
         ];
@@ -301,20 +322,26 @@ class Auto
     /**
      * Check posted values validity
      *
-     * @param array<string,mixed> $post        All values to check, basically the $_POST array
-     *                                         after sending the form
-     * @param VehicleAccess       $access      Access rules for current user
-     * @param AutoPreferences     $preferences Plugin preferences
+     * @param array<string,mixed> $post   All values to check, basically the $_POST array
+     *                                    after sending the form
+     * @param VehicleAccess       $access Access rules for current user
      */
-    public function check(array $post, VehicleAccess $access, AutoPreferences $preferences): bool
+    public function check(array $post, VehicleAccess $access): bool
     {
         $this->errors = [];
 
-        //check for required fields, and correct values
+        //check for required fields, and correct values; the type comes
+        //first, its fields modes apply to the following ones
         foreach (self::POSTED_FIELDS as $prop) {
             $value = $post[$prop] ?? null;
 
-            if (($value == '' || $value == null) && $preferences->isRequired($prop)) {
+            if ($prop !== 'owner_id' && $this->type->isHidden($prop)) {
+                //the type does not use this field: posted value is ignored,
+                //stored one is kept should the vehicle change type again
+                continue;
+            }
+
+            if (($value == '' || $value == null) && $prop !== 'owner_id' && $this->type->isRequired($prop)) {
                 $this->errors[] = str_replace(
                     '%field',
                     '<a href="#' . $prop . '">' . $this->getPropName($prop) . '</a>',
@@ -357,6 +384,10 @@ class Auto
                     //dates
                 case 'first_registration_date':
                 case 'first_circulation_date':
+                    if ($value === null || $value === '') {
+                        $this->clearField($prop);
+                        break;
+                    }
                     $d = \DateTime::createFromFormat(__("Y-m-d"), (string)$value);
                     if ($d === false) {
                         //try with non localized date
@@ -406,10 +437,18 @@ class Auto
                     //external objects
                 case 'finition':
                 case 'color':
-                case 'model':
                 case 'transmission':
                 case 'body':
                 case 'state':
+                    if ((int)$value <= 0) {
+                        //optional property, unset
+                        $this->clearField($prop);
+                        break;
+                    }
+                    //a chosen value is checked like the model and the type
+                    // no break
+                case 'type':
+                case 'model':
                     if ((int)$value <= 0 || !$this->$prop->load((int)$value)) {
                         $this->errors[] = str_replace(
                             '%s',
@@ -451,6 +490,40 @@ class Auto
         }
 
         return count($this->errors) === 0;
+    }
+
+    /**
+     * Clear an optional field left empty
+     *
+     * @param string $prop Field name
+     */
+    private function clearField(string $prop): void
+    {
+        switch ($prop) {
+            case 'name':
+            case 'registration':
+                //not nullable
+                $this->$prop = '';
+                break;
+            case 'finition':
+            case 'color':
+            case 'transmission':
+            case 'body':
+            case 'state':
+                $this->$prop->reset();
+                break;
+            case 'first_registration_date':
+            case 'first_circulation_date':
+            case 'mileage':
+            case 'comment':
+            case 'chassis_number':
+            case 'seats':
+            case 'horsepower':
+            case 'engine_size':
+            case 'fuel':
+                $this->$prop = null;
+                break;
+        }
     }
 
     /**
@@ -603,6 +676,25 @@ class Auto
             return null;
         }
         return $this->listFuels()[$this->fuel] ?? null;
+    }
+
+    /**
+     * Set vehicle type
+     *
+     * @param VehicleType $type Vehicle type
+     */
+    public function setType(VehicleType $type): self
+    {
+        $this->type = $type;
+        return $this;
+    }
+
+    /**
+     * Get vehicle type
+     */
+    public function getType(): VehicleType
+    {
+        return $this->type;
     }
 
     /**

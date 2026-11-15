@@ -17,7 +17,6 @@ use Galette\Core\Plugins\DashboardProviderInterface;
 use Galette\Core\Plugins\InstallableInterface;
 use Galette\Core\Plugins\MemberActionProviderInterface;
 use Galette\Core\Plugins\MenuProviderInterface;
-use Galette\Core\Plugins\PreferencesProviderInterface;
 use Galette\Core\Plugins\PublicPagesProviderInterface;
 use Galette\Entity\Adherent;
 use Galette\Core\GalettePlugin;
@@ -30,7 +29,7 @@ use Laminas\Db\Metadata\Source\Factory;
  * @author Johan Cwiklinski <johan@x-tnd.be>
  */
 
-class PluginGaletteAuto extends GalettePlugin implements MenuProviderInterface, DashboardProviderInterface, MemberActionProviderInterface, InstallableInterface, PublicPagesProviderInterface, PreferencesProviderInterface
+class PluginGaletteAuto extends GalettePlugin implements MenuProviderInterface, DashboardProviderInterface, MemberActionProviderInterface, InstallableInterface, PublicPagesProviderInterface
 {
     #[Inject]
     private readonly Db $zdb; //@phpstan-ignore property.uninitializedReadonly,property.onlyRead (injected from DI)
@@ -60,6 +59,10 @@ class PluginGaletteAuto extends GalettePlugin implements MenuProviderInterface, 
                 $menus['plugin_auto']['items'] = array_merge(
                     $menus['plugin_auto']['items'],
                     [
+                        [
+                            'label' => _T("Vehicle types list", "auto"),
+                            'route' => ['name' => 'typesList']
+                        ],
                         [
                             'label' => _T("Colors list", "auto"),
                             'route' => ['name' => 'colorsList']
@@ -106,13 +109,6 @@ class PluginGaletteAuto extends GalettePlugin implements MenuProviderInterface, 
                 ];
             }
 
-            if ($login->isAdmin()) {
-                $menus['plugin_auto']['items'][] = [
-                    'label' => _T("Preferences", "auto"),
-                    'route' => ['name' => 'autoPreferences']
-                ];
-            }
-
             // Super Admin is not a regular user
             if (!$login->isSuperAdmin()) {
                 $menus['myaccount'] = [
@@ -127,16 +123,6 @@ class PluginGaletteAuto extends GalettePlugin implements MenuProviderInterface, 
         }
 
         return $menus;
-    }
-
-    /**
-     * Get the preferences the plugin declares
-     *
-     * @return array<string, array<string, mixed>>
-     */
-    public function getPreferences(): array
-    {
-        return AutoPreferences::getSchema();
     }
 
     /**
@@ -276,7 +262,8 @@ class PluginGaletteAuto extends GalettePlugin implements MenuProviderInterface, 
     /**
      * Version of tables installed before plugins versions were recorded
      *
-     * Vehicles of a removed member are removed along since 1.1.
+     * Vehicles of a removed member are removed along since 1.1, vehicles
+     * have a type since 1.2.
      */
     public function getLegacyDbVersion(): ?float
     {
@@ -284,9 +271,12 @@ class PluginGaletteAuto extends GalettePlugin implements MenuProviderInterface, 
         /** @var ConstraintObject $constraint */
         foreach ($metadata->getConstraints(PREFIX_DB . AUTO_PREFIX . Auto::TABLE) as $constraint) {
             if ($constraint->isForeignKey() && $constraint->getColumns() === [Adherent::PK]) {
-                return $constraint->getDeleteRule() === 'CASCADE' ? null : 1.0;
+                if ($constraint->getDeleteRule() !== 'CASCADE') {
+                    return 1.0;
+                }
+                break;
             }
         }
-        return null;
+        return $this->zdb->tableExists(AUTO_PREFIX . VehicleType::TABLE) ? null : 1.1;
     }
 }

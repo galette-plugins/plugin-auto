@@ -32,6 +32,10 @@ class Fixtures extends GaletteTestCase
     {
         parent::setUp();
         $this->plugins = $this->container->get(\Galette\Core\Plugins::class);
+        //start without the vehicle types the plugin creates on install or upgrade;
+        //removed in the test transaction, they are back once it is rolled back
+        $this->zdb->execute($this->zdb->delete(AUTO_PREFIX . \GaletteAuto\VehicleType::FIELDS_TABLE));
+        $this->zdb->execute($this->zdb->delete(AUTO_PREFIX . \GaletteAuto\VehicleType::TABLE));
     }
 
     /**
@@ -69,8 +73,20 @@ class Fixtures extends GaletteTestCase
         );
 
         $fixtures = new \GaletteAuto\Fixtures();
-        $this->assertSame('Created 15 vehicles', $fixtures->seedFixtures($context));
-        $this->assertSame(15, $this->countRows(\GaletteAuto\Auto::TABLE));
+        $this->assertSame('Created 20 vehicles', $fixtures->seedFixtures($context));
+        $this->assertSame(20, $this->countRows(\GaletteAuto\Auto::TABLE));
+        //types come with their fields; two-wheelers have no body
+        $select = $this->zdb->select(AUTO_PREFIX . \GaletteAuto\VehicleType::TABLE)->where(['type' => 'Mobylette']);
+        $moped = new \GaletteAuto\VehicleType(
+            $this->zdb,
+            (int)$this->zdb->execute($select)->current()[\GaletteAuto\VehicleType::PK]
+        );
+        $this->assertTrue($moped->isHidden('body'));
+        $this->assertTrue($moped->isRequired('name'));
+        $select = $this->zdb->select(AUTO_PREFIX . \GaletteAuto\Auto::TABLE)->where([\GaletteAuto\VehicleType::PK => $moped->getId()]);
+        $mopeds = $this->zdb->execute($select)->toArray();
+        $this->assertCount(3, $mopeds);
+        $this->assertSame([null], array_unique(array_column($mopeds, \GaletteAuto\Body::PK)));
         //existing value is reused
         $select = $this->zdb->select(AUTO_PREFIX . \GaletteAuto\Color::TABLE)->where(['color' => 'Rouge']);
         $this->assertSame(1, $this->zdb->execute($select)->count());
@@ -83,10 +99,10 @@ class Fixtures extends GaletteTestCase
         }
 
         //one history entry per vehicle, and a former owner for one of them
-        $this->assertSame(16, $this->countRows(\GaletteAuto\History::TABLE));
+        $this->assertSame(21, $this->countRows(\GaletteAuto\History::TABLE));
         $select = $this->zdb->select(AUTO_PREFIX . \GaletteAuto\History::TABLE);
         $select->where->lessThan('history_date', $today);
-        $this->assertSame(16, $this->zdb->execute($select)->count());
+        $this->assertSame(21, $this->zdb->execute($select)->count());
 
         $fixtures->cleanFixtures($context);
         $this->assertSame(0, $this->countRows(\GaletteAuto\Auto::TABLE));
@@ -94,6 +110,7 @@ class Fixtures extends GaletteTestCase
         $this->assertSame(0, $this->countRows(\GaletteAuto\Model::TABLE));
         $this->assertSame(0, $this->countRows(\GaletteAuto\Brand::TABLE));
         $this->assertSame(0, $this->countRows(\GaletteAuto\Body::TABLE));
+        $this->assertSame(0, $this->countRows(\GaletteAuto\VehicleType::TABLE));
         //color that existed before seeding is gone as well: nothing tells it from a fixture one
         $this->assertSame($colors - 1, $this->countRows(\GaletteAuto\Color::TABLE));
     }

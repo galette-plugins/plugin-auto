@@ -14,7 +14,6 @@ use Analog\Analog;
 use Galette\Repository\Members;
 use GaletteAuto\AbstractObject;
 use GaletteAuto\Auto;
-use GaletteAuto\AutoPreferences;
 use GaletteAuto\Body;
 use GaletteAuto\Brand;
 use GaletteAuto\Color;
@@ -24,6 +23,7 @@ use GaletteAuto\Model;
 use GaletteAuto\Picture;
 use GaletteAuto\State;
 use GaletteAuto\Transmission;
+use GaletteAuto\VehicleType;
 use GaletteAuto\VehicleAccess;
 use Laminas\Db\ResultSet\ResultSet;
 use Slim\Psr7\Request;
@@ -74,14 +74,6 @@ class Controller extends AbstractPluginController
             [_T("You do not have enough privileges.", "auto")],
             $this->routeparser->urlFor('myVehiclesList')
         );
-    }
-
-    /**
-     * Get plugin preferences
-     */
-    protected function getAutoPreferences(): AutoPreferences
-    {
-        return new AutoPreferences($this->preferences);
     }
 
     /**
@@ -407,10 +399,27 @@ class Controller extends AbstractPluginController
             }
         }
 
+        /** @var array<int, VehicleType> $types */
+        $types = $this->getProperties(VehicleType::class);
+        if ($is_new && count($types) === 1) {
+            //no choice to make
+            $auto->setType($types[0]);
+        }
+
         if ($this->session->auto !== null) {
-            $auto->check($this->session->auto, $this->getAccess(), $this->getAutoPreferences());
+            $auto->check($this->session->auto, $this->getAccess());
             $this->session->auto = null;
         }
+
+        //fields modes of every type, for the form to follow the chosen one
+        $types_fields = [];
+        foreach ($types as $type) {
+            $types_fields[(int)$type->getId()] = $type->getFields();
+        }
+        $hidden = array_filter(
+            $auto->getType()->getFields(),
+            fn(int $mode): bool => $mode === VehicleType::HIDDEN
+        );
 
         $title = ($is_new)
             ? _T("New vehicle", "auto")
@@ -431,6 +440,9 @@ class Controller extends AbstractPluginController
             'require_dialog'    => true,
             'car'               => $auto,
             'models'            => $models->getList($auto->getModel()->getBrand()->getId()),
+            'types'             => $types,
+            'types_fields'      => $types_fields,
+            'hidden'            => $hidden,
             'brands'            => $this->getProperties(Brand::class),
             'colors'            => $this->getProperties(Color::class),
             'bodies'            => $this->getProperties(Body::class),
@@ -439,7 +451,7 @@ class Controller extends AbstractPluginController
             'states'            => $this->getProperties(State::class),
             'fuels'             => $auto->listFuels(),
             'time'              => time(),
-            'required'          => $this->getAutoPreferences()->getRequired()
+            'required'          => $auto->getType()->getRequired()
         ];
 
         // members
@@ -515,7 +527,7 @@ class Controller extends AbstractPluginController
             }
         }
 
-        $res = $auto->check($post, $this->getAccess(), $this->getAutoPreferences());
+        $res = $auto->check($post, $this->getAccess());
         if ($res !== true) {
             $error_detected = $auto->getErrors();
         }

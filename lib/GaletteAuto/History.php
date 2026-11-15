@@ -14,6 +14,7 @@ use Analog\Analog;
 use ArrayObject;
 use Galette\Core\Db;
 use Galette\Entity\Adherent;
+use Laminas\Db\Sql\Select;
 
 /**
  * Automobile History class for galette Auto plugin
@@ -71,13 +72,15 @@ class History
         try {
             $select = $this->zdb->select(AUTO_PREFIX . self::TABLE, 'h');
             $select->join(
-                ['c' => PREFIX_DB . AUTO_PREFIX . Color::TABLE],
-                'h.' . Color::PK . ' = c.' . Color::PK,
-                [Color::FIELD]
+                name: ['c' => PREFIX_DB . AUTO_PREFIX . Color::TABLE],
+                on: 'h.' . Color::PK . ' = c.' . Color::PK,
+                columns: [Color::FIELD],
+                type: Select::JOIN_LEFT
             )->join(
-                ['s' => PREFIX_DB . AUTO_PREFIX . State::TABLE],
-                'h.' . State::PK . ' = s.' . State::PK,
-                [State::FIELD]
+                name: ['s' => PREFIX_DB . AUTO_PREFIX . State::TABLE],
+                on: 'h.' . State::PK . ' = s.' . State::PK,
+                columns: [State::FIELD],
+                type: Select::JOIN_LEFT
             )->where(
                 [
                     'h.' . Auto::PK => $id

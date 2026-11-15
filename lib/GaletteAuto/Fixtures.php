@@ -26,20 +26,22 @@ use RuntimeException;
  *
  * @author Johan Cwiklinski <johan@x-tnd.be>
  * @phpstan-type Vehicle array{
+ *     type?: string,
  *     name: string,
  *     registration: string,
  *     brand: string,
  *     model: string,
  *     fuel: int,
  *     color: string,
- *     body: string,
- *     finition: string,
+ *     body?: string,
+ *     finition?: string,
  *     state: string,
- *     transmission: string,
+ *     transmission?: string,
  *     years: int,
- *     mileage: int,
- *     seats: int,
- *     horsepower: int,
+ *     mileage?: int,
+ *     seats?: int,
+ *     horsepower?: int,
+ *     engine_size?: int,
  *     member: int,
  *     comment?: string,
  *     previous_member?: int
@@ -54,16 +56,58 @@ class Fixtures implements FixturesProviderInterface
         Finition::class => ['Standard', 'Confort', 'Sport', 'Luxe'],
         State::class => ['Neuf', 'Très bon état', 'Bon état', 'À restaurer'],
         Transmission::class => ['Manuelle', 'Automatique'],
+        VehicleType::class => ['Voiture', 'Moto', 'Mobylette'],
+    ];
+
+    /**
+     * Fields modes of vehicle types; fields not listed are optional
+     *
+     * @var array<string, array<string, int>>
+     */
+    private const array TYPES_FIELDS = [
+        'Voiture' => [
+            'name' => VehicleType::REQUIRED,
+            'registration' => VehicleType::REQUIRED,
+            'fuel' => VehicleType::REQUIRED,
+            'first_registration_date' => VehicleType::REQUIRED,
+            'first_circulation_date' => VehicleType::REQUIRED,
+            'color' => VehicleType::REQUIRED,
+            'state' => VehicleType::REQUIRED,
+            'body' => VehicleType::REQUIRED,
+            'transmission' => VehicleType::REQUIRED,
+            'finition' => VehicleType::REQUIRED,
+        ],
+        'Moto' => [
+            'name' => VehicleType::REQUIRED,
+            'registration' => VehicleType::REQUIRED,
+            'first_circulation_date' => VehicleType::REQUIRED,
+            'body' => VehicleType::HIDDEN,
+            'finition' => VehicleType::HIDDEN,
+            'seats' => VehicleType::HIDDEN,
+        ],
+        'Mobylette' => [
+            'name' => VehicleType::REQUIRED,
+            'first_registration_date' => VehicleType::HIDDEN,
+            'body' => VehicleType::HIDDEN,
+            'transmission' => VehicleType::HIDDEN,
+            'finition' => VehicleType::HIDDEN,
+            'seats' => VehicleType::HIDDEN,
+            'horsepower' => VehicleType::HIDDEN,
+        ],
     ];
 
     /** @var array<string, list<string>> Models, by brand */
     private const array MODELS = [
         'Renault' => ['Clio', 'Mégane', 'Zoé', 'Kangoo', '4L'],
-        'Peugeot' => ['208', '308', '3008', 'Partner'],
+        'Peugeot' => ['208', '308', '3008', 'Partner', '103'],
         'Citroën' => ['C3', 'Berlingo', '2CV'],
         'Volkswagen' => ['Golf', 'Polo', 'Combi'],
         'Toyota' => ['Yaris', 'Prius'],
         'Tesla' => ['Model 3'],
+        'Honda' => ['CB 750 Four'],
+        'Yamaha' => ['XT 500'],
+        'Velosolex' => ['3800'],
+        'Motobécane' => ['AV88'],
     ];
 
     /** @var list<Vehicle> Vehicles; years since first registration, member by position */
@@ -129,6 +173,23 @@ class Fixtures implements FixturesProviderInterface
             'fuel' => Auto::FUEL_PETROL, 'color' => 'Jaune', 'body' => 'Cabriolet', 'finition' => 'Sport',
             'state' => 'Bon état', 'transmission' => 'Manuelle', 'years' => 6, 'mileage' => 73100, 'seats' => 4,
             'horsepower' => 5, 'member' => 18],
+        ['type' => 'Moto', 'name' => 'La japonaise', 'registration' => 'FX-016-AR', 'brand' => 'Honda',
+            'model' => 'CB 750 Four', 'fuel' => Auto::FUEL_PETROL, 'color' => 'Rouge', 'state' => 'Bon état',
+            'transmission' => 'Manuelle', 'years' => 50, 'mileage' => 64000, 'horsepower' => 7,
+            'engine_size' => 736, 'member' => 9, 'comment' => 'Première moto de série à quatre cylindres.'],
+        ['type' => 'Moto', 'name' => 'Trail', 'registration' => 'FX-017-AS', 'brand' => 'Yamaha',
+            'model' => 'XT 500', 'fuel' => Auto::FUEL_PETROL, 'color' => 'Blanc', 'state' => 'À restaurer',
+            'transmission' => 'Manuelle', 'years' => 44, 'mileage' => 38200, 'horsepower' => 4,
+            'engine_size' => 499, 'member' => 14],
+        ['type' => 'Mobylette', 'name' => 'Le Solex', 'registration' => 'FX-018-AT', 'brand' => 'Velosolex',
+            'model' => '3800', 'fuel' => Auto::FUEL_TWO_STROKE, 'color' => 'Noir', 'state' => 'Très bon état',
+            'years' => 52, 'engine_size' => 49, 'member' => 17],
+        ['type' => 'Mobylette', 'name' => 'La bleue', 'registration' => 'FX-019-AU', 'brand' => 'Motobécane',
+            'model' => 'AV88', 'fuel' => Auto::FUEL_TWO_STROKE, 'color' => 'Bleu nuit', 'state' => 'Bon état',
+            'years' => 47, 'engine_size' => 49, 'member' => 3, 'comment' => 'Pédales d\'origine.'],
+        ['type' => 'Mobylette', 'name' => 'Cent-trois', 'registration' => 'FX-020-AV', 'brand' => 'Peugeot',
+            'model' => '103', 'fuel' => Auto::FUEL_TWO_STROKE, 'color' => 'Jaune', 'state' => 'À restaurer',
+            'years' => 38, 'engine_size' => 49, 'member' => 2],
     ];
 
     /** @var array<class-string<AbstractObject>, array<string, int>> Reference values identifiers */
@@ -153,6 +214,11 @@ class Fixtures implements FixturesProviderInterface
                 $this->values[$class][$value] = $this->getValueId($context, $class, $value);
             }
         }
+        foreach (self::TYPES_FIELDS as $name => $fields) {
+            $type = new VehicleType($zdb, $this->values[VehicleType::class][$name]);
+            $type->setFields($fields);
+            $type->store();
+        }
         foreach (self::MODELS as $brand => $models) {
             $brand_id = $this->getValueId($context, Brand::class, $brand);
             foreach ($models as $model) {
@@ -161,7 +227,6 @@ class Fixtures implements FixturesProviderInterface
         }
 
         $access = new VehicleAccess($zdb, $context->login, $context->preferences);
-        $preferences = new AutoPreferences($context->preferences);
         $vehicles = new Vehicles(
             plugins: $context->plugins,
             zdb: $zdb,
@@ -179,20 +244,23 @@ class Fixtures implements FixturesProviderInterface
                 'registration' => $data['registration'],
                 'first_registration_date' => $registration->format('Y-m-d'),
                 'first_circulation_date' => $registration->format('Y-m-d'),
-                'mileage' => (string)$data['mileage'],
-                'seats' => (string)$data['seats'],
-                'horsepower' => (string)$data['horsepower'],
+                'mileage' => (string)($data['mileage'] ?? ''),
+                'seats' => (string)($data['seats'] ?? ''),
+                'horsepower' => (string)($data['horsepower'] ?? ''),
+                'engine_size' => (string)($data['engine_size'] ?? ''),
                 'fuel' => (string)$data['fuel'],
                 'comment' => $data['comment'] ?? '',
+                'type' => (string)$this->values[VehicleType::class][$data['type'] ?? 'Voiture'],
                 'model' => (string)$this->models[$data['brand'] . '/' . $data['model']],
                 'color' => (string)$this->values[Color::class][$data['color']],
-                'body' => (string)$this->values[Body::class][$data['body']],
-                'finition' => (string)$this->values[Finition::class][$data['finition']],
+                //two-wheelers have no body nor finition, mopeds no transmission
+                'body' => $this->getSeededId(Body::class, $data['body'] ?? null),
+                'finition' => $this->getSeededId(Finition::class, $data['finition'] ?? null),
                 'state' => (string)$this->values[State::class][$data['state']],
-                'transmission' => (string)$this->values[Transmission::class][$data['transmission']],
+                'transmission' => $this->getSeededId(Transmission::class, $data['transmission'] ?? null),
                 'owner_id' => (string)$context->getMemberId($data['member']),
             ];
-            if (!$vehicle->check($post, $access, $preferences)) {
+            if (!$vehicle->check($post, $access)) {
                 throw new RuntimeException(sprintf(
                     'Invalid fixture vehicle %s: %s',
                     $data['name'],
@@ -204,6 +272,17 @@ class Fixtures implements FixturesProviderInterface
         }
 
         return sprintf('Created %d vehicles', count(self::VEHICLES));
+    }
+
+    /**
+     * Get the id of a seeded reference value, as posted
+     *
+     * @param class-string<AbstractObject> $class Property class
+     * @param ?string                      $value Value, if any
+     */
+    private function getSeededId(string $class, ?string $value): string
+    {
+        return $value === null ? '' : (string)$this->values[$class][$value];
     }
 
     /**

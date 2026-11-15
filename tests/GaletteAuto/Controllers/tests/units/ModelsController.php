@@ -125,7 +125,7 @@ class ModelsController extends GaletteRoutingTestCase
     private function createVehicle(int $model_id): void
     {
         $values = [];
-        foreach (['Body', 'Color', 'Finition', 'State', 'Transmission'] as $property) {
+        foreach (['Body', 'Color', 'Finition', 'State', 'Transmission', 'VehicleType'] as $property) {
             $class = '\\GaletteAuto\\' . $property;
             $object = new $class($this->zdb);
             $object->setValue('Test ' . $property);

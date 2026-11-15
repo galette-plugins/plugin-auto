@@ -10,7 +10,6 @@ declare(strict_types=1);
 
 use Galette\Middleware\Authenticate;
 use GaletteAuto\Controllers\Controller;
-use GaletteAuto\Controllers\PreferencesController;
 use GaletteAuto\Controllers\Crud\PropertiesController;
 use GaletteAuto\Controllers\Crud\ModelsController;
 
@@ -147,6 +146,11 @@ $app->post(
 )->setName('doRemoveModel')->add(Authenticate::class);
 
 $app->get(
+    '/types[/{option:page|order}/{value:\d+}]',
+    [PropertiesController::class, 'typesList']
+)->setName('typesList')->add(Authenticate::class);
+
+$app->get(
     '/brands[/{option:page|order}/{value:\d+}]',
     [PropertiesController::class, 'brandsList']
 )->setName('brandsList')->add(Authenticate::class);
@@ -177,27 +181,27 @@ $app->get(
 )->setName('transmissionsList')->add(Authenticate::class);
 
 $app->post(
-    '/{property:brand|color|state|finition|body|transmission}/filter',
+    '/{property:brand|color|state|finition|body|transmission|type}/filter',
     [PropertiesController::class, 'filter']
 )->setName('propertyFilter')->add(Authenticate::class);
 
 $app->get(
-    '/{property:brand|color|state|finition|body|transmission}/add',
+    '/{property:brand|color|state|finition|body|transmission|type}/add',
     [PropertiesController::class, 'propertyAdd']
 )->setName('propertyAdd')->add(Authenticate::class);
 
 $app->get(
-    '/{property:brand|color|state|finition|body|transmission}/edit/{id:\d+}',
+    '/{property:brand|color|state|finition|body|transmission|type}/edit/{id:\d+}',
     [PropertiesController::class, 'propertyEdit']
 )->setName('propertyEdit')->add(Authenticate::class);
 
 $app->post(
-    '/{property:brand|color|state|finition|body|transmission}/add',
+    '/{property:brand|color|state|finition|body|transmission|type}/add',
     [PropertiesController::class, 'doPropertyAdd']
 )->setName('doPropertyAdd')->add(Authenticate::class);
 
 $app->post(
-    '/{property:brand|color|state|finition|body|transmission}/edit/{id:\d+}',
+    '/{property:brand|color|state|finition|body|transmission|type}/edit/{id:\d+}',
     [PropertiesController::class, 'doPropertyEdit']
 )->setName('doPropertyEdit')->add(Authenticate::class);
 
@@ -207,26 +211,16 @@ $app->get(
 )->setName('propertyShow')->add(Authenticate::class);
 
 $app->get(
-    '/{property:brand|color|state|finition|body|transmission}/remove/{id:\d+}',
+    '/{property:brand|color|state|finition|body|transmission|type}/remove/{id:\d+}',
     [PropertiesController::class, 'removeProperty']
 )->setName('removeProperty')->add(Authenticate::class);
 
 $app->get(
-    '/{property:brand|color|state|finition|body|transmission}' . '/remove',
+    '/{property:brand|color|state|finition|body|transmission|type}' . '/remove',
     [PropertiesController::class, 'removeProperties']
 )->setName('removeProperties')->add(Authenticate::class);
 
 $app->post(
-    '/{property:brand|color|state|finition|body|transmission}/remove[/{id:\d+}]',
+    '/{property:brand|color|state|finition|body|transmission|type}/remove[/{id:\d+}]',
     [PropertiesController::class, 'doRemoveProperty']
 )->setName('doRemoveProperty')->add(Authenticate::class);
-
-$app->get(
-    '/preferences',
-    [PreferencesController::class, 'preferences']
-)->setName('autoPreferences')->add(Authenticate::class);
-
-$app->post(
-    '/preferences',
-    [PreferencesController::class, 'storePreferences']
-)->setName('storeAutoPreferences')->add(Authenticate::class);

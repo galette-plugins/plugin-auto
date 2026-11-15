@@ -13,6 +13,7 @@
     {'label': _T("ID"), 'collapse': true},
     {'label': _T("Name", "auto"), 'order': constant('GaletteAuto\\Filters\\AutosList::ORDERBY_NAME')},
     {'label': _T("Owner", "auto"), 'order': constant('GaletteAuto\\Filters\\AutosList::ORDERBY_OWNER')},
+    {'label': _T("Vehicle type", "auto"), 'order': constant('GaletteAuto\\Filters\\AutosList::ORDERBY_TYPE')},
     {'label': _T("Brand", "auto"), 'order': constant('GaletteAuto\\Filters\\AutosList::ORDERBY_BRAND')},
     {'label': _T("Model", "auto"), 'order': constant('GaletteAuto\\Filters\\AutosList::ORDERBY_MODEL')},
 ] %}
@@ -62,6 +63,7 @@
             </td>
             <td data-col-label="{{ _T("Name", "auto") }}"><a href="{{ edit_link }}">{{ auto.getName() }}</a></td>
             <td data-col-label="{{ _T("Owner", "auto") }}"><a href="{{ url_for("member", {"id": auto.getOwnerId()}) }}">{{ auto.getOwner().sfullname }}</a></td>
+            <td data-col-label="{{ _T("Vehicle type", "auto") }}">{{ auto.getType().getValue() }}</td>
             <td data-col-label="{{ _T("Brand", "auto") }}"><a href="{{ edit_link }}">{{ brand.getValue() }}</a></td>
             <td data-col-label="{{ _T("Model", "auto") }}"><a href="{{ edit_link }}">{{ auto.getModel().getModel() }}</a></td>
             <td class="center actions_row collapsing">
