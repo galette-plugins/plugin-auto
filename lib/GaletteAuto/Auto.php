@@ -80,13 +80,13 @@ class Auto
     //External objects
     private ?Picture $picture = null;
     private VehicleType $type;
-    private Finition $finition;
-    private Color $color;
+    private readonly Finition $finition;
+    private readonly Color $color;
     private Model $model;
-    private Transmission $transmission;
-    private Body $body;
+    private readonly Transmission $transmission;
+    private readonly Body $body;
     private ?History $history = null;
-    private State $state;
+    private readonly State $state;
     private ?int $owner_id = null;
     private ?Adherent $owner = null;
 
@@ -203,7 +203,7 @@ class Auto
             $class = $this->$property::class;
             if ($r[$class::PK] === null) {
                 //property is optional
-                $this->$property = new $class($this->zdb);
+                $this->$property->reset();
             } elseif (isset($r[$class::FIELD])) {
                 $this->$property->loadFromRow($r);
             } else {
@@ -510,7 +510,7 @@ class Auto
             case 'transmission':
             case 'body':
             case 'state':
-                $this->$prop = new ($this->$prop::class)($this->zdb);
+                $this->$prop->reset();
                 break;
             case 'first_registration_date':
             case 'first_circulation_date':

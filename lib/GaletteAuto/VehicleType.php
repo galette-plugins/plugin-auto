@@ -84,6 +84,16 @@ class VehicleType extends AbstractObject
     }
 
     /**
+     * Reset to an empty type, without fields modes
+     */
+    public function reset(): static
+    {
+        $this->fields = null;
+        parent::reset();
+        return $this;
+    }
+
+    /**
      * Store current record and its fields modes
      *
      * @param bool $new New record or existing one

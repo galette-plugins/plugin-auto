@@ -102,6 +102,16 @@ abstract class AbstractObject
     }
 
     /**
+     * Reset to an empty object
+     */
+    public function reset(): static
+    {
+        $this->id = null;
+        $this->value = null;
+        return $this;
+    }
+
+    /**
      * Populate from a resultset row, which may come from a join
      *
      * @param ArrayObject<string, mixed> $row Resultset row
