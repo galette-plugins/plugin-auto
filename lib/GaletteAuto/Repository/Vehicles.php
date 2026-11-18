@@ -17,6 +17,7 @@ use Galette\Core\History as CoreHistory;
 use Galette\Core\Login;
 use Galette\Core\Plugins;
 use Galette\Entity\Adherent;
+use Galette\Entity\DynamicFieldsHandle;
 use Galette\Entity\Status;
 use Galette\Repository\Groups;
 use GaletteAuto\Auto;
@@ -204,6 +205,10 @@ class Vehicles
                 $history->load((int)$vehicle->getId());
             }
 
+            if (!$vehicle->storeDynamicFields(transaction: true)) {
+                throw new \RuntimeException('Unable to store dynamic fields of vehicle #' . $vehicle->getId());
+            }
+
             if ($transaction) {
                 $this->zdb->commit();
             }
@@ -269,6 +274,11 @@ class Vehicles
 
             $delete = $this->zdb->delete(AUTO_PREFIX . History::TABLE);
             $delete->where->in(Auto::PK, $ids);
+            $this->zdb->execute($delete);
+
+            $delete = $this->zdb->delete(DynamicFieldsHandle::TABLE);
+            $delete->where(['field_form' => Auto::DYNAMIC_FORM]);
+            $delete->where->in('item_id', $ids);
             $this->zdb->execute($delete);
 
             $delete = $this->zdb->delete(AUTO_PREFIX . Auto::TABLE);

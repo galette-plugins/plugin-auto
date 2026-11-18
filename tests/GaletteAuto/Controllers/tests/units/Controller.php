@@ -1218,4 +1218,176 @@ class Controller extends GaletteRoutingTestCase
             (string)$test_response->getBody()
         );
     }
+
+    /**
+     * Create a dynamic field for vehicles
+     *
+     * @param string $name     Field name
+     * @param int    $type     Field type
+     * @param bool   $required Whether the field is required
+     */
+    private function createDynamicField(string $name, int $type = \Galette\DynamicFields\DynamicField::LINE, bool $required = false): int
+    {
+        $field = \Galette\DynamicFields\DynamicField::getFieldType($this->zdb, $type);
+        $this->assertTrue(
+            $field->store([
+                'field_name' => $name,
+                'field_perm' => (string)\Galette\Entity\FieldsConfig::USER_WRITE,
+                'field_type' => (string)$type,
+                'field_required' => $required ? '1' : '0',
+                'form_name' => Auto::DYNAMIC_FORM
+            ]),
+            implode(' ', $field->getErrors())
+        );
+        return (int)$field->getId();
+    }
+
+    /**
+     * Get dynamic fields values of a vehicle from database
+     *
+     * @param int $car_id Vehicle ID
+     *
+     * @return array<int, string> Values, by field ID
+     */
+    private function getDynamicValues(int $car_id): array
+    {
+        $select = $this->zdb->select(\Galette\Entity\DynamicFieldsHandle::TABLE);
+        $select->where(['field_form' => Auto::DYNAMIC_FORM, 'item_id' => $car_id]);
+        $values = [];
+        foreach ($this->zdb->execute($select) as $row) {
+            $values[(int)$row['field_id']] = (string)$row['field_val'];
+        }
+        return $values;
+    }
+
+    /**
+     * Vehicles get dynamic fields, configured with the core ones
+     */
+    public function testDynamicFields(): void
+    {
+        $this->assertSame(Auto::class, \Galette\Repository\DynamicFieldsSet::getClasses()[Auto::DYNAMIC_FORM]);
+        $this->assertSame('Vehicles', \Galette\DynamicFields\DynamicField::getFormsNames()[Auto::DYNAMIC_FORM]);
+
+        $frame = $this->createDynamicField('Frame number', required: true);
+        $member_one = $this->getMemberOne();
+        $car_id = $this->createVehicle($member_one->id);
+        $other_id = $this->createVehicle($member_one->id, 'Other');
+
+        $this->logMember($this->dataAdherentOne());
+        //the form shows the field
+        $test_response = $this->app->handle($this->createRequest('vehicleEdit', ['id' => (string)$car_id]));
+        $this->expectOK($test_response);
+        $this->assertStringContainsString('info_field_' . $frame . '_1', (string)$test_response->getBody());
+
+        //a required field is checked; forms post it empty
+        $test_response = $this->app->handle($this->storeRequest(['info_field_' . $frame . '_1' => ''], $car_id));
+        $this->assertSame(
+            ['Location' => [$this->routeparser->urlFor('vehicleEdit', ['id' => (string)$car_id])]],
+            $test_response->getHeaders()
+        );
+        $this->expectFlashData(['error_detected' => ['Missing required field Frame number']]);
+        $this->assertSame('Titine', $this->getVehicleName($car_id));
+        $this->assertSame([], $this->getDynamicValues($car_id));
+        $this->session->auto = null;
+
+        //values are stored along with the vehicle, apart from other vehicles
+        foreach ([$car_id => 'VF3ABC', $other_id => 'VF3XYZ'] as $id => $value) {
+            $test_response = $this->app->handle(
+                $this->storeRequest(['info_field_' . $frame . '_1' => $value], $id)
+            );
+            $this->assertSame(301, $test_response->getStatusCode());
+            $this->expectFlashData(['success_detected' => ['Vehicle has been saved!']]);
+        }
+        $this->assertSame([$frame => 'VF3ABC'], $this->getDynamicValues($car_id));
+        $this->assertSame([$frame => 'VF3XYZ'], $this->getDynamicValues($other_id));
+        $test_response = $this->app->handle($this->createRequest('vehicleEdit', ['id' => (string)$car_id]));
+        $this->assertStringContainsString('VF3ABC', (string)$test_response->getBody());
+
+        //a new vehicle gets its values once inserted
+        $count = $this->countVehicles();
+        $test_response = $this->app->handle(
+            $this->storeRequest(['info_field_' . $frame . '_1' => 'VF3NEW'])
+        );
+        $this->assertSame(301, $test_response->getStatusCode());
+        $this->expectFlashData(['success_detected' => ['Vehicle has been saved!']]);
+        $this->assertSame($count + 1, $this->countVehicles());
+        $select = $this->zdb->select(AUTO_PREFIX . Auto::TABLE);
+        $select->columns([Auto::PK])->order(Auto::PK . ' DESC')->limit(1);
+        $new_id = (int)$this->zdb->execute($select)->current()[Auto::PK];
+        $this->assertSame([$frame => 'VF3NEW'], $this->getDynamicValues($new_id));
+
+        //values go away with their vehicle only
+        $request = $this->createRequest('doRemoveVehicle', ['id' => (string)$car_id], 'POST')->withParsedBody([
+            'id' => (string)$car_id,
+            'confirm' => '1',
+            'redirect_uri' => $this->routeparser->urlFor('myVehiclesList'),
+        ]);
+        $this->assertSame(301, $this->app->handle($request)->getStatusCode());
+        $this->expectFlashData(['success_detected' => ['1 vehicles have been successfully deleted.']]);
+        $this->assertSame([], $this->getDynamicValues($car_id));
+        $this->assertSame([$frame => 'VF3XYZ'], $this->getDynamicValues($other_id));
+    }
+
+    /**
+     * Files of vehicles dynamic fields are sent to who can manage their owner
+     */
+    public function testDynamicFile(): void
+    {
+        $file_field = $this->createDynamicField('Registration card', \Galette\DynamicFields\DynamicField::FILE);
+        $member_two = $this->getMemberTwo();
+        $this->getMemberOne();
+        $car_id = $this->createVehicle($member_two->id);
+
+        //an administrator sends the file
+        $this->logSuperAdmin();
+        $tmp = sys_get_temp_dir() . '/galette_pro.png';
+        copy(GALETTE_ROOT . '../tests/fixtures/galette_pro.png', $tmp);
+        $test_response = $this->app->handle(
+            $this->storeRequest([], $car_id)->withUploadedFiles([
+                'info_field_' . $file_field . '_1' => new \Slim\Psr7\UploadedFile(
+                    fileNameOrStream: $tmp,
+                    name: 'card.png',
+                    type: 'image/png',
+                    size: (int)filesize($tmp),
+                    error: UPLOAD_ERR_OK
+                )
+            ])
+        );
+        $this->assertSame(301, $test_response->getStatusCode());
+        $this->expectFlashData(['success_detected' => ['Vehicle has been saved!']]);
+        $filename = GALETTE_FILES_PATH . sprintf('auto_vehicle_%1$s_field_%2$s_value_1', $car_id, $file_field);
+        $this->assertFileExists($filename);
+        $this->assertSame([$file_field => 'card.png'], $this->getDynamicValues($car_id));
+        $this->login->logout();
+
+        $request = $this->createRequest(
+            'getDynamicFile',
+            [
+                'form_name' => Auto::DYNAMIC_FORM,
+                'id' => (string)$car_id,
+                'fid' => (string)$file_field,
+                'pos' => '1',
+                'name' => 'card.png'
+            ]
+        );
+
+        //the owner gets it
+        $this->logMember($this->dataAdherentTwo());
+        $test_response = $this->app->handle($request);
+        $this->assertSame(200, $test_response->getStatusCode());
+        $this->assertSame(['attachment;filename="card.png"'], $test_response->getHeader('Content-Disposition'));
+        $this->login->logout();
+
+        //another member does not
+        $this->logMember($this->dataAdherentOne());
+        $test_response = $this->app->handle($request);
+        $this->assertSame(
+            ['Location' => [$this->routeparser->urlFor('myVehiclesList')]],
+            $test_response->getHeaders()
+        );
+        $this->expectFlashData(['error_detected' => ['You do not have permission for requested URL.']]);
+        $this->login->logout();
+
+        unlink($filename);
+    }
 }

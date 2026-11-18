@@ -13,16 +13,21 @@ namespace GaletteAuto;
 use DI\Attribute\Inject;
 use Galette\Core\Db;
 use Galette\Core\Login;
+use Galette\Core\Plugins;
 use Galette\Core\Plugins\DashboardProviderInterface;
+use Galette\Core\Plugins\DynamicFormsProviderInterface;
 use Galette\Core\Plugins\InstallableInterface;
 use Galette\Core\Plugins\InstallInitInterface;
 use Galette\Core\Plugins\MemberActionProviderInterface;
 use Galette\Core\Plugins\MenuProviderInterface;
 use Galette\Core\Plugins\PublicPagesProviderInterface;
+use Galette\Core\Preferences;
 use Galette\Entity\Adherent;
 use Galette\Core\GalettePlugin;
 use Laminas\Db\Metadata\Object\ConstraintObject;
 use Laminas\Db\Metadata\Source\Factory;
+use Psr\Container\ContainerInterface;
+use Slim\Routing\RouteParser;
 
 /**
  * Galette Auto plugin main class
@@ -30,12 +35,17 @@ use Laminas\Db\Metadata\Source\Factory;
  * @author Johan Cwiklinski <johan@x-tnd.be>
  */
 
-class PluginGaletteAuto extends GalettePlugin implements MenuProviderInterface, DashboardProviderInterface, MemberActionProviderInterface, InstallableInterface, InstallInitInterface, PublicPagesProviderInterface
+class PluginGaletteAuto extends GalettePlugin implements MenuProviderInterface, DashboardProviderInterface, MemberActionProviderInterface, InstallableInterface, InstallInitInterface, PublicPagesProviderInterface, DynamicFormsProviderInterface
 {
     #[Inject]
     private readonly Db $zdb; //@phpstan-ignore property.uninitializedReadonly,property.onlyRead (injected from DI)
     #[Inject]
     private readonly Login $login; //@phpstan-ignore property.uninitializedReadonly,property.onlyRead (injected from DI)
+    //plugins are not injected: they build this class
+    #[Inject]
+    private readonly ContainerInterface $container; //@phpstan-ignore property.uninitializedReadonly,property.onlyRead (injected from DI)
+    #[Inject]
+    private readonly Preferences $preferences; //@phpstan-ignore property.uninitializedReadonly,property.onlyRead (injected from DI)
 
     /**
      * Get plugins menus
@@ -164,6 +174,57 @@ class PluginGaletteAuto extends GalettePlugin implements MenuProviderInterface, 
     public function getPublicPageLabel(string $id): string
     {
         return _T("Vehicles", "auto");
+    }
+
+    /**
+     * Get the dynamic fields forms the plugin declares
+     *
+     * @return array<string, class-string>
+     */
+    public function getDynamicForms(): array
+    {
+        return [Auto::DYNAMIC_FORM => Auto::class];
+    }
+
+    /**
+     * Get the label of a declared dynamic fields form
+     *
+     * @param string $form Form name
+     */
+    public function getDynamicFormLabel(string $form): string
+    {
+        return _T("Vehicles", "auto");
+    }
+
+    /**
+     * Get a vehicle, if the user can manage its owner
+     *
+     * @param string $form  Form name
+     * @param int    $id    Vehicle identifier
+     * @param Login  $login Current user
+     */
+    public function getDynamicFormObject(string $form, int $id, Login $login): ?object
+    {
+        $vehicle = new Auto($this->container->get(Plugins::class), $this->zdb);
+        if (!$vehicle->load($id)) {
+            return null;
+        }
+
+        $access = new VehicleAccess($this->zdb, $login, $this->preferences);
+        return $access->canManageMember((int)$vehicle->getOwnerId()) ? $vehicle : null;
+    }
+
+    /**
+     * Get the vehicles list, to go back to when a file cannot be sent
+     *
+     * @param string      $form        Form name
+     * @param int         $id          Vehicle identifier
+     * @param RouteParser $routeparser Route parser
+     */
+    public function getDynamicFormReturnUrl(string $form, int $id, RouteParser $routeparser): string
+    {
+        $access = new VehicleAccess($this->zdb, $this->login, $this->preferences);
+        return $routeparser->urlFor($access->isManager() ? 'vehiclesList' : 'myVehiclesList');
     }
 
     /**

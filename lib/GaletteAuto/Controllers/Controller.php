@@ -527,7 +527,7 @@ class Controller extends AbstractPluginController
             }
         }
 
-        $res = $auto->check($post, $this->getAccess());
+        $res = $auto->check($post, $this->getAccess(), $request->getUploadedFiles());
         if ($res !== true) {
             $error_detected = $auto->getErrors();
         }
