@@ -33,6 +33,7 @@ var _autoVehicleForm = function() {
 
     /* modes are 0 (hidden), 1 (optional) and 2 (required) */
     var _typesFields = $form.data('types-fields') || {};
+    var _dynamicPrefix = 'dynfield_';
     $('#type').dropdown('setting', 'onChange', function(id_type) {
         var _fields = _typesFields[id_type];
         if (!_fields) {
@@ -41,14 +42,29 @@ var _autoVehicleForm = function() {
             $form.find('[id^="field_"]').each(function() {
                 _fields[this.id.substring(6)] = 1;
             });
+            $form.find('[data-dynfield]').each(function() {
+                _fields[_dynamicPrefix + $(this).data('dynfield')] = 1;
+            });
         }
         $.each(_fields, function(field, mode) {
-            var _container = $('#field_' + field);
-            var _input = _container.find('input, select, textarea').not('.search');
+            var _container, _required;
+            if (field.indexOf(_dynamicPrefix) === 0) {
+                //dynamic fields: only their first occurrence is required,
+                //and a stored file is not to be sent again
+                _container = $form.find('[data-dynfield="' + field.substring(_dynamicPrefix.length) + '"]');
+                _required = _container.find('.field').first();
+                if (_required.data('filled')) {
+                    _required = $();
+                }
+            } else {
+                _container = $('#field_' + field);
+                _required = _container;
+            }
             _container.toggleClass('displaynone', mode === 0);
-            _container.toggleClass('required', mode === 2);
+            _required.toggleClass('required', mode === 2);
             //a hidden field must not block the submission
-            _input.prop('required', mode === 2);
+            _container.find('input, select, textarea').not('.search').prop('required', false);
+            _required.find('input, select, textarea').not('.search').prop('required', mode === 2);
         });
     });
 

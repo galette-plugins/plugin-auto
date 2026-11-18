@@ -15,6 +15,7 @@ use Analog\Analog;
 use Galette\Core\Db;
 use Galette\Core\Login;
 use Galette\Core\Plugins;
+use Galette\DynamicFields\DynamicField;
 use Galette\Entity\Adherent;
 use Galette\Features\Dynamics;
 use Psr\Http\Message\UploadedFileInterface;
@@ -561,6 +562,26 @@ class Auto
         $this->dynamicsFiles($files);
 
         return !count($this->errors);
+    }
+
+    /**
+     * Is a dynamic field hidden for the vehicle type?
+     *
+     * @param DynamicField $field Dynamic field
+     */
+    public function isDynamicFieldHidden(DynamicField $field): bool
+    {
+        return $this->type->isHidden(VehicleType::DYNAMIC_PREFIX . $field->getId());
+    }
+
+    /**
+     * Is a dynamic field required for the vehicle type?
+     *
+     * @param DynamicField $field Dynamic field
+     */
+    public function isDynamicFieldRequired(DynamicField $field): bool
+    {
+        return $this->type->isRequired(VehicleType::DYNAMIC_PREFIX . $field->getId());
     }
 
     /**

@@ -1390,4 +1390,80 @@ class Controller extends GaletteRoutingTestCase
 
         unlink($filename);
     }
+
+    /**
+     * Each vehicle type hides, requires or leaves optional the dynamic fields of vehicles
+     */
+    public function testTypeDynamicFields(): void
+    {
+        $frame = $this->createDynamicField('Frame number', required: true);
+        $inspection = $this->createDynamicField('Last inspection');
+        $separator = \Galette\DynamicFields\DynamicField::getFieldType($this->zdb, \Galette\DynamicFields\DynamicField::SEPARATOR);
+        $this->assertTrue($separator->store([
+            'field_name' => 'Papers',
+            'field_perm' => (string)\Galette\Entity\FieldsConfig::USER_WRITE,
+            'field_type' => (string)\Galette\DynamicFields\DynamicField::SEPARATOR,
+            'form_name' => Auto::DYNAMIC_FORM
+        ]));
+        $frame_key = \GaletteAuto\VehicleType::DYNAMIC_PREFIX . $frame;
+        $inspection_key = \GaletteAuto\VehicleType::DYNAMIC_PREFIX . $inspection;
+
+        //a type that does not configure them follows the fields; separators are not configured
+        $car = new \GaletteAuto\VehicleType($this->zdb, $this->props['type']);
+        $fields = $car->getFields();
+        $this->assertSame(\GaletteAuto\VehicleType::REQUIRED, $fields[$frame_key]);
+        $this->assertSame(\GaletteAuto\VehicleType::OPTIONAL, $fields[$inspection_key]);
+        $this->assertArrayNotHasKey(\GaletteAuto\VehicleType::DYNAMIC_PREFIX . $separator->getId(), $fields);
+
+        $moped = new \GaletteAuto\VehicleType($this->zdb);
+        $moped->setValue('Moped');
+        $moped->setFields([$frame_key => \GaletteAuto\VehicleType::OPTIONAL, $inspection_key => \GaletteAuto\VehicleType::HIDDEN]);
+        $moped->store(new: true);
+        $moped = new \GaletteAuto\VehicleType($this->zdb, (int)$moped->getId());
+        $this->assertSame(\GaletteAuto\VehicleType::OPTIONAL, $moped->getFieldMode($frame_key));
+        $this->assertTrue($moped->isHidden($inspection_key));
+
+        //the type page configures them under their name
+        $this->logSuperAdmin();
+        $test_response = $this->app->handle(
+            $this->createRequest('propertyEdit', ['property' => 'type', 'id' => (string)$moped->getId()])
+        );
+        $this->expectOK($test_response);
+        $body = (string)$test_response->getBody();
+        $this->assertStringContainsString('name="fields[' . $frame_key . ']"', $body);
+        $this->assertStringContainsString('Last inspection', $body);
+        $this->login->logout();
+
+        $member_one = $this->getMemberOne();
+        $car_id = $this->createVehicle($member_one->id);
+        $moped_id = $this->createVehicle($member_one->id, 'Solex');
+        $update = $this->zdb->update(AUTO_PREFIX . Auto::TABLE);
+        $update->set([\GaletteAuto\VehicleType::PK => $moped->getId()])->where([Auto::PK => $moped_id]);
+        $this->zdb->execute($update);
+
+        //the form follows the type, and gives every type modes to switch them
+        $this->logMember($this->dataAdherentOne());
+        $test_response = $this->app->handle($this->createRequest('vehicleEdit', ['id' => (string)$moped_id]));
+        $this->expectOK($test_response);
+        $body = (string)$test_response->getBody();
+        $this->assertMatchesRegularExpression('/column displaynone" data-dynfield="' . $inspection . '"/', $body);
+        $this->assertMatchesRegularExpression('/<div class="field">\s*<label for="info_field_' . $frame . '_1"/', $body);
+        $this->assertStringContainsString('&quot;' . $frame_key . '&quot;:2', $body);
+        $test_response = $this->app->handle($this->createRequest('vehicleEdit', ['id' => (string)$car_id]));
+        $this->assertMatchesRegularExpression('/<div class="field required">\s*<label for="info_field_' . $frame . '_1"/', (string)$test_response->getBody());
+
+        //the type decides which fields are required
+        $values = ['info_field_' . $frame . '_1' => '', 'info_field_' . $inspection . '_1' => '2026-03-01'];
+        $test_response = $this->app->handle($this->storeRequest($values, $car_id));
+        $this->assertSame(301, $test_response->getStatusCode());
+        $this->expectFlashData(['error_detected' => ['Missing required field Frame number']]);
+        $this->session->auto = null;
+        $test_response = $this->app->handle(
+            $this->storeRequest($values + ['type' => (string)$moped->getId()], $moped_id)
+        );
+        $this->assertSame(301, $test_response->getStatusCode());
+        $this->expectFlashData(['success_detected' => ['Vehicle has been saved!']]);
+        //hidden for mopeds: not stored
+        $this->assertSame([], $this->getDynamicValues($moped_id));
+    }
 }
