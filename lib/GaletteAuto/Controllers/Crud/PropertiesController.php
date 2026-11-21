@@ -342,7 +342,8 @@ class PropertiesController extends AbstractPluginController
             foreach (VehicleType::FIELDS as $field) {
                 $labels[$field] = $auto->getPropName($field);
             }
-            $params['fields_labels'] = $labels;
+            //dynamic fields are configured along, under their own name
+            $params['fields_labels'] = $labels + $object->getDynamicFieldsNames();
             $params['fields_modes'] = VehicleType::getModes();
         }
 

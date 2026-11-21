@@ -15,7 +15,9 @@ use Analog\Analog;
 use Galette\Core\Db;
 use Galette\Core\Login;
 use Galette\Core\Plugins;
+use Galette\DynamicFields\DynamicField;
 use Galette\Entity\Adherent;
+use Galette\Features\Dynamics;
 use Psr\Http\Message\UploadedFileInterface;
 
 /**
@@ -25,8 +27,12 @@ use Psr\Http\Message\UploadedFileInterface;
  */
 class Auto
 {
+    use Dynamics;
+
     public const string TABLE = 'cars';
     public const string PK = 'id_car';
+    /** Dynamic fields form name; never change it, stored values refer to it */
+    public const string DYNAMIC_FORM = 'auto_vehicle';
 
     public const int FUEL_PETROL = 1;
     public const int FUEL_DIESEL = 2;
@@ -322,11 +328,12 @@ class Auto
     /**
      * Check posted values validity
      *
-     * @param array<string,mixed> $post   All values to check, basically the $_POST array
-     *                                    after sending the form
-     * @param VehicleAccess       $access Access rules for current user
+     * @param array<string,mixed>                   $post   All values to check, basically the $_POST array
+     *                                                      after sending the form
+     * @param VehicleAccess                         $access Access rules for current user
+     * @param ?array<string, UploadedFileInterface> $files  Uploaded files; required dynamic files are not checked when null
      */
-    public function check(array $post, VehicleAccess $access): bool
+    public function check(array $post, VehicleAccess $access, ?array $files = null): bool
     {
         $this->errors = [];
 
@@ -489,7 +496,10 @@ class Auto
             }
         }
 
-        return count($this->errors) === 0;
+        //dynamic fields are the same for every vehicle type
+        $dynamics = $this->dynamicsCheck(post: $post, required: [], disabled: [], files: $files);
+
+        return $dynamics && count($this->errors) === 0;
     }
 
     /**
@@ -548,8 +558,40 @@ class Auto
         if (!$this->picture->upload(request_files: $files, key: 'photo')) {
             $this->errors = array_merge($this->errors, $this->picture->uploadErrors());
         }
+        //files of dynamic fields; errors are added to the list
+        $this->dynamicsFiles($files);
 
         return !count($this->errors);
+    }
+
+    /**
+     * Is a dynamic field hidden for the vehicle type?
+     *
+     * @param DynamicField $field Dynamic field
+     */
+    public function isDynamicFieldHidden(DynamicField $field): bool
+    {
+        return $this->type->isHidden(VehicleType::DYNAMIC_PREFIX . $field->getId());
+    }
+
+    /**
+     * Is a dynamic field required for the vehicle type?
+     *
+     * @param DynamicField $field Dynamic field
+     */
+    public function isDynamicFieldRequired(DynamicField $field): bool
+    {
+        return $this->type->isRequired(VehicleType::DYNAMIC_PREFIX . $field->getId());
+    }
+
+    /**
+     * Store dynamic fields values, once the vehicle is stored
+     *
+     * @param bool $transaction True if a transaction already exists
+     */
+    public function storeDynamicFields(bool $transaction = false): bool
+    {
+        return $this->dynamicsStore($transaction);
     }
 
     /**

@@ -11,6 +11,7 @@ declare(strict_types=1);
 namespace GaletteAuto;
 
 use ArrayObject;
+use Galette\DynamicFields\DynamicField;
 
 /**
  * Vehicle types (car, motorbike, moped, truck...) for galette Auto plugin
@@ -52,6 +53,11 @@ class VehicleType extends AbstractObject
         'fuel',
         'comment',
     ];
+
+    /**
+     * Prefix of dynamic fields in fields modes, followed by the field ID
+     */
+    public const string DYNAMIC_PREFIX = 'dynfield_';
 
     /**
      * Fields modes, loaded on demand
@@ -145,12 +151,18 @@ class VehicleType extends AbstractObject
     /**
      * Get every configurable field mode; a field the type does not configure is optional
      *
+     * Dynamic fields of vehicles are configured as well, keyed by DYNAMIC_PREFIX
+     * and their ID; one the type does not configure follows its own setting.
+     *
      * @return array<string, int>
      */
     public function getFields(): array
     {
         if ($this->fields === null) {
             $this->fields = array_fill_keys(self::FIELDS, self::OPTIONAL);
+            foreach ($this->getDynamicFields() as $key => $field) {
+                $this->fields[$key] = (int)$field['field_required'] === 1 ? self::REQUIRED : self::OPTIONAL;
+            }
             if ($this->id !== null) {
                 $select = $this->zdb->select(AUTO_PREFIX . self::FIELDS_TABLE);
                 $select->where([self::PK => $this->id]);
@@ -162,6 +174,40 @@ class VehicleType extends AbstractObject
             }
         }
         return $this->fields;
+    }
+
+    /**
+     * Get the dynamic fields of vehicles a type configures, separators left out
+     *
+     * @return array<string, ArrayObject<string, mixed>> Fields rows, keyed by DYNAMIC_PREFIX and their ID
+     */
+    private function getDynamicFields(): array
+    {
+        $select = $this->zdb->select(DynamicField::TABLE);
+        $select
+            ->where(['field_form' => Auto::DYNAMIC_FORM])
+            ->where->notEqualTo('field_type', DynamicField::SEPARATOR);
+        $select->order(['field_index', DynamicField::PK]);
+
+        $fields = [];
+        foreach ($this->zdb->execute($select) as $row) {
+            /** @var ArrayObject<string, mixed> $row */
+            $fields[self::DYNAMIC_PREFIX . $row[DynamicField::PK]] = $row;
+        }
+        return $fields;
+    }
+
+    /**
+     * Get the names of the dynamic fields of vehicles a type configures
+     *
+     * @return array<string, string> Names, keyed by DYNAMIC_PREFIX and the field ID
+     */
+    public function getDynamicFieldsNames(): array
+    {
+        return array_map(
+            fn(ArrayObject $field): string => (string)$field['field_name'],
+            $this->getDynamicFields()
+        );
     }
 
     /**
